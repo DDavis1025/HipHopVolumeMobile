@@ -12,7 +12,7 @@ import UIKit
 import SwiftUI
 import AVFoundation
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     private var myTableView: UITableView!
     var listArray:[PostById] = []
@@ -67,7 +67,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     let trackVC = AlbumTrackVC()
-    let globalAudioVC = GlobalAudio()
     let modelClass = ModelClass()
 
     
@@ -127,7 +126,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidLoad()
         
 
-        
+        modelClass.updateTheViewLoaded(newBool: true)
 //        button = UIButton(frame: CGRect(x: 100, y: 300, width: 100, height: 50))
 //
 //               button?.setImage(UIImage(named: "play"), for: .normal)
@@ -255,6 +254,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.myTableView?.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
             self.myTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        
+            myTableView.layoutMargins = UIEdgeInsets.zero
+            myTableView.separatorInset = UIEdgeInsets.zero
             
                     
                     
@@ -324,9 +326,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
         cell.textLabel!.text = "\(listArray[indexPath.row].name!)"
+        cell.translatesAutoresizingMaskIntoConstraints = false
+        cell.layoutMargins = UIEdgeInsets.zero
         return cell
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return " Tracks"
+    }
 
    
     

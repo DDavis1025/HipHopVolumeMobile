@@ -11,7 +11,7 @@ import UIKit
 import Auth0
 
 
-class WhoToFollowVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     var imageView:UIImageView!
     private var myTableView: UITableView!

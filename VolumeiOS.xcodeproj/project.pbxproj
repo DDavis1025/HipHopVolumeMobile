@@ -10,9 +10,7 @@
 		4A34179DA10DF7C31AE28B6E /* Pods_VolumeiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */; };
 		CD571148244FDF6600FAAC5D /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD571130244FDF6600FAAC5D /* Auth0.plist */; };
 		CD571149244FDF6600FAAC5D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571132244FDF6600FAAC5D /* ViewController.swift */; };
-		CD57114A244FDF6600FAAC5D /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571133244FDF6600FAAC5D /* Album.swift */; };
 		CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571134244FDF6600FAAC5D /* ArtistProfileVC.swift */; };
-		CD57114C244FDF6600FAAC5D /* GlobalAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571135244FDF6600FAAC5D /* GlobalAudio.swift */; };
 		CD57114D244FDF6600FAAC5D /* WhoToFollow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571136244FDF6600FAAC5D /* WhoToFollow.swift */; };
 		CD57114E244FDF6600FAAC5D /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571137244FDF6600FAAC5D /* ImageView.swift */; };
 		CD57114F244FDF6600FAAC5D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571138244FDF6600FAAC5D /* ContentView.swift */; };
@@ -30,6 +28,8 @@
 		CD5711612450AB5B00FAAC5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5711602450AB5B00FAAC5D /* AppDelegate.swift */; };
 		CD5711632450AB6700FAAC5D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5711622450AB6700FAAC5D /* SceneDelegate.swift */; };
 		CD5711672450CF1500FAAC5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD5711662450CF1500FAAC5D /* Assets.xcassets */; };
+		CD571169245115A200FAAC5D /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571168245115A200FAAC5D /* Toolbar.swift */; };
+		CD57116D2451D5BA00FAAC5D /* AlbumVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57116C2451D5BA00FAAC5D /* AlbumVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,9 +38,7 @@
 		CD57112F244FDF6500FAAC5D /* VolumeiOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VolumeiOS-Bridging-Header.h"; sourceTree = "<group>"; };
 		CD571130244FDF6600FAAC5D /* Auth0.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Auth0.plist; sourceTree = "<group>"; };
 		CD571132244FDF6600FAAC5D /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		CD571133244FDF6600FAAC5D /* Album.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
 		CD571134244FDF6600FAAC5D /* ArtistProfileVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistProfileVC.swift; sourceTree = "<group>"; };
-		CD571135244FDF6600FAAC5D /* GlobalAudio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalAudio.swift; sourceTree = "<group>"; };
 		CD571136244FDF6600FAAC5D /* WhoToFollow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhoToFollow.swift; sourceTree = "<group>"; };
 		CD571137244FDF6600FAAC5D /* ImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		CD571138244FDF6600FAAC5D /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,6 +57,8 @@
 		CD5711622450AB6700FAAC5D /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		CD5711642450AC0900FAAC5D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../Test/Test/Info.plist; sourceTree = "<group>"; };
 		CD5711662450CF1500FAAC5D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CD571168245115A200FAAC5D /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
+		CD57116C2451D5BA00FAAC5D /* AlbumVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumVC.swift; sourceTree = "<group>"; };
 		E9359D0B9062EBD16B3ADC07 /* Pods-VolumeiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolumeiOS.debug.xcconfig"; path = "Target Support Files/Pods-VolumeiOS/Pods-VolumeiOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolumeiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -110,6 +110,7 @@
 				CD571147244FDF6600FAAC5D /* Spinner.swift */,
 				CD571131244FDF6600FAAC5D /* View */,
 				CD571144244FDF6600FAAC5D /* View Models */,
+				CD571168245115A200FAAC5D /* Toolbar.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -118,14 +119,13 @@
 			isa = PBXGroup;
 			children = (
 				CD571132244FDF6600FAAC5D /* ViewController.swift */,
-				CD571133244FDF6600FAAC5D /* Album.swift */,
 				CD571134244FDF6600FAAC5D /* ArtistProfileVC.swift */,
-				CD571135244FDF6600FAAC5D /* GlobalAudio.swift */,
 				CD571136244FDF6600FAAC5D /* WhoToFollow.swift */,
 				CD571137244FDF6600FAAC5D /* ImageView.swift */,
 				CD571138244FDF6600FAAC5D /* ContentView.swift */,
 				CD571139244FDF6600FAAC5D /* OtherView.swift */,
 				CD57115E245096AE00FAAC5D /* AlbumTrackVC.swift */,
+				CD57116C2451D5BA00FAAC5D /* AlbumVC.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -288,11 +288,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD571169245115A200FAAC5D /* Toolbar.swift in Sources */,
 				CD571156244FDF6600FAAC5D /* ImageLoader.swift in Sources */,
 				CD57114E244FDF6600FAAC5D /* ImageView.swift in Sources */,
 				CD5711612450AB5B00FAAC5D /* AppDelegate.swift in Sources */,
 				CD57115F245096AE00FAAC5D /* AlbumTrackVC.swift in Sources */,
 				CD571155244FDF6600FAAC5D /* ImageCache.swift in Sources */,
+				CD57116D2451D5BA00FAAC5D /* AlbumVC.swift in Sources */,
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,
 				CD57114F244FDF6600FAAC5D /* ContentView.swift in Sources */,
@@ -301,12 +303,10 @@
 				CD571152244FDF6600FAAC5D /* PlayAudio.swift in Sources */,
 				CD571157244FDF6600FAAC5D /* Webservice.swift in Sources */,
 				CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */,
-				CD57114A244FDF6600FAAC5D /* Album.swift in Sources */,
 				CD571153244FDF6600FAAC5D /* ProfileViewController.swift in Sources */,
 				CD5711632450AB6700FAAC5D /* SceneDelegate.swift in Sources */,
 				CD57114D244FDF6600FAAC5D /* WhoToFollow.swift in Sources */,
 				CD571151244FDF6600FAAC5D /* Models.swift in Sources */,
-				CD57114C244FDF6600FAAC5D /* GlobalAudio.swift in Sources */,
 				CD571150244FDF6600FAAC5D /* OtherView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

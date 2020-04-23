@@ -25,7 +25,7 @@ struct ContentView: View {
                              VStack{
                                    Text("Title: ").bold()
                                     + Text("\(post.title!)")
-                                NavigationLink(destination: Album.init(post: post)) {
+                                NavigationLink(destination: AlbumController(post:post)) {
                         
                                     ImageView(withURL: "http://localhost:8000/\(post.path.replacingOccurrences(of: " ", with: "%20"))")
                                    }

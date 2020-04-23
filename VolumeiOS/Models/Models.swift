@@ -42,18 +42,13 @@ struct UsersModel: Codable {
 class ModelClass : NSObject
 {
     static var trackNameLabel:String?
-    static var track:String? {
-              didSet {
-//                  playing = false
-                  GlobalAudio.shared.playing = false
-                  print("track didSet")
-              }
-          }
+    static var track:String? 
     static var listArray:[PostById]? = []
     static var index:Int?
     static var imgPath:String?
     static var post:Post?
     static var playing:Bool?
+    static var theViewLoaded:Bool?
     
     func updatePlaying(newBool: Bool) {
            ModelClass.self.playing = newBool
@@ -81,6 +76,10 @@ class ModelClass : NSObject
     
     func updatePost(newPost: Post) {
         ModelClass.self.post = newPost
+    }
+    
+    func updateTheViewLoaded(newBool: Bool) {
+        ModelClass.self.theViewLoaded = newBool
     }
 }
  

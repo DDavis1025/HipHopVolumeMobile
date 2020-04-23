@@ -12,13 +12,13 @@ import SwiftUI
 import AVFoundation
 
 var player:AVPlayer?
-class AlbumTrackVC: UIViewController {
+class AlbumTrackVC: Toolbar {
 
     var post:Post?
     var albumNameLabel:UILabel?
     var trackNameLabel:UILabel?
     var playing:Bool?
-    var justClicked:Bool?
+    var justClicked:Bool? = false
     var mySlider:UISlider?
     var timer: Timer?
     var button:UIButton?

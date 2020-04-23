@@ -11,7 +11,7 @@ import UIKit
 import Auth0
 import SwiftUI
 
-class ArtistProfileVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     var profile: UserInfo!
     var isLoaded:Bool? = false
@@ -22,7 +22,7 @@ class ArtistProfileVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     var images:[UIImage]?
     var post:Post? {
         didSet {
-            let vc = UIHostingController(rootView: Album(post: self.post!))
+            let vc = AlbumVC(post: self.post!)
             self.navigationController?.pushViewController(vc, animated: true)
             print("posty \(post)")
         }
@@ -78,7 +78,6 @@ class ArtistProfileVC: UIViewController, UITableViewDelegate, UITableViewDataSou
 //            myTableView?.isHidden = true
             
             getArtist(id: artistID!)
-          
             
             view.backgroundColor = UIColor.white
             
@@ -219,15 +218,6 @@ class ArtistProfileVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.view.addSubview(self.myTableView)
         
         print("tbl view")
-        
-        let headerView: UIView = UIView.init(frame: CGRect.init(x: 1, y: 50, width: 276, height: 30))
-        headerView.backgroundColor = UIColor(red: 235/255.0, green: 235/255.0, blue: 235/255.0, alpha: 1.0)
-
-        let labelView: UILabel = UILabel.init(frame: CGRect.init(x: 10, y: 5, width: 276, height: 24))
-        labelView.text = "Albums"
-
-        headerView.addSubview(labelView)
-        self.myTableView.tableHeaderView = headerView
 
         self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
         self.imageView?.translatesAutoresizingMaskIntoConstraints = false
@@ -262,6 +252,10 @@ class ArtistProfileVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return artistData.count
     }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+           return " Albums"
+       }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
            let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
