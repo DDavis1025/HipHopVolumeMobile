@@ -26,6 +26,10 @@
 		CD571157244FDF6600FAAC5D /* Webservice.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571142244FDF6600FAAC5D /* Webservice.swift */; };
 		CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571145244FDF6600FAAC5D /* PostListViewModel.swift */; };
 		CD57115B244FDF6700FAAC5D /* Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571147244FDF6600FAAC5D /* Spinner.swift */; };
+		CD57115F245096AE00FAAC5D /* AlbumTrackVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57115E245096AE00FAAC5D /* AlbumTrackVC.swift */; };
+		CD5711612450AB5B00FAAC5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5711602450AB5B00FAAC5D /* AppDelegate.swift */; };
+		CD5711632450AB6700FAAC5D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD5711622450AB6700FAAC5D /* SceneDelegate.swift */; };
+		CD5711672450CF1500FAAC5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD5711662450CF1500FAAC5D /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,7 +54,11 @@
 		CD571142244FDF6600FAAC5D /* Webservice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Webservice.swift; sourceTree = "<group>"; };
 		CD571145244FDF6600FAAC5D /* PostListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostListViewModel.swift; sourceTree = "<group>"; };
 		CD571147244FDF6600FAAC5D /* Spinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spinner.swift; sourceTree = "<group>"; };
-		CD57115C244FDFE300FAAC5D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CD57115E245096AE00FAAC5D /* AlbumTrackVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTrackVC.swift; sourceTree = "<group>"; };
+		CD5711602450AB5B00FAAC5D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CD5711622450AB6700FAAC5D /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		CD5711642450AC0900FAAC5D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../Test/Test/Info.plist; sourceTree = "<group>"; };
+		CD5711662450CF1500FAAC5D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E9359D0B9062EBD16B3ADC07 /* Pods-VolumeiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolumeiOS.debug.xcconfig"; path = "Target Support Files/Pods-VolumeiOS/Pods-VolumeiOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolumeiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -88,8 +96,11 @@
 		CD57111A244FDF3300FAAC5D /* VolumeiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CD5711662450CF1500FAAC5D /* Assets.xcassets */,
+				CD5711642450AC0900FAAC5D /* Info.plist */,
+				CD5711622450AB6700FAAC5D /* SceneDelegate.swift */,
+				CD5711602450AB5B00FAAC5D /* AppDelegate.swift */,
 				CD57112F244FDF6500FAAC5D /* VolumeiOS-Bridging-Header.h */,
-				CD57115C244FDFE300FAAC5D /* Info.plist */,
 				CD571130244FDF6600FAAC5D /* Auth0.plist */,
 				CD57113A244FDF6600FAAC5D /* Models */,
 				CD57113C244FDF6600FAAC5D /* PlayAudio.swift */,
@@ -114,6 +125,7 @@
 				CD571137244FDF6600FAAC5D /* ImageView.swift */,
 				CD571138244FDF6600FAAC5D /* ContentView.swift */,
 				CD571139244FDF6600FAAC5D /* OtherView.swift */,
+				CD57115E245096AE00FAAC5D /* AlbumTrackVC.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -222,6 +234,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD5711672450CF1500FAAC5D /* Assets.xcassets in Resources */,
 				CD571148244FDF6600FAAC5D /* Auth0.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -277,6 +290,8 @@
 			files = (
 				CD571156244FDF6600FAAC5D /* ImageLoader.swift in Sources */,
 				CD57114E244FDF6600FAAC5D /* ImageView.swift in Sources */,
+				CD5711612450AB5B00FAAC5D /* AppDelegate.swift in Sources */,
+				CD57115F245096AE00FAAC5D /* AlbumTrackVC.swift in Sources */,
 				CD571155244FDF6600FAAC5D /* ImageCache.swift in Sources */,
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,
@@ -288,6 +303,7 @@
 				CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */,
 				CD57114A244FDF6600FAAC5D /* Album.swift in Sources */,
 				CD571153244FDF6600FAAC5D /* ProfileViewController.swift in Sources */,
+				CD5711632450AB6700FAAC5D /* SceneDelegate.swift in Sources */,
 				CD57114D244FDF6600FAAC5D /* WhoToFollow.swift in Sources */,
 				CD571151244FDF6600FAAC5D /* Models.swift in Sources */,
 				CD57114C244FDF6600FAAC5D /* GlobalAudio.swift in Sources */,

@@ -53,6 +53,11 @@ class ModelClass : NSObject
     static var index:Int?
     static var imgPath:String?
     static var post:Post?
+    static var playing:Bool?
+    
+    func updatePlaying(newBool: Bool) {
+           ModelClass.self.playing = newBool
+       }
     
     func updateTrackNameLabel(newText: String) {
         ModelClass.self.trackNameLabel = newText

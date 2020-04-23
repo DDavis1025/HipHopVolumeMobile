@@ -39,12 +39,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 let imagePath = self.albumData.filter { i in i.id == self.post.id
                 }
                 
+                
                 self.listArray = self.albumData.filter { i in i.album_id == self.post.id && i.id != self.post.id
                 }
 
-                for post in imagePath {
-                    self.modelClass.updateImgPath(newText: post.path)
-                }
+                self.components.path = "/\(self.albumData[0].path)"
+
+                self.modelClass.updateImgPath(newText: self.components.url!.absoluteString)
+                
                 self.myTableView?.reloadData()
             }
         }
@@ -63,7 +65,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 //    var button:UIButton?
     
     
-//    static var shared = ViewController()
     
     let trackVC = AlbumTrackVC()
     let globalAudioVC = GlobalAudio()
@@ -179,9 +180,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                             target: self,
                             action: #selector(self.selectorName(sender:))
                         )
+          doneItem.tintColor = UIColor.black
                     
            navItem.leftBarButtonItem = doneItem
-            self.navBar?.barTintColor = UIColor.lightGray
+          self.navBar?.barTintColor = UIColor.lightGray
         
            self.navBar!.setItems([navItem], animated: false)
                 
@@ -275,7 +277,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        trackVC.trackNameLabel.text = "\(listArray[indexPath.row].name!)"
+        trackVC.trackNameLabel?.text = "\(listArray[indexPath.row].name!)"
 //        trackVC.track = songPath[indexPath.row] as? String
         modelClass.updateTrackNameLabel(newText: "\(listArray[indexPath.row].name!)")
         print("tdsr \(ModelClass.trackNameLabel)")
@@ -292,6 +294,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             trackVC.play(url: (NSURL(string: (ModelClass.track!))!))
         }
         
+         
+        
 //        print("Song \(songPath[indexPath.row])")
 //        print("Num: \(indexPath.row)")
 //        print("Value: \(songArray[indexPath.row])")
@@ -302,9 +306,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let index = indexPath.row
 //        trackVC.index = index
         modelClass.updateIndex(newInt: index)
-        trackVC.playing = true
+        modelClass.updatePlaying(newBool: true)
         trackVC.justClicked = true
-        GlobalAudio.shared.playing = true
         print("playing \(trackVC.playing)")
 //         ModelClass.index = index
 //        index = self.index

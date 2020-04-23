@@ -92,7 +92,7 @@ override func didReceiveMemoryWarning() {
     @objc func playBtnAction(sender: UIBarButtonItem)
 {
 
-    if GlobalAudio.shared.playing! {
+    if ModelClass.playing! {
      player!.play()
      print("play")
     }
@@ -101,7 +101,7 @@ override func didReceiveMemoryWarning() {
     @objc func pauseBtnAction(sender: UIBarButtonItem)
 {
 //    print(AlbumTrackVC.shared.playing!)
-    if GlobalAudio.shared.playing! {
+    if ModelClass.playing! {
       print("pause")
       player!.pause()
     }
@@ -115,7 +115,7 @@ override func didReceiveMemoryWarning() {
          
 //        print("toolbar clicked")
 //        print(albumTrackVCPressed)
-        if GlobalAudio.shared.atVCLoaded! {
+        if ModelClass.playing! {
         self.present(albumTrackVC, animated: true, completion: nil)
 //            player?.play()
         }
