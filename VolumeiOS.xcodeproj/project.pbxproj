@@ -30,6 +30,7 @@
 		CD5711672450CF1500FAAC5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD5711662450CF1500FAAC5D /* Assets.xcassets */; };
 		CD571169245115A200FAAC5D /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571168245115A200FAAC5D /* Toolbar.swift */; };
 		CD57116D2451D5BA00FAAC5D /* AlbumVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57116C2451D5BA00FAAC5D /* AlbumVC.swift */; };
+		CD57116F2451F7C400FAAC5D /* ViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57116E2451F7C400FAAC5D /* ViewModels.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +60,7 @@
 		CD5711662450CF1500FAAC5D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CD571168245115A200FAAC5D /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
 		CD57116C2451D5BA00FAAC5D /* AlbumVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumVC.swift; sourceTree = "<group>"; };
+		CD57116E2451F7C400FAAC5D /* ViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels.swift; sourceTree = "<group>"; };
 		E9359D0B9062EBD16B3ADC07 /* Pods-VolumeiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolumeiOS.debug.xcconfig"; path = "Target Support Files/Pods-VolumeiOS/Pods-VolumeiOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolumeiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -152,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				CD571145244FDF6600FAAC5D /* PostListViewModel.swift */,
+				CD57116E2451F7C400FAAC5D /* ViewModels.swift */,
 			);
 			path = "View Models";
 			sourceTree = "<group>";
@@ -300,6 +303,7 @@
 				CD57114F244FDF6600FAAC5D /* ContentView.swift in Sources */,
 				CD57115B244FDF6700FAAC5D /* Spinner.swift in Sources */,
 				CD571149244FDF6600FAAC5D /* ViewController.swift in Sources */,
+				CD57116F2451F7C400FAAC5D /* ViewModels.swift in Sources */,
 				CD571152244FDF6600FAAC5D /* PlayAudio.swift in Sources */,
 				CD571157244FDF6600FAAC5D /* Webservice.swift in Sources */,
 				CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */,

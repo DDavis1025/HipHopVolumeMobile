@@ -60,7 +60,10 @@ class AlbumTrackVC: Toolbar {
          addLabels()
          print("MCp \(ModelClass.post)")
          view.backgroundColor = UIColor.white
-         play(url: (NSURL(string: (ModelClass.track!))!))
+//         play(url: (NSURL(string: (ModelClass.track!))!))
+        if ModelClass.playing! {
+         player?.play()
+        }
          print("model class track \(ModelClass.track)")
          addButtons()
          view.addSubview(timeElapsedLabel)
@@ -79,23 +82,33 @@ class AlbumTrackVC: Toolbar {
            } else {
                button?.setImage(UIImage(named: "play"), for: .normal)
            }
-           
            trackNameLabel!.text = ModelClass.trackNameLabel
-       }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        guard let player = player else { return }
-        if justClicked! {
+        
+        print(ModelClass.justClicked)
+        
+        if ModelClass.justClicked! && !ModelClass.clickedFromAT! {
            play(url: (NSURL(string: (ModelClass.track!))!))
-           justClicked = false
+           modelClass.updateJustClicked(newBool: false)
         }
         mySlider?.value = 0.0
-        mySlider?.maximumValue = Float(CMTimeGetSeconds((player.currentItem?.asset.duration)!))
+        mySlider?.maximumValue = Float(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
         timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
-        
-        
-    }
+       }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        guard let player = player else { return }
+//        print("justClicked \(justClicked)")
+//        if ModelClass.justClicked! {
+//           play(url: (NSURL(string: (ModelClass.track!))!))
+//           modelClass.updateJustClicked(newBool: false)
+//        }
+//        mySlider?.value = 0.0
+//        mySlider?.maximumValue = Float(CMTimeGetSeconds((player.currentItem?.asset.duration)!))
+//        timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+//
+//
+//    }
     
     
     func addLabels() {
@@ -161,6 +174,7 @@ class AlbumTrackVC: Toolbar {
             mySlider?.isContinuous = true
             mySlider?.tintColor = UIColor.black
             mySlider?.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+            mySlider?.thumbTintColor = UIColor.black
                
             self.view.addSubview(mySlider!)
 

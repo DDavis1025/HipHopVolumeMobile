@@ -48,31 +48,9 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
                addSpinner()
                addTableView()
                myTableView.isHidden = true
-            
-//              myTableView.addSubview(child.view)
-            
-
-//            imageView = UIImageView(image: image)
-//            imageView.frame = CGRect(x: 120, y: 160, width: 100, height: 100)
-
-           
-//            {
-//                var image = UIImage(data: data)!
-//                print("Data \(data)")
-////                imageView = UIImageView(image: image)
-////                imageView.frame.origin = CGPoint(x: 160, y: 320)
-//            }
-//            DispatchQueue.main.async {
-//            }
-//            self.view.addSubview(imageView)
-//            addTableView()
-//            self.view.addSubview(imageView!)
-//            self.view.addSubview(imageView!)
+        
         }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        print("users vda \(self.users)")
-//    }
     func addSpinner() {
           let child = SpinnerViewController()
           addChild(child)
@@ -150,14 +128,5 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-//     func getArtist(id: String) {
-//         let artistPFVC = ArtistProfileVC()
-//         GETArtistById(id: id).getAllById {
-//            artistPFVC.artistData = $0
-//        }
-//         
-//     }
-
-
     
 }

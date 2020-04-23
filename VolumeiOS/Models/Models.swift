@@ -15,6 +15,7 @@ struct Post: Codable, Hashable, Identifiable {
     let title: String?
     let path: String
     let description: String?
+    let author: String?
 }
 
 
@@ -47,8 +48,10 @@ class ModelClass : NSObject
     static var index:Int?
     static var imgPath:String?
     static var post:Post?
-    static var playing:Bool?
+    static var playing:Bool? = false
     static var theViewLoaded:Bool?
+    static var justClicked:Bool?
+    static var clickedFromAT:Bool? = false
     
     func updatePlaying(newBool: Bool) {
            ModelClass.self.playing = newBool
@@ -80,6 +83,14 @@ class ModelClass : NSObject
     
     func updateTheViewLoaded(newBool: Bool) {
         ModelClass.self.theViewLoaded = newBool
+    }
+    
+    func updateJustClicked(newBool: Bool) {
+        ModelClass.self.justClicked = newBool
+    }
+    
+    func updateClickedFromAT(newBool: Bool) {
+        ModelClass.self.clickedFromAT = newBool
     }
 }
  

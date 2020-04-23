@@ -71,70 +71,15 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
         override func viewDidLoad() {
             super.viewDidLoad()
-//            profile = SessionManager.shared.profile
             addSpinner()
             addTableView()
     
-//            myTableView?.isHidden = true
-            
             getArtist(id: artistID!)
             
             view.backgroundColor = UIColor.white
             
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-//                self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
-//                self.imageView?.translatesAutoresizingMaskIntoConstraints = false
-//                self.myTableView?.topAnchor.constraint(equalTo: self.imageView.bottomAnchor).isActive = true
-//            }
-              
-            
-//            let label = UILabel(frame: CGRect(x: 0, y: 0, width: 500, height: 21))
-//            label.center = CGPoint(x: 120, y: 120)
-//            label.textAlignment = .center
-//            label.text = "Name: \(users[0].name)"
-//
-////            let label2 = UILabel(frame: CGRect(x: 0, y: 0, width: 500, height: 21))
-////            label2.center = CGPoint(x: 120, y: 140)
-////            label2.textAlignment = .center
-////            label2.text = "Email: \(email)"
-//
-//            let url = URL(string: users[0].picture!)
-//            let data = try! Data(contentsOf: url!)
-//            let image = UIImage(data: data)
-//            imageView = UIImageView(image: image)
-//            imageView.frame = CGRect(x: 120, y: 160, width: 100, height: 100)
-//
-//            self.view.addSubview(label)
-//            self.view.addSubview(label2)
-//            self.view.addSubview(imageView)
-            
-            
-//            if (ArtistProfileVC.shared.artistData != nil) {
-//                myTableView.reloadData()
-//            }
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-//                self.myTableView.reloadData()
-//               print("theArtsit \(ArtistProfileVC.shared.artistData)")
-//            }
-//
-//               DispatchQueue.main.asyncAfter(deadline: .now() + 8.0) {
-//                self.myTableView.reloadData()
-//                           }
-            
-           
-
-            
-//            self.view.addSubview(myTableView)
-//            self.view.addSubview(imageView!)
-//            self.view.addSubview(imageView!)
         }
     
-//    func getAlbumById(id: String) {
-//        SecondWebService(id: id).getAllPostsById {
-//            self.album = $0
-//        }
-//    }
-//    
     func setContraints() {
         self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
         self.imageView?.translatesAutoresizingMaskIntoConstraints = false

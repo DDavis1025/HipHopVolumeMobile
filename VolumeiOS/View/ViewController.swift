@@ -62,10 +62,6 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     
     
-//    var button:UIButton?
-    
-    
-    
     let trackVC = AlbumTrackVC()
     let modelClass = ModelClass()
 
@@ -77,38 +73,6 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     print("model class post \(ModelClass.post?.title)")
 
-   
-    
-//    let imagePath = ContentView.shared.mainArray.filter { i in i.id == post.id
-//      }
-//        let imagePath = albumData.filter { i in i.id == post.id
-//        }
-//
-//        for post in imagePath {
-//            modelClass.updateImgPath(newText: post.path)
-//        }
-    
-//    listArray = albumData.filter { i in i.album_id == post.id && i.id != post.id
-//    }
-        
-        print("list Array \(listArray)")
-        
-        for post in listArray {
-            songArray.append(post.name ?? "unAvailable")
-            components.path =  "/\(post.path)"
-            songPath.append(components.url?.absoluteString)
-            songId.append(post.id)
-            albumId.append(post.album_id)
-        }
-        
-//        images = self.albumData.map { path in
-//            components.path = path.path
-//            return components.url!.absoluteString
-//         }
-//
-        
-//    trackVC.albumId = albumId
-        
     super.init(nibName: nil, bundle: nil)
         
         getAlbumById(id: post.id!)
@@ -127,13 +91,7 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
         
 
         modelClass.updateTheViewLoaded(newBool: true)
-//        button = UIButton(frame: CGRect(x: 100, y: 300, width: 100, height: 50))
-//
-//               button?.setImage(UIImage(named: "play"), for: .normal)
-//               button?.imageView?.contentMode = .scaleAspectFit
-//               button?.addTarget(self, action: #selector(buttonClicked(_:)), for: .touchUpInside)
-//
-        
+
         view.backgroundColor = UIColor.darkGray
 
         addTableView()
@@ -141,16 +99,9 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
         
         view.isUserInteractionEnabled = true
-//        view.addSubview(button!)
-
-//
 
     }
     
-//    @objc func buttonClicked(_: UIButton) {
-//        let mainVC = ViewController(post:post)
-//        self.navigationController?.pushViewController(mainVC, animated: true)
-//    }
     
     func albumTrackPush() {
            let mainVC = ViewController(post:post)
@@ -265,56 +216,27 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     }
     
-    
-//    private func setupLayout() {
-//        view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-//        view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-//         view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-//         view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-//
-//    }
-//
-    
-
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         trackVC.trackNameLabel?.text = "\(listArray[indexPath.row].name!)"
-//        trackVC.track = songPath[indexPath.row] as? String
         modelClass.updateTrackNameLabel(newText: "\(listArray[indexPath.row].name!)")
-        print("tdsr \(ModelClass.trackNameLabel)")
-//        print("TracknameLAbel MC \(modelClass.trackNameLabel)")
+
         modelClass.updateTrackPath(newText: (trackPath?[indexPath.row])!)
-//        ModelClass.track =
-//        print("model class track \(ModelClass.track)")
-        
-//        AlbumTrackVC.shared.trackNameLabel.text = "\(songArray[indexPath.row])"
-//        AlbumTrackVC.shared.track = songPath[indexPath.row] as? String
+
         if !albumTrackBtnClicked! {
-        self.present(trackVC, animated: true, completion: nil)
+          modelClass.updateClickedFromAT(newBool: false)
+          self.present(trackVC, animated: true, completion: nil)
         } else {
-            trackVC.play(url: (NSURL(string: (ModelClass.track!))!))
+          trackVC.play(url: (NSURL(string: (ModelClass.track!))!))
+          modelClass.updateClickedFromAT(newBool: true)
         }
         
-         
-        
-//        print("Song \(songPath[indexPath.row])")
-//        print("Num: \(indexPath.row)")
-//        print("Value: \(songArray[indexPath.row])")
-//        trackVC.listArray = listArray
          modelClass.updateListArray(newList: listArray)
-//         ModelClass.listArray = listArray
-//        AlbumTrackVC.shared.listArray = listArray
         let index = indexPath.row
-//        trackVC.index = index
         modelClass.updateIndex(newInt: index)
         modelClass.updatePlaying(newBool: true)
-        trackVC.justClicked = true
-        print("playing \(trackVC.playing)")
-//         ModelClass.index = index
-//        index = self.index
-//        AlbumTrackVC.shared.index = index
-//        let mainVC = OtherView()
+        modelClass.updateJustClicked(newBool: true)
         
     }
 

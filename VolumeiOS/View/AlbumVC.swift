@@ -18,6 +18,8 @@ class AlbumVC: Toolbar {
     var imageView:UIViewController?
     var albumTitle: UILabel?
     var albumDescription:UILabel?
+    var user:UILabel?
+    var userModel:GetUserByIDVM?
    
  init(post: Post) {
     self.post = post
@@ -27,6 +29,8 @@ class AlbumVC: Toolbar {
        components.scheme = "http"
        components.host = "localhost"
        components.port = 8000
+    
+     
     
      super.init(nibName: nil, bundle: nil)
     
@@ -39,6 +43,13 @@ class AlbumVC: Toolbar {
     
     override func viewDidLoad() {
     super.viewDidLoad()
+        self.userModel = GetUserByIDVM(id: (self.post?.author!)!)
+        addUser()
+        userModel?.usersDidChange = { [weak self] users in
+        print("um users \(users)")
+        self?.user!.text = users[0].name
+        }
+
         imageViewVC()
         addLabels()
         addViewController()
@@ -46,6 +57,19 @@ class AlbumVC: Toolbar {
         
     }
     
+    func addUser() {
+        user = UILabel()
+        
+        view.addSubview(user!)
+        setUsersConstraints()
+        
+    }
+    
+    func setUsersConstraints() {
+            user?.translatesAutoresizingMaskIntoConstraints = false
+            user?.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
+            user?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
+    }
     
     func imageViewVC() {
            print("image view vc")
@@ -60,7 +84,9 @@ class AlbumVC: Toolbar {
     
     func setImageViewVCConstraints() {
         imageView?.view.translatesAutoresizingMaskIntoConstraints = false
-        imageView?.view.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        if let thisUser = user {
+            imageView?.view.topAnchor.constraint(equalTo: thisUser.bottomAnchor).isActive = true
+        }
         imageView?.view.widthAnchor.constraint(equalToConstant: 320).isActive = true
         imageView?.view.heightAnchor.constraint(equalToConstant: 320).isActive = true
         imageView?.view.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true

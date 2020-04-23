@@ -45,21 +45,3 @@ final class PostListViewByIdModel: ObservableObject {
     
 }
 
-//final class UserViewModel {
-//    
-//    init() {
-//    fetchPosts()
-//    }
-//    
-//    var users = [UsersClass]()
-//    
-//    private func fetchPosts() {
-//        GetUsersWebservice().getAllPosts {
-//            self.users = $0
-//            print("Users \(self.users)")
-//        }
-//
-//    
-//}
-//
-//}
