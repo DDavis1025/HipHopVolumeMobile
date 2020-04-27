@@ -27,7 +27,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let window = UIWindow(windowScene: windowScene)
             var navigationController: UINavigationController?
 
-            let mainVC = OtherView()
+            let mainVC = MainView()
+            
             navigationController = UINavigationController(rootViewController: mainVC)
             
             window.rootViewController = navigationController

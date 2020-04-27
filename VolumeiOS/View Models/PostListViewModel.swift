@@ -11,13 +11,38 @@ import SwiftUI
 import Combine
 
 
+//final class PostListViewModel: ObservableObject {
+//
+//    init() {
+//        fetchPosts()
+//    }
+//
+//    @Published var posts = [Post]()
+//
+//    private func fetchPosts() {
+//        Webservice().getAllPosts {
+//            self.posts = $0
+//        }
+//
+//
+//}
+//
+//}
+
+
 final class PostListViewModel: ObservableObject {
+    var postsDidChange: (([Post]) -> ())?
     
-    init() {
+       init() {
         fetchPosts()
-    }
-    
-    @Published var posts = [Post]()
+       }
+      
+       var posts = [Post]() {
+            didSet {
+                 postsDidChange?(posts)
+             }
+       }
+      
     
     private func fetchPosts() {
         Webservice().getAllPosts {

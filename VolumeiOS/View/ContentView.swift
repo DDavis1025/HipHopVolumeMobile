@@ -43,16 +43,16 @@ struct ContentView: View {
                     
                    
                         
-                  .onReceive(model.$posts) { posts in // << first got finished
-                     self.model2.fetchPostsById(for: posts)
-
-                   }
-            
-                  .onReceive(model2.$postsById) { postById in
-//                    print("Model2 \(postById)")
-                    ContentView.shared.mainArray.append(contentsOf: postById)
-                    
-                    }
+//                  .onReceive(model.$posts) { posts in // << first got finished
+//                     self.model2.fetchPostsById(for: posts)
+//
+//                   }
+//
+//                  .onReceive(model2.$postsById) { postById in
+////                    print("Model2 \(postById)")
+//                    ContentView.shared.mainArray.append(contentsOf: postById)
+//                    
+//                    }
 
 
 

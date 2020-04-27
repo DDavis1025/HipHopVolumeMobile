@@ -40,6 +40,12 @@ struct UsersModel: Codable {
 }
 
 
+struct ImageModel: Codable {
+    var data:Data?
+}
+
+
+
 class ModelClass : NSObject
 {
     static var trackNameLabel:String?
@@ -49,8 +55,8 @@ class ModelClass : NSObject
     static var imgPath:String?
     static var post:Post?
     static var playing:Bool? = false
-    static var theViewLoaded:Bool?
-    static var justClicked:Bool?
+    static var theViewLoaded:Bool? = false
+    static var justClicked:Bool? = false
     static var clickedFromAT:Bool? = false
     
     func updatePlaying(newBool: Bool) {

@@ -11,6 +11,7 @@ import UIKit
 import Auth0
 import SwiftUI
 
+
 class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     var profile: UserInfo!
@@ -20,6 +21,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var author:[PostById]!
     var album:[Post]!
     var images:[UIImage]?
+    var imageLoader:DownloadImage?
     var post:Post? {
         didSet {
             let vc = AlbumVC(post: self.post!)
@@ -33,11 +35,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         didSet {
             DispatchQueue.main.async {
                 print("usersdid \(self.users)")
-                self.child?.willMove(toParent: nil)
-                self.child?.view.removeFromSuperview()
-                self.child?.removeFromParent()
                 self.userInfo()
-
                 self.setContraints()
             }
         }
@@ -49,6 +47,9 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
                 print("Artist Data \(self.artistData)")
                 self.isLoaded = true
                 self.albumImages()
+                self.child?.willMove(toParent: nil)
+                self.child?.view.removeFromSuperview()
+                self.child?.removeFromParent()
 
             }
         }
@@ -73,6 +74,8 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             super.viewDidLoad()
             addSpinner()
             addTableView()
+
+            addImagePH()
     
             getArtist(id: artistID!)
             
@@ -82,12 +85,23 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     func setContraints() {
         self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
+        self.myTableView?.topAnchor.constraint(equalTo: self.label!.bottomAnchor, constant: 20).isActive = true
+    }
+    
+    func addImagePH() {
+           let imagePH = UIImage(named:"profile-placeholder-user")
+           self.imageView = UIImageView(image: imagePH)
+           self.view?.addSubview(self.imageView)
+           setImageContraints()
+    }
+    
+    func setImageContraints() {
         self.imageView?.translatesAutoresizingMaskIntoConstraints = false
-        self.myTableView?.topAnchor.constraint(equalTo: self.imageView.bottomAnchor, constant: 20).isActive = true
+        self.imageView?.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         self.imageView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         self.imageView?.widthAnchor.constraint(equalToConstant: 150).isActive = true
         self.imageView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
-    }
+}
     
     func userInfo() {
             label = UILabel(frame: CGRect(x: 0, y: 0, width: 500, height: 21))
@@ -95,16 +109,17 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             self.view.addSubview(label!)
             label?.translatesAutoresizingMaskIntoConstraints = false
             label?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-            label?.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-            label?.text = "Name: \(self.users[0].name!)"
-            let url = URL(string: users[0].picture!)
-            let data = try! Data(contentsOf: url!)
-            let image = UIImage(data: data)
-            imageView = UIImageView(image: image)
-//            imageView.frame = CGRect(x: 120, y: 160, width: 100, height: 100)
-            self.view.addSubview(imageView)
-            self.imageView?.translatesAutoresizingMaskIntoConstraints = false
-            self.imageView?.topAnchor.constraint(equalTo: label!.bottomAnchor, constant: 10).isActive = true
+            label?.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10).isActive = true
+            label?.text = "\(self.users[0].name!)"
+
+            imageLoader = DownloadImage(urlString: users[0].picture!)
+                self.imageLoader?.imageDidSet = { [weak self] image in
+                let image = image
+                print("user pic \(self?.users[0].picture!)")
+                self?.imageView = UIImageView(image: image)
+                self?.view?.addSubview(self!.imageView)
+                self?.setImageContraints()
+                }
 
     }
            
@@ -112,10 +127,22 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
           let child = SpinnerViewController()
           addChild(child)
           child.view.frame = view.frame
+//          child.view.backgroundColor = UIColor.white
           view.addSubview(child.view)
           child.didMove(toParent: self)
-          child.view.backgroundColor = UIColor.white
+//          child.view.backgroundColor = UIColor.black
           self.view.bringSubviewToFront(child.view)
+
+          self.child?.view?.translatesAutoresizingMaskIntoConstraints = false
+
+          self.child?.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+
+          self.child?.view?.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+
+          self.child?.view?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        
+          self.child?.view?.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        
     }
     
     func getAlbum(id: String) {
@@ -140,14 +167,13 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     
    func albumImages() {
-    var data:Data?
-           self.images = self.artistData.map { path in
-           let url = URL(string: String(self.components.url!.absoluteString + "/\(path.path!)"))
-            print("url \(url)")
-            if let thisURL = url {
-            data = try! Data(contentsOf: thisURL)
-            }
-            return UIImage(data: data!)!
+       for artist in self.artistData {
+           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString + "/\(artist.path!)"))
+            self.imageLoader?.imageDidSet = { [weak self] image in
+            let image = image
+//            self?.images?.append(image!)
+         }
+            
        }
         
     }
@@ -206,7 +232,20 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
            let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
            cell.textLabel!.text = "playa playa"
            cell.textLabel!.text = "\(artistData[indexPath.row].title!)"
-           cell.imageView!.image = images![indexPath.row]
+           components.path = "/\(artistData[indexPath.row].path!)"
+           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString))
+           self.imageLoader?.imageDidSet = { [weak self] image in
+            cell.imageView!.image = image
+            let itemSize = CGSize.init(width: 100, height: 100)
+            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
+            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+            cell.imageView?.image!.draw(in: imageRect)
+            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+            UIGraphicsEndImageContext();
+           }
+        
+            
+            cell.imageView!.image = UIImage(named: "music-placeholder")
             let itemSize = CGSize.init(width: 100, height: 100)
             UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
             let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)

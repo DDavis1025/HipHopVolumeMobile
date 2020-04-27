@@ -18,10 +18,11 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var images:Array<UIImage> = []
     var isLoaded:Bool? = false
     var child:SpinnerViewController?
+    var imageLoader:DownloadImage?
     var users:[UsersModel]? {
         didSet {
             DispatchQueue.main.async {
-                self.addImage()
+//                self.addImage()
                 self.isLoaded = true
                 self.myTableView.reloadData()
                 self.myTableView.isHidden = false
@@ -64,10 +65,11 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     func addImage() {
         for user in users! {
-            let url = URL(string: user.picture!)
-            let data = try! Data(contentsOf: url!)
-            self.image = UIImage(data: data)
-            images.append(image!)
+            imageLoader = DownloadImage(urlString: (user.picture)!)
+              imageLoader?.imageDidSet = { [weak self] image in
+                self?.image = image
+                self?.images.append((self?.image!)!)
+            }
         }
     }
     
@@ -114,15 +116,27 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
-        if isLoaded! == false {
             cell.imageView!.image = UIImage(named: "profile-placeholder-user")
-            print("worked")
-        } else {
-            cell.imageView!.image = self.images[indexPath.row]
-            cell.textLabel!.text = "\(users?[indexPath.row].name)"
-            
-
+            if let username = users![indexPath.row].name {
+            cell.textLabel!.text = "\(username)"
+            }
+            imageLoader = DownloadImage(urlString: (users?[indexPath.row].picture)!)
+            imageLoader?.imageDidSet = { [weak self] image in
+            cell.imageView!.image = image
+            cell.translatesAutoresizingMaskIntoConstraints = false
+            let itemSize = CGSize.init(width: 120, height: 120)
+            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
+            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+            cell.imageView?.image!.draw(in: imageRect)
+            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+            UIGraphicsEndImageContext();
         }
+        let itemSize = CGSize.init(width: 120, height: 120)
+       UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
+       let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+       cell.imageView?.image!.draw(in: imageRect)
+       cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+       UIGraphicsEndImageContext();
         cell.translatesAutoresizingMaskIntoConstraints = false
         cell.layoutMargins = UIEdgeInsets.zero
         return cell

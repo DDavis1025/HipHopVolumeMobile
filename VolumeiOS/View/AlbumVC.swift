@@ -20,7 +20,12 @@ class AlbumVC: Toolbar {
     var albumDescription:UILabel?
     var user:UILabel?
     var userModel:GetUserByIDVM?
-   
+    var image:UIImage?
+    var userImageView:UIImageView?
+    var child:SpinnerViewController?
+    var imageLoader:DownloadImage?
+    var userImage:String?
+    var authorID:String?
  init(post: Post) {
     self.post = post
     print("post Album \(post)")
@@ -30,9 +35,14 @@ class AlbumVC: Toolbar {
        components.host = "localhost"
        components.port = 8000
     
-     
+    authorID = self.post?.author!
+    self.userModel = GetUserByIDVM(id: (authorID!))
+
     
-     super.init(nibName: nil, bundle: nil)
+    
+    super.init(nibName: nil, bundle: nil)
+    
+    
     
 
 }
@@ -43,33 +53,92 @@ class AlbumVC: Toolbar {
     
     override func viewDidLoad() {
     super.viewDidLoad()
-        self.userModel = GetUserByIDVM(id: (self.post?.author!)!)
-        addUser()
-        userModel?.usersDidChange = { [weak self] users in
-        print("um users \(users)")
-        self?.user!.text = users[0].name
+        addSpinner()
+        addImage()
+        
+            self.userModel?.usersDidChange = { [weak self] users in
+            self?.user = UILabel()
+            self?.user!.text = users[0].name
+            self?.view.addSubview(self!.user!)
+            self?.imageLoader = DownloadImage(urlString: users[0].picture!)
+            self?.addImageAfterLoad()
+//            self?.setUsersConstraints()
         }
+        
+        
+
 
         imageViewVC()
         addLabels()
         addViewController()
         view.backgroundColor = UIColor.white
+
+
+        
+
         
     }
     
-    func addUser() {
-        user = UILabel()
-        
-        view.addSubview(user!)
+    func addImage() {
+        let imagePH = UIImage(named: "profile-placeholder-user")
+        userImageView = UIImageView(image: imagePH)
+        view.addSubview(userImageView!)
         setUsersConstraints()
-        
+    }
+    
+    func addImageAfterLoad() {
+        self.imageLoader?.imageDidSet = { [weak self] image in
+              self?.image = image
+              self?.userImageView = UIImageView(image: self?.image)
+              self!.view.addSubview(self!.userImageView!)
+              
+              self!.setUsersConstraints()
+              self?.child?.willMove(toParent: nil)
+              self?.child?.view.removeFromSuperview()
+              self?.child?.removeFromParent()
+            
+            let tap = UITapGestureRecognizer(target: self, action:  #selector(self?.userAction))
+            let tap2 = UITapGestureRecognizer(target: self, action:  #selector(self?.userAction))
+            
+            self?.userImageView?.addGestureRecognizer(tap)
+            self?.user?.addGestureRecognizer(tap2)
+//
+            self?.user?.isUserInteractionEnabled = true
+            self?.userImageView?.isUserInteractionEnabled = true
+    }
+}
+    
+    func addSpinner() {
+        self.child = SpinnerViewController()
+        addChild(self.child!)
+        self.child!.view.frame = view.frame
+        view.addSubview(self.child!.view)
+        self.child!.didMove(toParent: self)
+        self.child!.view.backgroundColor = UIColor.white
+        self.view.bringSubviewToFront(self.child!.view)
     }
     
     func setUsersConstraints() {
-            user?.translatesAutoresizingMaskIntoConstraints = false
-            user?.topAnchor.constraint(equalTo: view.topAnchor, constant: 10).isActive = true
-            user?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
+               userImageView?.translatesAutoresizingMaskIntoConstraints = false
+        userImageView?.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+               userImageView?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
+               userImageView?.widthAnchor.constraint(equalToConstant: 50).isActive = true
+               userImageView?.heightAnchor.constraint(equalToConstant: 50).isActive = true
+               user?.translatesAutoresizingMaskIntoConstraints = false
+               user?.leadingAnchor.constraint(equalTo: userImageView!.trailingAnchor, constant: 10).isActive = true
+               user?.centerYAnchor.constraint(equalTo: userImageView!.centerYAnchor).isActive = true
+        
+        
+         
     }
+    
+    @objc func userAction(sender : UITapGestureRecognizer) {
+    let artistPFVC = ArtistProfileVC()
+    artistPFVC.artistID = authorID
+    navigationController?.pushViewController(artistPFVC, animated: true)
+    print("clicked")
+    }
+    
     
     func imageViewVC() {
            print("image view vc")
@@ -84,12 +153,10 @@ class AlbumVC: Toolbar {
     
     func setImageViewVCConstraints() {
         imageView?.view.translatesAutoresizingMaskIntoConstraints = false
-        if let thisUser = user {
-            imageView?.view.topAnchor.constraint(equalTo: thisUser.bottomAnchor).isActive = true
-        }
-        imageView?.view.widthAnchor.constraint(equalToConstant: 320).isActive = true
-        imageView?.view.heightAnchor.constraint(equalToConstant: 320).isActive = true
+        imageView?.view.widthAnchor.constraint(equalToConstant: 310).isActive = true
+        imageView?.view.heightAnchor.constraint(equalToConstant: 310).isActive = true
         imageView?.view.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        imageView?.view.topAnchor.constraint(equalTo: userImageView!.bottomAnchor, constant: 20).isActive = true
 }
     
     func addLabels() {
@@ -135,7 +202,14 @@ class AlbumVC: Toolbar {
             albumDescription?.topAnchor.constraint(equalTo: albumTitle!.bottomAnchor, constant: 20).isActive = true
             
             albumTitle?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
+              albumTitle?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
+           
+            albumDescription?.numberOfLines = 3
+//            albumDescription?.lineBreakMode = .byWordWrapping
+             albumDescription?.adjustsFontSizeToFitWidth = false
+             albumDescription?.lineBreakMode = .byTruncatingTail
             albumDescription?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
+            albumDescription?.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor).isActive = true
         }
     
     func addViewController() {
