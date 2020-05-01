@@ -15,17 +15,20 @@ class AlbumVC: Toolbar {
     var post:Post?
     var components = URLComponents()
     var viewController:UIViewController?
-    var imageView:UIViewController?
+    var imageView = UIImageView()
     var albumTitle: UILabel?
     var albumDescription:UILabel?
     var user:UILabel?
     var userModel:GetUserByIDVM?
-    var image:UIImage?
+    var image:UIImageView?
     var userImageView:UIImageView?
     var child:SpinnerViewController?
     var imageLoader:DownloadImage?
     var userImage:String?
     var authorID:String?
+    var user_id:String?
+    var followButton = FollowerButton()
+    var profile = SessionManager.shared.profile
  init(post: Post) {
     self.post = post
     print("post Album \(post)")
@@ -54,23 +57,30 @@ class AlbumVC: Toolbar {
     override func viewDidLoad() {
     super.viewDidLoad()
         addSpinner()
-        addImage()
         
             self.userModel?.usersDidChange = { [weak self] users in
             self?.user = UILabel()
             self?.user!.text = users[0].name
+            self?.user_id = users[0].user_id
             self?.view.addSubview(self!.user!)
-            self?.imageLoader = DownloadImage(urlString: users[0].picture!)
             self?.addImageAfterLoad()
+            self?.imageLoader?.downloadImage(urlString: users[0].picture!)
+            self?.setFollowButtonConstraints()
 //            self?.setUsersConstraints()
         }
+        addImage()
         
+        imageView.image = UIImage(named: "music-placeholder")
+        self.view.addSubview(imageView)
+        setImageViewConstraints()
+
+        view.addSubview(followButton)
         
-
-
-        imageViewVC()
+//        imageViewVC()
+        addAlbumImage()
         addLabels()
         addViewController()
+        addActionFollowBtn()
         view.backgroundColor = UIColor.white
 
 
@@ -87,9 +97,9 @@ class AlbumVC: Toolbar {
     }
     
     func addImageAfterLoad() {
+        imageLoader = DownloadImage()
         self.imageLoader?.imageDidSet = { [weak self] image in
-              self?.image = image
-              self?.userImageView = UIImageView(image: self?.image)
+              self?.userImageView?.image = image
               self!.view.addSubview(self!.userImageView!)
               
               self!.setUsersConstraints()
@@ -106,6 +116,7 @@ class AlbumVC: Toolbar {
             self?.user?.isUserInteractionEnabled = true
             self?.userImageView?.isUserInteractionEnabled = true
     }
+
 }
     
     func addSpinner() {
@@ -139,24 +150,30 @@ class AlbumVC: Toolbar {
     print("clicked")
     }
     
+
     
-    func imageViewVC() {
-           print("image view vc")
-           components.path = "/\(post!.path)"
-           imageView = UIHostingController(rootView: ImageView(withURL: components.url!.absoluteString))
-           print("url components \(components.url)")
-           addChild(imageView!)
-           view.addSubview(imageView!.view)
-           imageView?.didMove(toParent: self)
-           setImageViewVCConstraints()
-       }
+    func addAlbumImage() {
+        imageLoader = DownloadImage()
+        self.imageLoader?.imageDidSet = { [weak self] image in
+            self!.imageView.image = image
+            self!.view.addSubview((self?.imageView)!)
+            self?.setImageViewConstraints()
+        }
+        components.path = "/\(post!.path)"
+        if let url = components.url?.absoluteString {
+            imageLoader?.downloadImage(urlString: url)
+            print("components url plus \(url)")
+        }
+
+//        print("components url \(url)")
+    }
     
-    func setImageViewVCConstraints() {
-        imageView?.view.translatesAutoresizingMaskIntoConstraints = false
-        imageView?.view.widthAnchor.constraint(equalToConstant: 310).isActive = true
-        imageView?.view.heightAnchor.constraint(equalToConstant: 310).isActive = true
-        imageView?.view.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        imageView?.view.topAnchor.constraint(equalTo: userImageView!.bottomAnchor, constant: 20).isActive = true
+    func setImageViewConstraints() {
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.widthAnchor.constraint(equalToConstant: 310).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 310).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        imageView.topAnchor.constraint(equalTo: userImageView!.bottomAnchor, constant: 20).isActive = true
 }
     
     func addLabels() {
@@ -197,7 +214,7 @@ class AlbumVC: Toolbar {
             self.albumTitle?.translatesAutoresizingMaskIntoConstraints = false
             self.albumDescription?.translatesAutoresizingMaskIntoConstraints = false
                                                                          
-            albumTitle?.topAnchor.constraint(equalTo: imageView!.view.bottomAnchor, constant: 20).isActive = true
+            albumTitle?.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20).isActive = true
             
             albumDescription?.topAnchor.constraint(equalTo: albumTitle!.bottomAnchor, constant: 20).isActive = true
             
@@ -230,7 +247,24 @@ class AlbumVC: Toolbar {
 
         viewController?.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
+    
+    func addActionFollowBtn() {
+        followButton.addTarget(self, action: #selector(followBtnTapped), for: .touchUpInside)
+    }
+    
+    func setFollowButtonConstraints() {
+        followButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        followButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
+        
+        followButton.centerYAnchor.constraint(equalTo: user!.centerYAnchor).isActive = true
+    }
 
+    
+    @objc func followBtnTapped() {
+        let follower_id = (profile?.sub)!
+        followButton.addFollower(user_id: user_id!, follower_id: follower_id)
+    }
     
    
     

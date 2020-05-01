@@ -11,7 +11,7 @@ import Combine
 import UIKit
 
 class ImageLoader: ObservableObject {
-    @Published var image: UIImage?
+    var image: UIImage?
     var urlString: String?
     var imageCache = ImageCache.getImageCache()
 

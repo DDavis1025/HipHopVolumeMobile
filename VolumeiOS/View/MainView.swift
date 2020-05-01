@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import Auth0
+    
 
 class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
@@ -18,15 +19,110 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var child:SpinnerViewController?
     var cellTitle:UILabel?
     var cellDesc:UILabel?
-    var userModel:GetUserByIDVM?
+    var usersLoaded:Bool? = false
+    var userModel:GetUserByIDVM2?
+    var getUserById:GetUsersById?
+    var array = [String]()
+    var userDictionary = [String: UsersModel]()
+    var users = [UsersModel]() {
+        didSet {
+            print("users should be array \(users)")
+
+            let group = DispatchGroup()
+            for user in users {
+                group.enter()
+                userDictionary[user.user_id!] = user
+                group.leave()
+            }
+            
+            group.notify(queue: .main) {
+             self.usersLoaded = true
+             self.myTableView.reloadData()
+            }
+            
+            print("user dinctionary \(userDictionary)")
+
+        }
+    }
     var posts = [Post]() {
         didSet {
-            myTableView.reloadData()
             self.child?.willMove(toParent: nil)
             self.child?.view.removeFromSuperview()
             self.child?.removeFromParent()
-
-        }
+            myTableView.reloadData()
+            
+            print("posts right now \(posts)")
+           
+            func uniq<S : Sequence, T : Hashable>(source: S) -> [T] where S.Iterator.Element == T {
+                var buffer = [T]()
+                var added = Set<T>()
+                for elem in source {
+                    if !added.contains(elem) {
+                        buffer.append(elem)
+                        added.insert(elem)
+                    }
+                }
+                return buffer
+            }
+            
+            var authorId = [String]()
+            for post in self.posts {
+                authorId.append(post.author!)
+            }
+            
+            
+            let uniqueVals = uniq(source: authorId)
+            print("unique vals \(uniqueVals)")
+            
+            for id in uniqueVals {
+                    GetUsersById(id: id).getAllPosts {
+                        self.users.append(contentsOf: $0)
+                        print("got users for this \($0)")
+              }
+            }
+            
+//            var userDictionary = [String: String]()
+//
+//            for user in users {
+//                userDictionary[user.user_id!] = user.name
+//            }
+//
+//            print("user dinctionary \(userDictionary)")
+            
+            
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+//
+//                    for (index, _) in self.posts.enumerated() {
+//                        self.users.map { if self.posts[index].author == $0.user_id {
+//                             self.posts[index].addUser(user: $0.name!)
+//                             print("hello")
+//                            }
+//                        }
+//                }
+//            }
+            
+//           DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+//
+//                          for i in 0..<self.posts.count {
+//                              for z in 0..<self.users.count {
+//                                     if self.posts[i].author == self.users[z].user_id {
+//                                        self.posts[i].addUser(user: self.users[z].name!)
+//                                        print("i \(i)")
+//                                        print("z \(z)")
+//                          }
+//                          }
+//
+//                  }
+//            }
+        
+            
+            
+            
+            
+            
+            
+            
+      }
     }
     var albumVC:AlbumVC?
     var imageLoader:DownloadImage?
@@ -46,6 +142,7 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         addSpinner()
+        auth0()
         Webservice().getAllPosts {
             self.posts = $0
         }
@@ -66,9 +163,6 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        auth0()
-    }
     
     func auth0() {
         Auth0
@@ -136,7 +230,6 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
            
                             self.myTableView.dataSource = self
                             self.myTableView.delegate = self
-                            self.myTableView.isScrollEnabled = true
                     
             myTableView.delaysContentTouches = false
             self.view.addSubview(self.myTableView)
@@ -176,10 +269,15 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") as! FeedCell
+            
         let post = posts[indexPath.row]
+        
         cell.set(post: post)
-//        cell.albumImage.image = nil
+       
+        cell.setUser(user: userDictionary[posts[indexPath.row].author!])
+
 
         return cell
     }

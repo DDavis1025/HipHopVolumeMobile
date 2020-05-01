@@ -24,9 +24,9 @@ class AlbumTrackVC: Toolbar {
     var button:UIButton?
     var goBackBtn:UIButton?
     var goForwardBtn:UIButton?
-    var imageView:UIViewController?
+    var imageView = UIImageView()
     var albumTracksBtn:UIButton?
-    
+    var imageLoader:DownloadImage?
     let modelClass = ModelClass()
     
     
@@ -55,7 +55,11 @@ class AlbumTrackVC: Toolbar {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-         imageViewVC()
+        imageView.image = UIImage(named: "music-placeholder")
+        view.addSubview(imageView)
+        setImageViewConstraints()
+        
+         addAlbumImage()
          addSlider()
          addLabels()
          print("MCp \(ModelClass.post)")
@@ -130,7 +134,7 @@ class AlbumTrackVC: Toolbar {
                                                                      
 //        albumNameLabel?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
 //        albumNameLabel?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        albumNameLabel?.topAnchor.constraint(equalTo: imageView!.view.bottomAnchor, constant: 20).isActive = true
+        albumNameLabel?.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20).isActive = true
         
 //        trackNameLabel?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
 //        trackNameLabel?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -140,29 +144,30 @@ class AlbumTrackVC: Toolbar {
         trackNameLabel?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
     }
     
-    func imageViewVC() {
-        print("image view vc")
+    func addAlbumImage() {
         components.path = "/\(ModelClass.post!.path)"
-        imageView = UIHostingController(rootView: ImageView(withURL: components.url!.absoluteString))
-        print("url components \(components.url)")
-        addChild(imageView!)
-        view.addSubview(imageView!.view)
-        imageView?.didMove(toParent: self)
-        setImageViewVCConstraints()
+        imageLoader = DownloadImage()
+        imageLoader?.imageDidSet = { [weak self ] image in
+            self?.imageView.image = image
+            self?.setImageViewConstraints()
+            self?.view.addSubview(self!.imageView)
+        }
+        imageLoader?.downloadImage(urlString: components.url!.absoluteString)
+        
+        
     }
-    
-    func setImageViewVCConstraints() {
-        imageView?.view.translatesAutoresizingMaskIntoConstraints = false
+    func setImageViewConstraints() {
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         
         
-        imageView?.view.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        imageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
 
         
-        imageView?.view.widthAnchor.constraint(equalToConstant: 400).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 400).isActive = true
         
-        imageView?.view.heightAnchor.constraint(equalToConstant: 400).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 400).isActive = true
         
-        imageView?.view.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
         
 }

@@ -16,6 +16,11 @@ struct Post: Codable, Hashable, Identifiable {
     let path: String
     let description: String?
     let author: String?
+    var userName:String?
+    
+    mutating func addUser(user: String) {
+        userName = user
+       }
 }
 
 
@@ -28,7 +33,6 @@ struct PostById: Codable, Hashable, Identifiable {
     let name: String?
     let path: String
     let author:String?
-   
     
 }
 
@@ -37,6 +41,16 @@ struct UsersModel: Codable {
     var picture:String?
     var user_id:String?
     var email:String?
+}
+
+final class Follower: Codable {
+    var user_id:String?
+    var follower_id:String?
+    
+    init(user_id:String, follower_id:String) {
+        self.user_id = user_id
+        self.follower_id = follower_id
+    }
 }
 
 

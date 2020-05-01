@@ -65,11 +65,11 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     func addImage() {
         for user in users! {
-            imageLoader = DownloadImage(urlString: (user.picture)!)
-              imageLoader?.imageDidSet = { [weak self] image in
-                self?.image = image
-                self?.images.append((self?.image!)!)
-            }
+//            imageLoader = DownloadImage(urlString: (user.picture)!)
+//              imageLoader?.imageDidSet = { [weak self] image in
+//                self?.image = image
+//                self?.images.append((self?.image!)!)
+//            }
         }
     }
     
@@ -120,7 +120,7 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             if let username = users![indexPath.row].name {
             cell.textLabel!.text = "\(username)"
             }
-            imageLoader = DownloadImage(urlString: (users?[indexPath.row].picture)!)
+        imageLoader = DownloadImage()
             imageLoader?.imageDidSet = { [weak self] image in
             cell.imageView!.image = image
             cell.translatesAutoresizingMaskIntoConstraints = false
@@ -131,7 +131,8 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
             UIGraphicsEndImageContext();
         }
-        let itemSize = CGSize.init(width: 120, height: 120)
+        imageLoader?.downloadImage(urlString: (users?[indexPath.row].picture)!)
+       let itemSize = CGSize.init(width: 120, height: 120)
        UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
        let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
        cell.imageView?.image!.draw(in: imageRect)

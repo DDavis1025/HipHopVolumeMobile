@@ -9,23 +9,24 @@ import Foundation
 import UIKit
 import Combine
 
+var imageCache = NSCache<AnyObject, AnyObject>()
 class DownloadImage: ObservableObject {
-    var imageCache = NSCache<AnyObject, AnyObject>()
+//    var imageCache = NSCache<AnyObject, AnyObject>()
     var imageDidSet: ((UIImage) -> ())?
-    let defaultSession = URLSession(configuration: .default)
+//    let defaultSession = URLSession(configuration: .default)
     var dataTask: URLSessionDataTask?
     
-   var image = UIImage() {
+    var image:UIImage? {
          didSet {
-             imageDidSet?(image)
+            imageDidSet?(image!)
           }
     }
     
 
 
-    init(urlString: String) {
+    func downloadImage(urlString: String) {
         
-            
+        
             if let cacheImage = imageCache.object(forKey: urlString as AnyObject) as? UIImage {
                 self.image = cacheImage
                 print("cached image \(cacheImage)")
@@ -35,7 +36,7 @@ class DownloadImage: ObservableObject {
             guard let url = URL(string: urlString) else { return }
             
         
-       dataTask = defaultSession.dataTask(with: url) { (data, response, error) in
+       dataTask = URLSession.shared.dataTask(with: url) { (data, response, error) in
                 if let error = error {
                     print("Couldn't download image: ", error)
                     return
@@ -43,7 +44,7 @@ class DownloadImage: ObservableObject {
                 
                 guard let data = data else { return }
                 let image = UIImage(data: data)
-                self.imageCache.setObject(image!, forKey: urlString as AnyObject)
+                imageCache.setObject(image!, forKey: urlString as AnyObject)
                 
                 DispatchQueue.main.async {
                     self.image = image!

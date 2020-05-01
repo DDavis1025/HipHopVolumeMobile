@@ -22,6 +22,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var album:[Post]!
     var images:[UIImage]?
     var imageLoader:DownloadImage?
+    var imageLoaded:Bool? = false
     var post:Post? {
         didSet {
             let vc = AlbumVC(post: self.post!)
@@ -69,6 +70,10 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         
         return component
     }()
+    
+//    func prepareForReuse() {
+//        imageView?.image = nil
+//    }
 
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -78,6 +83,9 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             addImagePH()
     
             getArtist(id: artistID!)
+            
+//            self.view.layoutIfNeeded()
+//            self.view.setNeedsLayout()
             
             view.backgroundColor = UIColor.white
             
@@ -112,14 +120,13 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             label?.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10).isActive = true
             label?.text = "\(self.users[0].name!)"
 
-            imageLoader = DownloadImage(urlString: users[0].picture!)
+            imageLoader = DownloadImage()
                 self.imageLoader?.imageDidSet = { [weak self] image in
-                let image = image
-                print("user pic \(self?.users[0].picture!)")
-                self?.imageView = UIImageView(image: image)
+                self?.imageView.image = image
                 self?.view?.addSubview(self!.imageView)
                 self?.setImageContraints()
                 }
+            imageLoader?.downloadImage(urlString: users[0].picture!)
 
     }
            
@@ -168,11 +175,11 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
    func albumImages() {
        for artist in self.artistData {
-           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString + "/\(artist.path!)"))
-            self.imageLoader?.imageDidSet = { [weak self] image in
-            let image = image
-//            self?.images?.append(image!)
-         }
+//           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString + "/\(artist.path!)"))
+//            self.imageLoader?.imageDidSet = { [weak self] image in
+//            let image = image
+////            self?.images?.append(image!)
+//         }
             
        }
         
@@ -233,18 +240,37 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
            cell.textLabel!.text = "playa playa"
            cell.textLabel!.text = "\(artistData[indexPath.row].title!)"
            components.path = "/\(artistData[indexPath.row].path!)"
-           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString))
-           self.imageLoader?.imageDidSet = { [weak self] image in
-            cell.imageView!.image = image
-            let itemSize = CGSize.init(width: 100, height: 100)
-            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
-            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
-            cell.imageView?.image!.draw(in: imageRect)
-            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
-            UIGraphicsEndImageContext();
-           }
-        
-            
+//           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString))
+//           self.imageLoader?.imageDidSet = { [weak self] image in
+//            cell.imageView!.image = self?.imageLoader?.image
+//            let itemSize = CGSize.init(width: 100, height: 100)
+//            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
+//            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+//            cell.imageView?.image!.draw(in: imageRect)
+//            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+//            UIGraphicsEndImageContext();
+//           }
+            self.imageLoader = DownloadImage()
+            imageLoader?.imageDidSet = { [weak self] image in
+//                    cell.imageView?.image = nil
+                self!.imageLoaded = true
+                cell.imageView!.image = image
+                let itemSize = CGSize.init(width: 100, height: 100)
+                            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
+                            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+                            cell.imageView?.image!.draw(in: imageRect)
+                            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+                            UIGraphicsEndImageContext();
+                cell.layoutIfNeeded()
+                cell.setNeedsLayout()
+                }
+            imageLoader?.downloadImage(urlString: components.url!.absoluteString)
+            print("components url \(components.url?.absoluteString)")
+//            imageLoader?.downloadImage(urlString: components.url!.absoluteString)
+    
+
+//
+        if !imageLoaded! {
             cell.imageView!.image = UIImage(named: "music-placeholder")
             let itemSize = CGSize.init(width: 100, height: 100)
             UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
@@ -253,7 +279,8 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
             UIGraphicsEndImageContext();
            print("Artist data \(artistData)")
-           
+        }
+//
            cell.translatesAutoresizingMaskIntoConstraints = false
            cell.layoutMargins = UIEdgeInsets.zero
 //        }
