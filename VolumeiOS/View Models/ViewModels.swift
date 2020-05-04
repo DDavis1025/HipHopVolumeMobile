@@ -36,24 +36,3 @@ class GetUserByIDVM {
 }
 
 
-
-class GetUserByIDVM2 {
-    
-    var id:String?
-    var usersDidChange: (([UsersModel]) -> ())?
-   
-    var users = [UsersModel]() {
-         didSet {
-              usersDidChange?(users)
-          }
-    }
-   
-    func getUser(id: String) {
-        GetUsersById(id: id).getAllPosts {
-        self.users = $0
-        print("got users \(self.users)")
-    }
-  }
- 
-}
-

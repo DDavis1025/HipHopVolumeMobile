@@ -18,7 +18,6 @@ class FeedCell:UITableViewCell {
     var artistImage = UIImageView()
     var imageLoader:DownloadImage?
     var imageLoaded:Bool? = false
-    var userModel:GetUserByIDVM2?
     var user:[UsersModel]?
     var postAuthor:String?
     

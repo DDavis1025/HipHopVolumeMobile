@@ -53,6 +53,11 @@ final class Follower: Codable {
     }
 }
 
+struct Following: Codable, Hashable {
+    var user_id:String?
+    
+}
+
 
 struct ImageModel: Codable {
     var data:Data?

@@ -20,7 +20,6 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var cellTitle:UILabel?
     var cellDesc:UILabel?
     var usersLoaded:Bool? = false
-    var userModel:GetUserByIDVM2?
     var getUserById:GetUsersById?
     var array = [String]()
     var userDictionary = [String: UsersModel]()

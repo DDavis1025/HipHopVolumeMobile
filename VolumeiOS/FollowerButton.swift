@@ -9,36 +9,57 @@
 import Foundation
 import UIKit
 
+enum ButtonState {
+    case add
+    case delete
+}
+
 class FollowerButton: UIButton {
+    var buttonState:ButtonState? {
+        didSet {
+            updateButtonView(for: buttonState!)
+        }
+    }
+    
+    
     override init(frame:CGRect) {
         super.init(frame:frame)
-        setupButton()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        setupButton()
+        buttonState = .add
+        updateButtonView(for: buttonState!)
     }
     
-    func setupButton() {
-        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .black, scale: .medium)
-        let image = UIImage(systemName: "person.badge.plus.fill", withConfiguration: config) as UIImage?
+    
+    
+    private func updateButtonView(for state: ButtonState) {
+    switch buttonState {
+    case .add:
+        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium, scale: .medium)
+        let image = UIImage(systemName: "person.badge.plus", withConfiguration: config) as UIImage?
         let blackImage = image?.withTintColor(.black, renderingMode: .alwaysOriginal)
-        setImage(blackImage, for: .normal)
-    }
-    
-    
-    func addFollower(user_id:String, follower_id:String) {
-        let follower = Follower(user_id: user_id, follower_id: follower_id)
-        let postRequest = FollowerPostRequest(endpoint: "follower")
+        self.setImage(blackImage, for: .normal)
+        self.setTitle("Follow", for: .normal)
+        self.setTitleColor(.black, for: .normal)
+        titleLabel?.font = .systemFont(ofSize: 14)
+
+    case .delete:
+         let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .black, scale: .medium)
+         let image = UIImage(systemName: "person.badge.minus.fill", withConfiguration: config) as UIImage?
+         let blackImage = image?.withTintColor(.black, renderingMode: .alwaysOriginal)
+         self.setImage(blackImage, for: .normal)
+         self.setTitle("Following", for: .normal)
+         self.setTitleColor(.black, for: .normal)
+         titleLabel?.font = .systemFont(ofSize: 14)
         
-        postRequest.save(follower) { (result) in
-            switch result {
-            case .success(let follower):
-                print("The following follower has been added \(follower.follower_id) to user \(follower.user_id)")
-            case .failure(let error):
-                print("An error occurred \(error)")
-            }
+         default: break
         }
     }
-}
+
+    
+    
+   
+  }
+

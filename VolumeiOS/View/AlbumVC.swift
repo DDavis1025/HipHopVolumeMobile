@@ -28,6 +28,13 @@ class AlbumVC: Toolbar {
     var authorID:String?
     var user_id:String?
     var followButton = FollowerButton()
+    var following: Set<String>? {
+           didSet {
+               print("following \(following)")
+               
+           }
+       }
+
     var profile = SessionManager.shared.profile
  init(post: Post) {
     self.post = post
@@ -65,22 +72,25 @@ class AlbumVC: Toolbar {
             self?.view.addSubview(self!.user!)
             self?.addImageAfterLoad()
             self?.imageLoader?.downloadImage(urlString: users[0].picture!)
-            self?.setFollowButtonConstraints()
-//            self?.setUsersConstraints()
+            self?.setupButton(id: self!.user_id)
+            if self!.user_id! != self!.profile!.sub {
+                self!.view.addSubview(self!.followButton)
+                self?.setFollowButtonConstraints()
+               }
         }
         addImage()
         
         imageView.image = UIImage(named: "music-placeholder")
         self.view.addSubview(imageView)
         setImageViewConstraints()
-
-        view.addSubview(followButton)
+        getFollowing(id: profile!.sub)
         
-//        imageViewVC()
+
+        
+        addActionToFlwBtn()
         addAlbumImage()
         addLabels()
         addViewController()
-        addActionFollowBtn()
         view.backgroundColor = UIColor.white
 
 
@@ -88,6 +98,67 @@ class AlbumVC: Toolbar {
 
         
     }
+
+    
+    
+    func getFollowing(id: String) {
+        GETUsersByFollowerId(id: id).getAllById {
+            self.following = Set($0.map{String($0.user_id!)})
+        }
+    }
+    
+    
+    
+    func setupButton(id:String?) {
+           if let followingUsers = self.following {
+               if (followingUsers.contains(id!)) {
+                followButton.buttonState = .delete
+               } else {
+                followButton.buttonState = .add
+           }
+    }
+}
+    
+    @objc func setButtonAction() {
+        
+        if followButton.buttonState == .add {
+            let follower_id = (profile?.sub)!
+              let follower = Follower(user_id: user_id!, follower_id: follower_id)
+              let postRequest = FollowerPostRequest(endpoint: "follower")
+              
+              postRequest.save(follower) { (result) in
+                  switch result {
+                  case .success(let follower):
+                      print("The following follower has been added \(follower.follower_id) to user \(follower.user_id)")
+                  case .failure(let error):
+                      print("An error occurred \(error)")
+                  }
+              }
+              followButton.buttonState = .delete
+        } else if followButton.buttonState == .delete {
+          
+                if let id = user_id {
+                let deleteRequest = DLTFollowingRequest(id: id)
+                
+                deleteRequest.delete {(err) in
+                    if let err = err {
+                        print("Failed to delete", err)
+                        return
+                    }
+                    print("Successfully deleted followed user from server")
+                    
+                }
+             }
+             followButton.buttonState = .add
+        }
+               
+    }
+    
+    func addActionToFlwBtn() {
+        followButton.addTarget(self, action: #selector(setButtonAction), for: .touchUpInside)
+    }
+    
+    
     
     func addImage() {
         let imagePH = UIImage(named: "profile-placeholder-user")
@@ -248,9 +319,6 @@ class AlbumVC: Toolbar {
         viewController?.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
     
-    func addActionFollowBtn() {
-        followButton.addTarget(self, action: #selector(followBtnTapped), for: .touchUpInside)
-    }
     
     func setFollowButtonConstraints() {
         followButton.translatesAutoresizingMaskIntoConstraints = false
@@ -260,13 +328,6 @@ class AlbumVC: Toolbar {
         followButton.centerYAnchor.constraint(equalTo: user!.centerYAnchor).isActive = true
     }
 
-    
-    @objc func followBtnTapped() {
-        let follower_id = (profile?.sub)!
-        followButton.addFollower(user_id: user_id!, follower_id: follower_id)
-    }
-    
-   
     
 
 }
