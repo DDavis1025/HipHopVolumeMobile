@@ -58,8 +58,6 @@ class FollowerButton: UIButton {
         }
     }
 
-    
-    
-   
+
   }
 

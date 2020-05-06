@@ -38,6 +38,7 @@ struct PostById: Codable, Hashable, Identifiable {
 
 struct UsersModel: Codable {
     var name:String?
+    var username:String?
     var picture:String?
     var user_id:String?
     var email:String?
@@ -55,6 +56,11 @@ final class Follower: Codable {
 
 struct Following: Codable, Hashable {
     var user_id:String?
+    
+}
+
+struct Follows: Codable, Hashable {
+    var follower_id:String?
     
 }
 

@@ -23,6 +23,10 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var images:[UIImage]?
     var imageLoader:DownloadImage?
     var imageLoaded:Bool? = false
+    var followUsersVC:FollowUsers?
+    var usersWhoFollowVC:FollowUsers?
+    let stackview = UIStackView()
+    
     var post:Post? {
         didSet {
             let vc = AlbumVC(post: self.post!)
@@ -31,6 +35,10 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         }
     }
     var label:UILabel? = nil
+    var followingLabel = UILabel()
+    var followingTitle = UILabel()
+    var followsLabel = UILabel()
+    var followsTitle = UILabel()
     var child:SpinnerViewController?
     var users = [UsersModel]() {
         didSet {
@@ -41,22 +49,67 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
+    
+    var usersFollowed = [UsersModel]() {
+        didSet {
+                self.followUsersVC = FollowUsers(users: self.usersFollowed)
+//                self.usersWhoFollowLabels()
+                followingLabel.text = String(usersFollowed.count)
+                followingTitle.isHidden = false
+                followingLabel.isHidden = false
+//                self.followLabels()
+        }
+    }
+    
+    var usersWhoFollow = [UsersModel]() {
+           didSet {
+                    self.usersWhoFollowVC = FollowUsers(users: self.usersWhoFollow)
+                    followsLabel.text = String(usersWhoFollow.count)
+                    followsTitle.isHidden = false
+                    followsLabel.isHidden = false
+//                    self.usersWhoFollowLabels()
+//                    self.followLabels()
+          }
+       }
     var artistData = [ArtistModel]() {
         didSet {
             DispatchQueue.main.async {
-                self.myTableView.reloadData()
-                print("Artist Data \(self.artistData)")
-                self.isLoaded = true
-                self.albumImages()
                 self.child?.willMove(toParent: nil)
                 self.child?.view.removeFromSuperview()
                 self.child?.removeFromParent()
+                self.myTableView.reloadData()
+                print("Artist Data \(self.artistData)")
+                print("worked")
+                self.isLoaded = true
 
             }
         }
     }
     var posts:Array<Any> = []
     var artistID:String?
+
+    var following = [Following]() {
+              didSet {
+                   for followed in self.following {
+                    GetUsersById(id: followed.user_id!).getAllPosts {
+                        self.usersFollowed.append(contentsOf: $0)
+                        print("usersFollowed \(self.usersFollowed.count)")
+                    }
+                  }
+                  
+              }
+          }
+    var follows = [Follows]() {
+        didSet {
+            for follow in follows {
+                GetUsersById(id: follow.follower_id!).getAllPosts {
+                  self.usersWhoFollow.append(contentsOf: $0)
+                  print("usersFollowing \(self.usersWhoFollow.count)")
+              }
+            }
+            
+        }
+    }
     
     static var shared = ArtistProfileVC()
     
@@ -71,9 +124,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         return component
     }()
     
-//    func prepareForReuse() {
-//        imageView?.image = nil
-//    }
 
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -81,11 +131,15 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             addTableView()
 
             addImagePH()
-    
-            getArtist(id: artistID!)
             
-//            self.view.layoutIfNeeded()
-//            self.view.setNeedsLayout()
+                if let artistID = self.artistID {
+                self.getArtist(id: artistID)
+                self.getFollowers(id: artistID)
+            }
+            
+            self.usersWhoFollowLabels()
+            self.followLabels()
+
             
             view.backgroundColor = UIColor.white
             
@@ -118,7 +172,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             label?.translatesAutoresizingMaskIntoConstraints = false
             label?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
             label?.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10).isActive = true
-            label?.text = "\(self.users[0].name!)"
+            label?.text = "\(self.users[0].username ?? "undefined")"
 
             imageLoader = DownloadImage()
                 self.imageLoader?.imageDidSet = { [weak self] image in
@@ -129,15 +183,92 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             imageLoader?.downloadImage(urlString: users[0].picture!)
 
     }
+    
+    func followLabels() {
+        followingTitle.text = "Following"
+//        followingLabel.text = String(usersFollowed.count)
+        followingLabel.text = "0"
+        followingTitle.font = followingTitle.font.withSize(14)
+        followingLabel.font = followingLabel.font.withSize(14)
+        view.addSubview(followingTitle)
+        view.addSubview(followingLabel)
+        followLabelContraints()
+        
+        followingTitle.isHidden = true
+        followingLabel.isHidden = true
+        
+        
+        followingLabel.isUserInteractionEnabled = true
+        let gesture = UITapGestureRecognizer(target: self, action:  #selector(self.followingLabelAction(_:)))
+        followingLabel.addGestureRecognizer(gesture)
+    }
+    
+    func usersWhoFollowLabels() {
+        followsTitle.text = "Followers"
+//        followsLabel.text = String(usersWhoFollow.count)
+        followsLabel.text = "0"
+        followsTitle.font = followingTitle.font.withSize(14)
+        followsLabel.font = followingLabel.font.withSize(14)
+        view.addSubview(followsTitle)
+        view.addSubview(followsLabel)
+        followsTitle.isHidden = true
+        followsLabel.isHidden = true
+        usersWhoFollowLabelContraints()
+        
+        followsLabel.isUserInteractionEnabled = true
+        let gesture = UITapGestureRecognizer(target: self, action:  #selector(self.followsLabelAction(_:)))
+        followsLabel.addGestureRecognizer(gesture)
+    }
+    
+    @objc func followingLabelAction(_ sender : UITapGestureRecognizer) {
+        if let followUsersVC = followUsersVC {
+        navigationController?.pushViewController(followUsersVC, animated: true)
+        self.followUsersVC?.followTitle = "Following"
+        }
+        print("followingLabel clicked")
+
+    }
+    
+    @objc func followsLabelAction(_ sender : UITapGestureRecognizer) {
+        if let usersWhoFollowVC = usersWhoFollowVC {
+        navigationController?.pushViewController(usersWhoFollowVC, animated: true)
+        self.usersWhoFollowVC?.followTitle = "Followers"
+        print("followingLabel clicked")
+        }
+
+    }
+    
+    func followLabelContraints() {
+        self.followingLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.followingLabel.topAnchor.constraint(equalTo: followingTitle.bottomAnchor).isActive = true
+        
+        self.followingTitle.translatesAutoresizingMaskIntoConstraints = false
+        self.followingTitle.topAnchor.constraint(equalTo: followsLabel.bottomAnchor, constant: 15).isActive = true
+        self.followingTitle.centerXAnchor.constraint(equalTo: followsLabel.centerXAnchor).isActive = true
+        self.followingLabel.centerXAnchor.constraint(equalTo: followingTitle.centerXAnchor).isActive = true
+        
+        
+        
+    }
+    
+    func usersWhoFollowLabelContraints() {
+            self.followsLabel.translatesAutoresizingMaskIntoConstraints = false
+            self.followsLabel.topAnchor.constraint(equalTo: followsTitle.bottomAnchor).isActive = true
+            
+            self.followsTitle.translatesAutoresizingMaskIntoConstraints = false
+            self.followsTitle.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 30).isActive = true
+           self.followsTitle.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 13).isActive = true
+            self.followsLabel.centerXAnchor.constraint(equalTo: followsTitle.centerXAnchor).isActive = true
+        }
            
     func addSpinner() {
           let child = SpinnerViewController()
           addChild(child)
           child.view.frame = view.frame
-//          child.view.backgroundColor = UIColor.white
+
           view.addSubview(child.view)
           child.didMove(toParent: self)
-//          child.view.backgroundColor = UIColor.black
+
           self.view.bringSubviewToFront(child.view)
 
           self.child?.view?.translatesAutoresizingMaskIntoConstraints = false
@@ -163,27 +294,23 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             self.users = $0
         }
         
-        print("users \(self.users)")
-        
-        _ = ArtistProfileVC()
         let getArtistById =  GETArtistById(id: id)
         getArtistById.getAllById {
             self.artistData = $0
        }
-    }
-    
-    
-   func albumImages() {
-       for artist in self.artistData {
-//           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString + "/\(artist.path!)"))
-//            self.imageLoader?.imageDidSet = { [weak self] image in
-//            let image = image
-////            self?.images?.append(image!)
-//         }
-            
-       }
+        
+        GETUsersByFollowerId(id: id).getAllById {
+            self.following = $0
+        }
         
     }
+    
+    func getFollowers(id:String) {
+        GETFollowersByUserID(id: id).getAllById {
+            self.follows = $0
+        }
+    }
+    
     
     
     
@@ -206,8 +333,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
         self.myTableView?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
 
-//        self.myTableView?.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        
             myTableView.layoutMargins = UIEdgeInsets.zero
             myTableView.separatorInset = UIEdgeInsets.zero
             
@@ -240,16 +365,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
            cell.textLabel!.text = "playa playa"
            cell.textLabel!.text = "\(artistData[indexPath.row].title!)"
            components.path = "/\(artistData[indexPath.row].path!)"
-//           imageLoader = DownloadImage(urlString: String(self.components.url!.absoluteString))
-//           self.imageLoader?.imageDidSet = { [weak self] image in
-//            cell.imageView!.image = self?.imageLoader?.image
-//            let itemSize = CGSize.init(width: 100, height: 100)
-//            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
-//            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
-//            cell.imageView?.image!.draw(in: imageRect)
-//            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
-//            UIGraphicsEndImageContext();
-//           }
             self.imageLoader = DownloadImage()
             imageLoader?.imageDidSet = { [weak self] image in
 //                    cell.imageView?.image = nil
@@ -266,11 +381,8 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
                 }
             imageLoader?.downloadImage(urlString: components.url!.absoluteString)
             print("components url \(components.url?.absoluteString)")
-//            imageLoader?.downloadImage(urlString: components.url!.absoluteString)
     
-
-//
-        if !imageLoaded! {
+           if !imageLoaded! {
             cell.imageView!.image = UIImage(named: "music-placeholder")
             let itemSize = CGSize.init(width: 100, height: 100)
             UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
@@ -280,10 +392,8 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             UIGraphicsEndImageContext();
            print("Artist data \(artistData)")
         }
-//
            cell.translatesAutoresizingMaskIntoConstraints = false
            cell.layoutMargins = UIEdgeInsets.zero
-//        }
            return cell
        }
     

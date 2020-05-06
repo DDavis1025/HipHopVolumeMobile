@@ -63,15 +63,6 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     }
     
     
-    func addImage() {
-        for user in users! {
-//            imageLoader = DownloadImage(urlString: (user.picture)!)
-//              imageLoader?.imageDidSet = { [weak self] image in
-//                self?.image = image
-//                self?.images.append((self?.image!)!)
-//            }
-        }
-    }
     
     func addTableView() {
         myTableView = UITableView()

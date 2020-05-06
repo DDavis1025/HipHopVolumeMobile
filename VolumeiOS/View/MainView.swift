@@ -192,7 +192,8 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     @objc func addTapped() {
            let profileVC = ProfileViewController()
-           self.navigationController?.pushViewController(profileVC, animated: true)
+           let profileView = ProfileVC()
+           self.navigationController?.pushViewController(profileView, animated: true)
        }
        
    @objc func toFollowTapped() {

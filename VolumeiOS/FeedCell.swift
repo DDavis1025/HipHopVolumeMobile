@@ -78,7 +78,7 @@ class FeedCell:UITableViewCell {
     }
     
     func setUser(user: UsersModel?) {
-        albumArtist.text = user?.name ?? "undefined"
+        albumArtist.text = user?.username ?? "undefined"
         self.imageLoader = DownloadImage()
            imageLoader?.imageDidSet = { [weak self] image in
                 self?.artistImage.image = image

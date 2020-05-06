@@ -67,7 +67,7 @@ class AlbumVC: Toolbar {
         
             self.userModel?.usersDidChange = { [weak self] users in
             self?.user = UILabel()
-            self?.user!.text = users[0].name
+            self?.user!.text = users[0].username ?? "undefined"
             self?.user_id = users[0].user_id
             self?.view.addSubview(self!.user!)
             self?.addImageAfterLoad()
