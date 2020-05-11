@@ -7,43 +7,86 @@
 //
 
 import Foundation
-import SwiftUI
 import UIKit
-import Auth0
 
-class LoginVC: Toolbar {
-
-    var loginButton: UILabel?
-
-    override func viewDidLoad() {
-    super.viewDidLoad()
+class LoginVC: UIViewController {
+    var label = UILabel()
+    var button = UIButton()
+    var sfAuthSessionSwitch = UISwitch()
     
+    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+        checkState()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if !sfAuthSessionSwitch.isOn {
+            checkState()
+        }
         
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive(_:)),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
+        
+        addLoginLabel()
+        addButton()
+        updateUI()
+    
+        view.backgroundColor = UIColor.white
+        // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
     
     func addLoginLabel() {
-        loginButton = UILabel()
-        loginButton?.text = "Login"
-        view.addSubview(loginButton!)
+        label.text = ""
+        view.addSubview(label)
         
-        loginButton?.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
         
-        loginButton?.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        label.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
-        loginButton?.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        label.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         
-        loginButton?.isUserInteractionEnabled = true
+        label.isUserInteractionEnabled = true
         
-        let gesture = UITapGestureRecognizer(target: self, action:  #selector(self.loginClicked))
-        loginButton?.addGestureRecognizer(gesture)
+        
+        
+    }
+    
+    func addButton() {
+        button.setTitle("Login", for: .normal)
+        button.backgroundColor = UIColor.black
+        view.addSubview(button)
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        button.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        button.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50).isActive = true
+        
+        button.isUserInteractionEnabled = true
+        
+        button.addTarget(self, action:#selector(buttonClick), for: .touchUpInside)
+        
         
         
     }
 
-    @objc func loginClicked() {
+    @objc func buttonClick(sender: UIButton) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        if appDelegate.tokens == nil {
-            appDelegate.authServer.authorize(viewController: self, useSfAuthSession: sfAuthSessionSwitch.isOn, handler: { (success) in
+        if AppDelegate.shared.tokens == nil {
+            AppDelegate.shared.authServer.authorize(viewController: self, useSfAuthSession: sfAuthSessionSwitch.isOn, handler: { (success) in
                 if !success {
                     //TODO: show error
                     self.updateUI()
@@ -53,51 +96,56 @@ class LoginVC: Toolbar {
                 }
             })
         } else {
-            appDelegate.logout()
+            print("token != nil")
+            AppDelegate.shared.logout()
+            print("AT \(AppDelegate.shared.tokens)")
+            print("AP \(AppDelegate.shared.profile)")
+            print("auth server \(AppDelegate.shared.authServer)")
             updateUI()
         }
     }
     
-    func authorize(viewController: UIViewController, useSfAuthSession: Bool, handler: @escaping (Bool) -> Void) {
-        guard let challenge = generateCodeChallenge() else {
-            // TODO: handle error
-            handler(false)
-            return
-        }
-
-        savedState = generateRandomBytes()
-
-        var urlComp = URLComponents(string: domain + "/authorize")!
-
-        urlComp.queryItems = [
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "client_id", value: clientId),
-            URLQueryItem(name: "code_challenge_method", value: "S256"),
-            URLQueryItem(name: "code_challenge", value: challenge),
-            URLQueryItem(name: "state", value: savedState),
-            URLQueryItem(name: "scope", value: "id_token profile"),
-            URLQueryItem(name: "redirect_uri", value: "auth0test1://test"),
-        ]
-
-        if useSfAuthSession {
-            sfAuthSession = SFAuthenticationSession(url: urlComp.url!, callbackURLScheme: "auth0test1", completionHandler: { (url, error) in
-                guard error == nil else {
-                    return handler(false)
+    func updateUI() {
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            
+            if AppDelegate.shared.tokens == nil {
+                if AppDelegate.shared.authServer.receivedCode == nil {
+                    self.label.text = "Logged-out"
+                } else {
+                    self.label.text = "Finishing login..."
                 }
-
-                handler(url != nil && self.parseAuthorizeRedirectUrl(url: url!))
-            })
-            sfAuthSession?.start()
-        } else {
-            sfSafariViewController = SFSafariViewController(url: urlComp.url!)
-            viewController.present(sfSafariViewController!, animated: true)
-            handler(true)
+                self.button.setTitle("Login", for: UIControl.State.normal)
+                self.sfAuthSessionSwitch.isEnabled = true;
+            } else {
+                if AppDelegate.shared.profile?.name == nil {
+                    self.label.text = "Hello, you are logged-in"
+                } else {
+                    self.label.text = "Hello, " + appDelegate.profile!.name! + ", you are logged-in"
+                }
+                self.button.setTitle("Logout", for: UIControl.State.normal)
+                self.sfAuthSessionSwitch.isEnabled = false;
+            }
         }
     }
     
-    
-    
-    
-    
-    
+    private func checkState() {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        if AppDelegate.shared.authServer.receivedCode != nil && AppDelegate.shared.authServer.receivedState != nil {
+            AppDelegate.shared.authServer.getToken() { (tokens) in
+                AppDelegate.shared.tokens = tokens
+                if AppDelegate.shared.tokens != nil {
+                    AppDelegate.shared.authServer.getProfile(accessToken: tokens!.accessToken, handler: { (profile) in
+                        AppDelegate.shared.profile = profile
+                        self.updateUI()
+                    })
+                } else {
+                    // TODO: error getting token
+                    print("hell logout")
+                    AppDelegate.shared.logout()
+                }
+                self.updateUI()
+            }
+        }
+    }
 }

@@ -141,7 +141,7 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         addSpinner()
-        auth0()
+//        auth0()
         Webservice().getAllPosts {
             self.posts = $0
         }

@@ -12,6 +12,23 @@ import SwiftUI
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    
+    let authServer = AuthorizationServer()
+    var url:URL?
+    
+
+        func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) -> Bool {
+            return authServer.parseAuthorizeRedirectUrl(url: URLContexts.first!.url)
+       }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            AppDelegate.shared.application(UIApplication.shared, open: url)
+       }
+
+    }
+    
+    
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -23,17 +40,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
 
         // Use a UIHostingController as window root view controller.
+        
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             var navigationController: UINavigationController?
 
             let mainVC = MainView()
+            let loginVC = LoginVC()
+            let authVC = AuthVC()
             
-            navigationController = UINavigationController(rootViewController: mainVC)
+            navigationController = UINavigationController(rootViewController: authVC)
             
             window.rootViewController = navigationController
 //            window.addSubview(mainVC.view)
-            window.addSubview(mainVC.view)
+//            window.addSubview(mainVC.view)
 //            window.bringSubviewToFront(child.view)
 //              window.rootViewController = ImageSlideVC()
 ////
@@ -75,6 +95,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
+    
 
 
 }

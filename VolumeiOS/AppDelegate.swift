@@ -7,19 +7,45 @@
 //
 
 import UIKit
-import Auth0
+import SafariServices
+import AuthenticationServices
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+     var window: UIWindow?
     
+      static var shared = AppDelegate()
 
+      let authServer = AuthorizationServer()
+      
+      // TODO: store this using the keystore
+      var tokens: Tokens? = nil
+      var profile: Profile? = nil
+//
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print(url)
+        return authServer.parseAuthorizeRedirectUrl(url: url)
+    }
+    
+      var urlComp = URL(string: domain + "/v2/logout?federated")!
+    
+      
+      func logout() {
+          tokens = nil
+          profile = nil
+          authServer.reset()
+          authServer.logout()
+      }
+    
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         print("Application did finish launching")
         return true
     }
+    
 
     // MARK: UISceneSession Lifecycle
 
@@ -33,10 +59,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-    }
-    
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
-        return Auth0.resumeAuth(url, options: options)
     }
     
     
