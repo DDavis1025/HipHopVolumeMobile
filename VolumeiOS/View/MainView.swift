@@ -30,7 +30,9 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
             let group = DispatchGroup()
             for user in users {
                 group.enter()
-                userDictionary[user.user_id!] = user
+                if let user_id = user.user_id {
+                userDictionary[user_id] = user
+                }
                 group.leave()
             }
             
@@ -147,6 +149,7 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
         }
         
 
+        let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
         
         let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
                    
@@ -154,8 +157,12 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
        navigationItem.leftBarButtonItem = profile
        navigationItem.rightBarButtonItem = whoToFollow
+       navigationItem.rightBarButtonItem = logout
         
         addTableView()
+        
+        self.navigationController?.isToolbarHidden = false
+        self.navigationController?.isNavigationBarHidden = false
 
         
         view.isUserInteractionEnabled = true
@@ -200,6 +207,22 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
        let toFollowVC = WhoToFollowVC()
        self.navigationController?.pushViewController(toFollowVC, animated: true)
    }
+    
+    @objc func logoutTapped() {
+            let authVC = AuthVC()
+            SessionManager.shared.logout { (error) in
+                guard error == nil else {
+                // Handle error
+                print("Error: \(error)")
+                return
+            }
+        }
+            print("Session manager credentials \(SessionManager.shared.credentials)")
+            self.navigationController?.popToRootViewController(animated: true)
+            self.navigationController?.isToolbarHidden = true
+            self.navigationController?.isNavigationBarHidden = true
+        }
+
     
     func addSpinner() {
              let child = SpinnerViewController()

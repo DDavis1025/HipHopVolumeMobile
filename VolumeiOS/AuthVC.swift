@@ -13,6 +13,10 @@ import Auth0
 let domain = "https://dev-owihjaep.auth0.com"
 let clientId = "1xSs0Ez95mih823mzKFxHWVDFh7iHX8y"
 
+struct AuthStruct {
+     let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
+}
+
 class AuthVC: UIViewController {
     
     var label = UILabel()
@@ -20,10 +24,15 @@ class AuthVC: UIViewController {
     
     var profile: Auth0.UserInfo? = nil
     
+    var auth = AuthStruct()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         addLoginLabel()
         addButton()
+        
+        self.navigationController?.isToolbarHidden = true
+        self.navigationController?.isNavigationBarHidden = true
         
         view.backgroundColor = UIColor.white
         
@@ -52,8 +61,19 @@ class AuthVC: UIViewController {
        }
        
        func addButton() {
-           button.setTitle("Login", for: .normal)
-           button.backgroundColor = UIColor.black
+           button.setTitle("Login or Sign Up", for: .normal)
+           button.titleLabel?.numberOfLines = 1
+           button.titleLabel?.adjustsFontSizeToFitWidth = true
+           button.titleLabel?.lineBreakMode = .byClipping
+           button.setTitleColor(UIColor.black, for: .normal)
+           button.titleLabel?.font =  UIFont(name: "AppleSDGothicNeo-Bold", size: 20)
+           button.backgroundColor = .clear
+           button.layer.cornerRadius = 5
+           button.layer.borderWidth = 2
+           let spacing: CGFloat = 8.0
+           button.layer.borderColor = UIColor.lightGray.cgColor
+           button.titleEdgeInsets = UIEdgeInsets(top: 0, left: spacing, bottom: 0, right: spacing)
+        
            view.addSubview(button)
            
            button.translatesAutoresizingMaskIntoConstraints = false
@@ -70,47 +90,35 @@ class AuthVC: UIViewController {
        }
 
     @objc func buttonClicked(sender: UIButton) {
-        if profile != nil {
-            profile = nil
-            updateUI()
-        } else {
             Auth0
-                .webAuth(clientId: clientId, domain: domain)
-                .parameters(["prompt":"login"])
-                .scope("openid token profile")
-                .start { result in
-                    
-                    switch result {
-                    
-                    case .success(let credentials):
-                        Auth0
-                            .authentication(clientId: clientId, domain: domain)
-                            .userInfo(withAccessToken: credentials.accessToken!)
-                            .start { result in
-                    
-                                switch result {
-                                
-                                case .success(let profile):
-                                    self.profile = profile
-                                
-                                case .failure(let error):
-                                    print("Failed with \(error)")
-                                    self.profile = nil
-                                }
-                                
-                                self.updateUI()
+            .webAuth()
+            .scope("openid offline_access profile")
+            .parameters(["prompt":"login"])
+            .audience("https://dev-owihjaep.auth0.com/userinfo")
+            .start {
+                switch $0 {
+                case .failure(let error):
+                    print("Error: \(error)")
+                case .success(let credentials):
+                    print(credentials.accessToken)
+                    self.auth.credentialsManager.store(credentials: credentials)
+                    if(!SessionManager.shared.store(credentials: credentials)) {
+                        print("Failed to store credentials")
+                    } else {
+                        SessionManager.shared.retrieveProfile { error in
+                            DispatchQueue.main.async {
+                                self.navigationController?.pushViewController(MainView(), animated: true)
+                                guard error == nil else {
+                                    print("Failed to retrieve profile: \(String(describing: error))")
+                                    return
+                            }
+                          }
                         }
-                    
-                    case .failure(let error):
-                        self.profile = nil
-                        print("Failed with \(error)")
                     }
-                    
-                    self.updateUI()
+                }
             }
         }
-    }
-    
+
     
     func updateUI() {
         DispatchQueue.main.async {

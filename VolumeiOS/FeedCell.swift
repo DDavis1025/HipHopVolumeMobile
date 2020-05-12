@@ -16,6 +16,7 @@ class FeedCell:UITableViewCell {
     var albumArtist = UILabel()
     var albumTitle = UILabel()
     var artistImage = UIImageView()
+    var artistPH = UIImageView()
     var imageLoader:DownloadImage?
     var imageLoaded:Bool? = false
     var user:[UsersModel]?
@@ -35,13 +36,17 @@ class FeedCell:UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         albumPH.image = UIImage(named: "music-placeholder")
+        artistPH.image = UIImage(named: "profile-placeholder-user")
 //        albumPH.image = UIImage(named: "music-placeholder")
         addSubview(albumPH)
+        addSubview(artistPH)
         setImagePHConstraints()
 
         addSubview(albumImage)
         addSubview(albumTitle)
         addSubview(albumArtist)
+        addSubview(artistPH)
+        setArtistPHConstraints()
         addSubview(artistImage)
         setImageConstraints()
         setTitleContstraints()
@@ -82,6 +87,7 @@ class FeedCell:UITableViewCell {
         self.imageLoader = DownloadImage()
            imageLoader?.imageDidSet = { [weak self] image in
                 self?.artistImage.image = image
+                self?.artistPH.isHidden = true
               }
         if let userPicture = user?.picture {
         imageLoader?.downloadImage(urlString: userPicture)
@@ -111,6 +117,16 @@ class FeedCell:UITableViewCell {
         albumPH.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
         albumPH.heightAnchor.constraint(equalToConstant: 90).isActive = true
         albumPH.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        
+    }
+    
+    func setArtistPHConstraints() {
+        artistPH.translatesAutoresizingMaskIntoConstraints = false
+        artistPH.centerYAnchor.constraint(equalTo: albumArtist.centerYAnchor).isActive = true
+        artistPH.trailingAnchor.constraint(equalTo: albumArtist.leadingAnchor, constant: -3).isActive = true
+        artistPH.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        artistPH.leadingAnchor.constraint(equalTo: albumTitle.leadingAnchor).isActive = true
+        artistPH.widthAnchor.constraint(equalToConstant: 25).isActive = true
         
     }
     

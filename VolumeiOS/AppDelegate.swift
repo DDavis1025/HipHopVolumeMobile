@@ -9,6 +9,7 @@
 import UIKit
 import SafariServices
 import AuthenticationServices
+import Auth0
 
 
 @UIApplicationMain
@@ -16,30 +17,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
      var window: UIWindow?
     
-      static var shared = AppDelegate()
-
-      let authServer = AuthorizationServer()
-      
-      // TODO: store this using the keystore
-      var tokens: Tokens? = nil
-      var profile: Profile? = nil
-//
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        print(url)
-        return authServer.parseAuthorizeRedirectUrl(url: url)
+    func application(_
+        app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any]
+        ) -> Bool {
+        print("url \(url)")
+        return Auth0.resumeAuth(url, options: options)
     }
     
-      var urlComp = URL(string: domain + "/v2/logout?federated")!
-    
-      
-      func logout() {
-          tokens = nil
-          profile = nil
-          authServer.reset()
-          authServer.logout()
-      }
-    
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         print("Application did finish launching")
