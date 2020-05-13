@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Auth0
+import Lock
 
 let domain = "https://dev-owihjaep.auth0.com"
 let clientId = "1xSs0Ez95mih823mzKFxHWVDFh7iHX8y"
@@ -88,6 +89,7 @@ class AuthVC: UIViewController {
            
            
        }
+    
 
     @objc func buttonClicked(sender: UIButton) {
             Auth0

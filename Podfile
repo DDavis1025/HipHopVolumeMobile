@@ -8,4 +8,5 @@ target 'VolumeiOS' do
   # Pods for VolumeiOS
 
   pod 'Auth0', '~> 1.19'
+  pod 'Lock', '~> 2.0'
 end

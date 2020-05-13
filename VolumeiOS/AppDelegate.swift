@@ -10,6 +10,7 @@ import UIKit
 import SafariServices
 import AuthenticationServices
 import Auth0
+import Lock
 
 
 @UIApplicationMain
@@ -17,13 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
      var window: UIWindow?
     
-    func application(_
-        app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey : Any]
-        ) -> Bool {
-        print("url \(url)")
-        return Auth0.resumeAuth(url, options: options)
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+      return Lock.resumeAuth(url, options: options)
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {

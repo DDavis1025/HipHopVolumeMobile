@@ -26,6 +26,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var followUsersVC:FollowUsers?
     var usersWhoFollowVC:FollowUsers?
     let stackview = UIStackView()
+    var button = UIButton()
     
     var post:Post? {
         didSet {
