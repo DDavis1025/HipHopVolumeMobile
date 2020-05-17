@@ -39,6 +39,7 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
             group.notify(queue: .main) {
              self.usersLoaded = true
              self.myTableView.reloadData()
+             self.refresher?.endRefreshing()
             }
             
             print("user dinctionary \(userDictionary)")
@@ -82,51 +83,11 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
               }
             }
             
-//            var userDictionary = [String: String]()
-//
-//            for user in users {
-//                userDictionary[user.user_id!] = user.name
-//            }
-//
-//            print("user dinctionary \(userDictionary)")
-            
-            
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-//
-//                    for (index, _) in self.posts.enumerated() {
-//                        self.users.map { if self.posts[index].author == $0.user_id {
-//                             self.posts[index].addUser(user: $0.name!)
-//                             print("hello")
-//                            }
-//                        }
-//                }
-//            }
-            
-//           DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-//
-//                          for i in 0..<self.posts.count {
-//                              for z in 0..<self.users.count {
-//                                     if self.posts[i].author == self.users[z].user_id {
-//                                        self.posts[i].addUser(user: self.users[z].name!)
-//                                        print("i \(i)")
-//                                        print("z \(z)")
-//                          }
-//                          }
-//
-//                  }
-//            }
-        
-            
-            
-            
-            
-            
-            
-            
       }
     }
     var albumVC:AlbumVC?
     var imageLoader:DownloadImage?
+    var refresher:UIRefreshControl?
     
     var components:URLComponents = {
            var component = URLComponents()
@@ -147,8 +108,10 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
         Webservice().getAllPosts {
             self.posts = $0
         }
-        
 
+        refresher = UIRefreshControl()
+        refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
         let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
         
         let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
@@ -161,6 +124,8 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
         
         addTableView()
         
+        myTableView.addSubview(refresher!)
+        
         self.navigationController?.isToolbarHidden = false
         self.navigationController?.isNavigationBarHidden = false
 
@@ -169,33 +134,13 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     }
     
-    
-    func auth0() {
-        Auth0
-        .webAuth()
-        .scope("openid offline_access profile")
-        .audience("https://dev-owihjaep.auth0.com/userinfo")
-        .start {
-            switch $0 {
-            case .failure(let error):
-                print("Error: \(error)")
-            case .success(let credentials):
-                print(credentials.accessToken)
-                if(!SessionManager.shared.store(credentials: credentials)) {
-                    print("Failed to store credentials")
-                } else {
-                    SessionManager.shared.retrieveProfile { error in
-                        DispatchQueue.main.async {
-                            guard error == nil else {
-                                print("Failed to retrieve profile: \(String(describing: error))")
-                                return
-                        }
-                      }
-                    }
-                }
-            }
+    @objc func refresh() {
+        Webservice().getAllPosts {
+            self.posts = $0
         }
+        
     }
+    
     
     @objc func addTapped() {
            let profileVC = ProfileViewController()
@@ -304,5 +249,7 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
         return cell
     }
+    
+    
 
 }

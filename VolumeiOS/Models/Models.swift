@@ -132,3 +132,7 @@ struct ArtistModel: Codable {
     var path:String?
 }
 
+struct UserPhoto: Codable {
+    var path:String?
+}
+

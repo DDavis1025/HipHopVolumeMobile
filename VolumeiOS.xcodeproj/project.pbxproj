@@ -12,6 +12,8 @@
 		CD08ADB5246391C300AC3A39 /* AuthorizationServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADB4246391C300AC3A39 /* AuthorizationServer.swift */; };
 		CD08ADB7246A081800AC3A39 /* AuthVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADB6246A081700AC3A39 /* AuthVC.swift */; };
 		CD08ADB9246B452900AC3A39 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADB8246B452800AC3A39 /* EditProfileVC.swift */; };
+		CD08ADBB246DED8000AC3A39 /* ImageToServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBA246DED8000AC3A39 /* ImageToServer.swift */; };
+		CD08ADBD246F4D6D00AC3A39 /* PutPatchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBC246F4D6D00AC3A39 /* PutPatchRequests.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -50,6 +52,8 @@
 		CD08ADB4246391C300AC3A39 /* AuthorizationServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationServer.swift; sourceTree = "<group>"; };
 		CD08ADB6246A081700AC3A39 /* AuthVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVC.swift; sourceTree = "<group>"; };
 		CD08ADB8246B452800AC3A39 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
+		CD08ADBA246DED8000AC3A39 /* ImageToServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageToServer.swift; sourceTree = "<group>"; };
+		CD08ADBC246F4D6D00AC3A39 /* PutPatchRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PutPatchRequests.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -179,6 +183,8 @@
 				CD57117024522E3100FAAC5D /* DownloadImage.swift */,
 				CD48B17A245C9AED00A2FD12 /* PostRequests.swift */,
 				CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */,
+				CD08ADBA246DED8000AC3A39 /* ImageToServer.swift */,
+				CD08ADBC246F4D6D00AC3A39 /* PutPatchRequests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -339,12 +345,14 @@
 				CD57115B244FDF6700FAAC5D /* Spinner.swift in Sources */,
 				CD571149244FDF6600FAAC5D /* ViewController.swift in Sources */,
 				CD57116F2451F7C400FAAC5D /* ViewModels.swift in Sources */,
+				CD08ADBB246DED8000AC3A39 /* ImageToServer.swift in Sources */,
 				CD571152244FDF6600FAAC5D /* PlayAudio.swift in Sources */,
 				CD08ADA82460C34E00AC3A39 /* FollowUsers.swift in Sources */,
 				CD08ADB7246A081800AC3A39 /* AuthVC.swift in Sources */,
 				CD48B1812460AE9D00A2FD12 /* ProfileVC.swift in Sources */,
 				CD571157244FDF6600FAAC5D /* Webservice.swift in Sources */,
 				CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */,
+				CD08ADBD246F4D6D00AC3A39 /* PutPatchRequests.swift in Sources */,
 				CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */,
 				CD571153244FDF6600FAAC5D /* ProfileViewController.swift in Sources */,
 				CD57117124522E3100FAAC5D /* DownloadImage.swift in Sources */,

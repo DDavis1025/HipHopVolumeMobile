@@ -12,7 +12,7 @@ import Auth0
 import Lock
 
 let domain = "https://dev-owihjaep.auth0.com"
-let clientId = "1xSs0Ez95mih823mzKFxHWVDFh7iHX8y"
+let clientId = "vA4GjK6zABxVEbqtNLvs7t5IOqeFyWMJ"
 
 struct AuthStruct {
      let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
@@ -92,35 +92,51 @@ class AuthVC: UIViewController {
     
 
     @objc func buttonClicked(sender: UIButton) {
-            Auth0
-            .webAuth()
-            .scope("openid offline_access profile")
-            .parameters(["prompt":"login"])
-            .audience("https://dev-owihjaep.auth0.com/userinfo")
-            .start {
-                switch $0 {
-                case .failure(let error):
-                    print("Error: \(error)")
-                case .success(let credentials):
-                    print(credentials.accessToken)
-                    self.auth.credentialsManager.store(credentials: credentials)
-                    if(!SessionManager.shared.store(credentials: credentials)) {
-                        print("Failed to store credentials")
-                    } else {
-                        SessionManager.shared.retrieveProfile { error in
-                            DispatchQueue.main.async {
-                                self.navigationController?.pushViewController(MainView(), animated: true)
-                                guard error == nil else {
-                                    print("Failed to retrieve profile: \(String(describing: error))")
-                                    return
-                            }
-                          }
+//        addAuthorization()
+        Lock
+        .classic()
+        // withConnections, withOptions, withStyle, and so on
+        .withOptions {
+           $0.oidcConformant = true
+           $0.scope = "openid email profile"
+           $0.closable = true
+        }
+        .withOptions {
+            $0.logLevel = .all
+            $0.logHttpRequest = true
+            $0.loginAfterSignup = false
+            $0.parameters = ["prompt" : "select_account"]
+        }
+        .withStyle {
+            $0.title = "Volume"
+            $0.primaryColor = UIColor.darkGray
+        }
+        .withStyle {
+           $0.modalPopup = false
+        }
+        .onAuth { credentials in
+            print("hello")
+            if(!SessionManager.shared.store(credentials: credentials)) {
+                print("Failed to store credentials")
+            } else {
+                SessionManager.shared.retrieveProfile { error in
+                    DispatchQueue.main.async {
+                        self.navigationController?.pushViewController(MainView(), animated: true)
+                        guard error == nil else {
+                            print("Failed to retrieve profile: \(String(describing: error))")
+                            return
                         }
                     }
                 }
             }
         }
-
+            .onError {
+              print("Failed with \($0)")
+            }
+          // Let's save our credentials.accessToken value
+        .present(from: self)
+        }
+    
     
     func updateUI() {
         DispatchQueue.main.async {

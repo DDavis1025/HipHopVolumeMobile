@@ -112,6 +112,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    
     static var shared = ArtistProfileVC()
     
     
@@ -146,6 +147,31 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             
         }
     
+    override func viewWillAppear(_ animated: Bool) {
+       userPhotoUpdated()
+    }
+    
+    func userPhotoUpdated() {
+        profile = SessionManager.shared.profile
+        if EditPFStruct.photoDidChange! {
+         if let profile = profile {
+            print("hellur 2")
+                   GetUsersById(id: profile.sub).getAllPosts {
+                       let photo = $0
+                       self.imageLoader = DownloadImage()
+                       self.imageLoader?.imageDidSet = { [weak self] image in
+                           DispatchQueue.main.async {
+                               self?.imageView.image = image
+                               self?.view?.addSubview(self!.imageView)
+                           }
+                       }
+                       self.imageLoader?.downloadImage(urlString: photo[0].picture!)
+                       print("photo \(photo[0].picture)")
+                   }
+               }
+        }
+    }
+    
     func setContraints() {
         self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
         self.myTableView?.topAnchor.constraint(equalTo: self.label!.bottomAnchor, constant: 20).isActive = true
@@ -177,11 +203,15 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
             imageLoader = DownloadImage()
                 self.imageLoader?.imageDidSet = { [weak self] image in
+                DispatchQueue.main.async {
                 self?.imageView.image = image
                 self?.view?.addSubview(self!.imageView)
+                }
                 self?.setImageContraints()
                 }
-            imageLoader?.downloadImage(urlString: users[0].picture!)
+        if let user_pic = users[0].picture {
+            imageLoader?.downloadImage(urlString: user_pic)
+        }
 
     }
     
