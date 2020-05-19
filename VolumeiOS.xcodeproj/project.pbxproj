@@ -14,6 +14,7 @@
 		CD08ADB9246B452900AC3A39 /* EditProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADB8246B452800AC3A39 /* EditProfileVC.swift */; };
 		CD08ADBB246DED8000AC3A39 /* ImageToServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBA246DED8000AC3A39 /* ImageToServer.swift */; };
 		CD08ADBD246F4D6D00AC3A39 /* PutPatchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBC246F4D6D00AC3A39 /* PutPatchRequests.swift */; };
+		CD08ADBF2474575700AC3A39 /* UserInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -54,6 +55,7 @@
 		CD08ADB8246B452800AC3A39 /* EditProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileVC.swift; sourceTree = "<group>"; };
 		CD08ADBA246DED8000AC3A39 /* ImageToServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageToServer.swift; sourceTree = "<group>"; };
 		CD08ADBC246F4D6D00AC3A39 /* PutPatchRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PutPatchRequests.swift; sourceTree = "<group>"; };
+		CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoCell.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				CD08ADB4246391C300AC3A39 /* AuthorizationServer.swift */,
 				CD08ADB6246A081700AC3A39 /* AuthVC.swift */,
 				CD08ADB8246B452800AC3A39 /* EditProfileVC.swift */,
+				CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				CD57115F245096AE00FAAC5D /* AlbumTrackVC.swift in Sources */,
 				CD57117524550C4900FAAC5D /* FeedCell.swift in Sources */,
 				CD571155244FDF6600FAAC5D /* ImageCache.swift in Sources */,
+				CD08ADBF2474575700AC3A39 /* UserInfoCell.swift in Sources */,
 				CD57116D2451D5BA00FAAC5D /* AlbumVC.swift in Sources */,
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,

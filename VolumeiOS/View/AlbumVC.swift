@@ -71,7 +71,9 @@ class AlbumVC: Toolbar {
             self?.user_id = users[0].user_id
             self?.view.addSubview(self!.user!)
             self?.addImageAfterLoad()
-            self?.imageLoader?.downloadImage(urlString: users[0].picture!)
+            if let picture = users[0].picture {
+            self?.imageLoader?.downloadImage(urlString: picture)
+                }
             self?.setupButton(id: self!.user_id)
             if self!.user_id! != self!.profile!.sub {
                 self!.view.addSubview(self!.followButton)

@@ -17,7 +17,8 @@ struct EditPFStruct {
     }
 }
 
-class EditProfileVC: Toolbar, UITextFieldDelegate {
+class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource {
+    
     
     var user_profile = SessionManager.shared.profile
     var imageLoader:DownloadImage?
@@ -29,17 +30,32 @@ class EditProfileVC: Toolbar, UITextFieldDelegate {
     let emailLabel = UILabel()
     var save = UIButton()
     let pictureBool = EditPFStruct()
+    let updateUser = UpdateUserInfo()
+    var pictureAdded:Bool = false
+    var emailWarning:UILabel?
+    var usernameWarning:UILabel?
+    var dispatchGroup = DispatchGroup()
+    var photo:[UserPhoto]?
+    var imagePH = UIImageView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        imagePlaceHolder()
+        addButton()
         setProfileImage()
         addUserTextField()
+        usernameTaken()
         addEmailTextField()
         addEmailLabel()
         addUserLabel()
         addUserConstraints()
         addEmailConstraints()
         addNavButtons()
+        emailTaken()
+        
+        dispatchGroup.enter()
+        dispatchGroup.enter()
+        dispatchGroup.enter()
         view.backgroundColor = UIColor.white
         
     }
@@ -77,11 +93,17 @@ class EditProfileVC: Toolbar, UITextFieldDelegate {
             if let imageView = self?.imageView {
                 self?.view?.addSubview(imageView)
                 self?.setImageContraints()
-                self?.addButton()
+                self?.imagePH.isHidden = true
             }
         }
         imageLoader?.downloadImage(urlString: (user_profile?.picture!.absoluteString)!)
         print("url string \((user_profile?.picture!.absoluteString)!)")
+    }
+    
+    func imagePlaceHolder() {
+        imageView.image = UIImage(named: "profile-placeholder-user")
+        view.addSubview(imageView)
+        setImageContraints()
     }
     
     func setImageContraints() {
@@ -90,6 +112,14 @@ class EditProfileVC: Toolbar, UITextFieldDelegate {
         self.imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         self.imageView.widthAnchor.constraint(equalToConstant: 150).isActive = true
         self.imageView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+    }
+    
+    func setImagePHContraints() {
+        self.imagePH.translatesAutoresizingMaskIntoConstraints = false
+        self.imagePH.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        self.imagePH.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        self.imagePH.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        self.imagePH.heightAnchor.constraint(equalToConstant: 150).isActive = true
     }
     
     func addButton() {
@@ -182,7 +212,7 @@ class EditProfileVC: Toolbar, UITextFieldDelegate {
         
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         
-        emailTextField.topAnchor.constraint(equalTo: userTextField.bottomAnchor, constant: 7).isActive = true
+        emailTextField.topAnchor.constraint(equalTo: usernameWarning!.bottomAnchor, constant: 7).isActive = true
         emailTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
         emailTextField.widthAnchor.constraint(equalToConstant: 300).isActive = true
         
@@ -213,7 +243,16 @@ class EditProfileVC: Toolbar, UITextFieldDelegate {
     }
     
     @objc func doneTapped(sender: UIBarButtonItem) {
-      userPhotoUpload()
+        if pictureAdded {
+        userPhotoUpload()
+        } else {
+            dispatchGroup.leave()
+            print("dispatch leave1")
+        }
+        updateEmail()
+        updateUsername()
+        
+        self.updateUserInfo()
     }
     
     
@@ -223,8 +262,8 @@ class EditProfileVC: Toolbar, UITextFieldDelegate {
         component.host = "localhost"
         component.port = 8000
         component.path = "/upload"
-        
-        var imageToServer = ImageToServer()
+        let editPF = EditPFStruct()
+        let imageToServer = ImageToServer()
         let user_id = user_profile?.sub
         if let user_id = user_id {
             imageToServer.imageUploadRequest(imageView: imageView, uploadUrl: component.url!, param: ["user_id":user_id]) {
@@ -234,19 +273,161 @@ class EditProfileVC: Toolbar, UITextFieldDelegate {
                     component2.scheme = "http"
                     component2.host = "127.0.0.1"
                     component2.port = 8000
-                    let photo = $0
-                    if let photo_path = photo[0].path {
+                    self.photo = $0
+                    if let photo_path = self.photo![0].path {
                     component2.path = "/\(photo_path)"
                     }
-                    let updateUser = UpdateUserInfo()
-                    updateUser.updateUserInfo(parameters: ["picture": component2.url!.absoluteString], user_id: self.user_profile!.sub)
-                    
-                    self.pictureBool.updatePhotoBool(newBool: true)
+                    self.updateUser.updateUserInfo(parameters: ["picture": component2.url!.absoluteString], user_id: self.user_profile!.sub)
+                    editPF.updatePhotoBool(newBool: true)
+                    self.dispatchGroup.leave()
+//
                 }
             }
         }
+        }
+        
+    
+    
+    func updateEmail() {
+        var emailIsValid = isValidEmail(emailTextField.text!)
+        
+        if emailTextField.text != "" {
+            print("email text \(emailTextField.text)")
+            emailIsValid = isValidEmail(emailTextField.text!)
+            if emailIsValid == false {
+               print("email is not valid")
+               self.emailWarning?.text = "⚠ Enter a valid email address"
+               self.emailWarning?.isHidden = false
+            }
+            let emailValidation = EmailValidation()
+            emailValidation.getEmail(email: emailTextField.text!.lowercased()) {
+                print("getEmail")
+                 if $0.count > 0 {
+                    print("email already taken \($0)")
+                    self.emailWarning?.isHidden = false
+                    self.emailWarning?.text = "⚠ This email is already taken"
+                 } else {
+                    print("email accepted \($0)")
+                    self.emailWarning?.isHidden = true
+                    self.dispatchGroup.leave()
+                    print("dispatch leave2")
+//                    self.updateUser.updateUserInfo(parameters: ["email": self.emailTextField.text!], user_id: self.user_profile!.sub)
+//                    print("dismissed")
+                }
+            }
+        } else {
+            emailWarning?.isHidden = true
+            self.dispatchGroup.leave()
+            print("dispatch leave2 else")
+        }
         
     }
+    
+    func updateUsername() {
+        if userTextField.text != "" {
+            let usernameValidation = UsernameValidation()
+            usernameValidation.getUsername(username: userTextField.text!) {
+                if $0.count > 0 {
+                    print("$0 username \($0)")
+                    self.usernameWarning?.isHidden = false
+                    print("$0.count > 0 username")
+                } else {
+                    self.usernameWarning?.isHidden = true
+                    self.dispatchGroup.leave()
+                    print("username accepted \($0)")
+                    print("dispatch leave3")
+//                    self.updateUser.updateUserInfo(parameters: ["username": self.userTextField.text!], user_id: self.user_profile!.sub)
+//                    print("dismissed")
+                    }
+                }
+        } else {
+            self.dispatchGroup.leave()
+            print("dispatch leave3 else")
+         }
+    }
+    
+    func updateUserInfo() {
+    
+        dispatchGroup.notify(queue: .main) {
+        print("updated")
+        if self.userTextField.text != "" {
+        print("username updated")
+        self.updateUser.updateUserInfo(parameters: ["username": self.userTextField.text!], user_id: self.user_profile!.sub)
+        } else {
+            print("false username update")
+            }
+        
+        if self.emailTextField.text != "" {
+        print("email updated")
+        self.updateUser.updateUserInfo(parameters: ["email": self.emailTextField.text!], user_id: self.user_profile!.sub)
+        } else {
+            print("false email update")
+        }
+      }
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == userTextField {
+            self.usernameWarning?.isHidden = true
+        }
+        if textField == emailTextField {
+            self.emailWarning?.isHidden = true
+        }
+    }
+    
+    
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailPred.evaluate(with: email)
+    }
+    
+    
+    func usernameTaken() {
+        usernameWarning = UILabel()
+        usernameWarning?.text = "⚠ This username is already taken"
+        usernameWarning?.textColor = UIColor.red
+        usernameWarning?.isHidden = true
+        view.addSubview(usernameWarning!)
+        usernameWarningConstraints()
+    }
+    
+    func usernameWarningConstraints() {
+        usernameWarning?.translatesAutoresizingMaskIntoConstraints = false
+        
+        usernameWarning?.topAnchor.constraint(equalTo: userTextField.bottomAnchor, constant: 7).isActive = true
+
+        usernameWarning?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        usernameWarning?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+    }
+    
+    func emailTaken() {
+        emailWarning = UILabel()
+        emailWarning?.text = "⚠ This email is already taken"
+        emailWarning?.textColor = UIColor.red
+        emailWarning?.isHidden = true
+        view.addSubview(emailWarning!)
+        emailWarningConstraints()
+    }
+    
+    func emailWarningConstraints() {
+        emailWarning?.translatesAutoresizingMaskIntoConstraints = false
+        
+        emailWarning?.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 7).isActive = true
+
+        emailWarning?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        emailWarning?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        <#code#>
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        <#code#>
+    }
+    
     
     
     
@@ -267,8 +448,10 @@ extension EditProfileVC: UIImagePickerControllerDelegate, UINavigationController
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
             imageView.image = editedImage
+            pictureAdded = true
         } else if let originalImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             imageView.image = originalImage
+            pictureAdded = true
         }
         dismiss(animated: true, completion: nil)
     }

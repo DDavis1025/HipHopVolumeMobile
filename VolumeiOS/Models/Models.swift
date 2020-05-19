@@ -136,3 +136,11 @@ struct UserPhoto: Codable {
     var path:String?
 }
 
+
+struct Email:Codable {
+    var email:String?
+}
+
+struct Username:Codable {
+    var username:String?
+}
