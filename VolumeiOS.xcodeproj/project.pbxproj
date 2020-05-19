@@ -15,6 +15,8 @@
 		CD08ADBB246DED8000AC3A39 /* ImageToServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBA246DED8000AC3A39 /* ImageToServer.swift */; };
 		CD08ADBD246F4D6D00AC3A39 /* PutPatchRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBC246F4D6D00AC3A39 /* PutPatchRequests.swift */; };
 		CD08ADBF2474575700AC3A39 /* UserInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */; };
+		CD08ADC12474803000AC3A39 /* UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADC02474803000AC3A39 /* UsernameTextField.swift */; };
+		CD08ADC3247486FF00AC3A39 /* EmailTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -56,6 +58,8 @@
 		CD08ADBA246DED8000AC3A39 /* ImageToServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageToServer.swift; sourceTree = "<group>"; };
 		CD08ADBC246F4D6D00AC3A39 /* PutPatchRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PutPatchRequests.swift; sourceTree = "<group>"; };
 		CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoCell.swift; sourceTree = "<group>"; };
+		CD08ADC02474803000AC3A39 /* UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameTextField.swift; sourceTree = "<group>"; };
+		CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailTextField.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -108,6 +112,7 @@
 		CD57110F244FDF3300FAAC5D = {
 			isa = PBXGroup;
 			children = (
+				CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */,
 				CD57111A244FDF3300FAAC5D /* VolumeiOS */,
 				CD571119244FDF3300FAAC5D /* Products */,
 				E62E44DBBB1BF71774D16723 /* Pods */,
@@ -147,6 +152,7 @@
 				CD08ADB6246A081700AC3A39 /* AuthVC.swift */,
 				CD08ADB8246B452800AC3A39 /* EditProfileVC.swift */,
 				CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */,
+				CD08ADC02474803000AC3A39 /* UsernameTextField.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -344,6 +350,7 @@
 				CD08ADBF2474575700AC3A39 /* UserInfoCell.swift in Sources */,
 				CD57116D2451D5BA00FAAC5D /* AlbumVC.swift in Sources */,
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
+				CD08ADC12474803000AC3A39 /* UsernameTextField.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,
 				CD57114F244FDF6600FAAC5D /* ContentView.swift in Sources */,
 				CD57115B244FDF6700FAAC5D /* Spinner.swift in Sources */,
@@ -356,6 +363,7 @@
 				CD48B1812460AE9D00A2FD12 /* ProfileVC.swift in Sources */,
 				CD571157244FDF6600FAAC5D /* Webservice.swift in Sources */,
 				CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */,
+				CD08ADC3247486FF00AC3A39 /* EmailTextField.swift in Sources */,
 				CD08ADBD246F4D6D00AC3A39 /* PutPatchRequests.swift in Sources */,
 				CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */,
 				CD571153244FDF6600FAAC5D /* ProfileViewController.swift in Sources */,

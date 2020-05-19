@@ -10,25 +10,19 @@ import Foundation
 import UIKit
 
 class PersonInformationTableViewCell: UITableViewCell {
-  private let title: String
-  private let value: String
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+       super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
+      
+      required init?(coder: NSCoder) {
+          fatalError("init(coder:) has not been implemented")
+      }
   
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-  
-  init(title: String, value: String) {
-    self.title = title
-    self.value = value
-    super.init(style: .default, reuseIdentifier: "PersonInformationTableViewCell")
-    
-    setUpView()
-  }
-  
-  private func setUpView() {
+    func setUpView(title: String, value: String) {
     let titleLabel = UILabel()
     titleLabel.text = title
     
+    titleLabel.translatesAutoresizingMaskIntoConstraints = false
     titleLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
     
     let valueLabel = UILabel()
@@ -41,9 +35,10 @@ class PersonInformationTableViewCell: UITableViewCell {
     
     contentView.addSubview(stackView)
     
+    stackView.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
     stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-    stackView.leftAnchor.constraint(equalTo: contentView.leftAnchor),
+    stackView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
     stackView.rightAnchor.constraint(equalTo: contentView.rightAnchor),
     stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
     ])

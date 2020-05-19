@@ -37,25 +37,18 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
     var dispatchGroup = DispatchGroup()
     var photo:[UserPhoto]?
     var imagePH = UIImageView()
+    var userInfoArr:[(title: String, value: String)] = []
+    var myTableView:UITableView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         imagePlaceHolder()
         addButton()
+        getUserInfo()
         setProfileImage()
-        addUserTextField()
-        usernameTaken()
-        addEmailTextField()
-        addEmailLabel()
-        addUserLabel()
-        addUserConstraints()
-        addEmailConstraints()
         addNavButtons()
-        emailTaken()
         
-        dispatchGroup.enter()
-        dispatchGroup.enter()
-        dispatchGroup.enter()
+        print("user profile username \(user_profile?.preferredUsername)")
         view.backgroundColor = UIColor.white
         
     }
@@ -63,6 +56,20 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
     override func viewWillAppear(_ animated: Bool) {
         photoDidUpdate()
     }
+    
+    
+    func getUserInfo() {
+        if let userID = user_profile?.sub {
+        var getUser = GetUsersById(id:userID)
+            getUser.getAllPosts {
+                let user = $0
+                self.userInfoArr.append((title: "Username:", value: user[0].username ?? "undefined" ))
+                self.userInfoArr.append((title: "Email:", value: user[0].email ?? "undefined"))
+                self.addTableView()
+            }
+        }
+    }
+    
     
     func photoDidUpdate() {
     if EditPFStruct.photoDidChange! {
@@ -142,88 +149,6 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
         
     }
     
-    func addUserLabel() {
-        userLabel.text = "Username:"
-        self.view.addSubview(userLabel)
-        
-    }
-    
-    func addEmailLabel() {
-        emailLabel.text = "Email:"
-        self.view.addSubview(emailLabel)
-        
-    }
-    
-    func addUserTextField() {
-        
-        userTextField.placeholder = "Enter username"
-        userTextField.font = UIFont.systemFont(ofSize: 15)
-        userTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        userTextField.autocorrectionType = UITextAutocorrectionType.no
-        userTextField.keyboardType = UIKeyboardType.default
-        userTextField.returnKeyType = UIReturnKeyType.done
-        userTextField.clearButtonMode = UITextField.ViewMode.whileEditing
-        userTextField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
-        userTextField.delegate = self
-        self.view.addSubview(userTextField)
-        
-        
-    }
-    
-    func addUserConstraints() {
-        userTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        userTextField.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 20).isActive = true
-        userTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        userTextField.widthAnchor.constraint(equalToConstant: 300).isActive = true
-        
-        userTextField.leadingAnchor.constraint(equalTo: userLabel.trailingAnchor, constant: 5).isActive = true
-        
-        userTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        
-        userLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        userLabel.centerYAnchor.constraint(equalTo: userTextField.centerYAnchor).isActive = true
-        
-        userLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-    }
-    
-    
-    
-    
-    
-    func addEmailTextField() {
-        
-        emailTextField.placeholder = "Enter email"
-        emailTextField.font = UIFont.systemFont(ofSize: 15)
-        emailTextField.borderStyle = UITextField.BorderStyle.roundedRect
-        emailTextField.autocorrectionType = UITextAutocorrectionType.no
-        emailTextField.keyboardType = UIKeyboardType.default
-        emailTextField.returnKeyType = UIReturnKeyType.done
-        emailTextField.clearButtonMode = UITextField.ViewMode.whileEditing
-        emailTextField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
-        emailTextField.delegate = self
-        self.view.addSubview(emailTextField)
-        
-    }
-    
-    
-    func addEmailConstraints() {
-        
-        emailTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        emailTextField.topAnchor.constraint(equalTo: usernameWarning!.bottomAnchor, constant: 7).isActive = true
-        emailTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        emailTextField.widthAnchor.constraint(equalToConstant: 300).isActive = true
-        
-        emailTextField.leadingAnchor.constraint(equalTo: emailLabel.trailingAnchor, constant: 5).isActive = true
-        emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-        emailLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        emailLabel.centerYAnchor.constraint(equalTo: emailTextField.centerYAnchor).isActive = true
-        
-        emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-    }
     
     @objc func buttonClicked() {
         print("change photo clicked")
@@ -239,20 +164,11 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
     @objc func cancelTapped(sender: UIBarButtonItem) {
         print("hello")
         navigationController?.popViewController(animated: true)
-//        navigationController?.dismiss(animated: true, completion: nil)
     }
     
     @objc func doneTapped(sender: UIBarButtonItem) {
-        if pictureAdded {
         userPhotoUpload()
-        } else {
-            dispatchGroup.leave()
-            print("dispatch leave1")
-        }
-        updateEmail()
-        updateUsername()
         
-        self.updateUserInfo()
     }
     
     
@@ -279,7 +195,6 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
                     }
                     self.updateUser.updateUserInfo(parameters: ["picture": component2.url!.absoluteString], user_id: self.user_profile!.sub)
                     editPF.updatePhotoBool(newBool: true)
-                    self.dispatchGroup.leave()
 //
                 }
             }
@@ -287,145 +202,60 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
         }
         
     
-    
-    func updateEmail() {
-        var emailIsValid = isValidEmail(emailTextField.text!)
+    func addTableView() {
         
-        if emailTextField.text != "" {
-            print("email text \(emailTextField.text)")
-            emailIsValid = isValidEmail(emailTextField.text!)
-            if emailIsValid == false {
-               print("email is not valid")
-               self.emailWarning?.text = "⚠ Enter a valid email address"
-               self.emailWarning?.isHidden = false
-            }
-            let emailValidation = EmailValidation()
-            emailValidation.getEmail(email: emailTextField.text!.lowercased()) {
-                print("getEmail")
-                 if $0.count > 0 {
-                    print("email already taken \($0)")
-                    self.emailWarning?.isHidden = false
-                    self.emailWarning?.text = "⚠ This email is already taken"
-                 } else {
-                    print("email accepted \($0)")
-                    self.emailWarning?.isHidden = true
-                    self.dispatchGroup.leave()
-                    print("dispatch leave2")
-//                    self.updateUser.updateUserInfo(parameters: ["email": self.emailTextField.text!], user_id: self.user_profile!.sub)
-//                    print("dismissed")
-                }
-            }
-        } else {
-            emailWarning?.isHidden = true
-            self.dispatchGroup.leave()
-            print("dispatch leave2 else")
-        }
+        self.myTableView = UITableView()
+        
+        
+        self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        self.myTableView?.register(PersonInformationTableViewCell.self, forCellReuseIdentifier: "PersonInformationTableViewCell")
+        
+        self.myTableView?.dataSource = self
+        self.myTableView?.delegate = self
+        
+        myTableView?.delaysContentTouches = false
+        self.view.addSubview(self.myTableView!)
+        
+        self.myTableView?.topAnchor.constraint(equalTo: self.button.bottomAnchor).isActive = true
+        self.myTableView?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        
+        self.myTableView?.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
+        
+        self.myTableView?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        
+        
+        myTableView?.layoutMargins = UIEdgeInsets.zero
+        myTableView?.separatorInset = UIEdgeInsets.zero
         
     }
     
-    func updateUsername() {
-        if userTextField.text != "" {
-            let usernameValidation = UsernameValidation()
-            usernameValidation.getUsername(username: userTextField.text!) {
-                if $0.count > 0 {
-                    print("$0 username \($0)")
-                    self.usernameWarning?.isHidden = false
-                    print("$0.count > 0 username")
-                } else {
-                    self.usernameWarning?.isHidden = true
-                    self.dispatchGroup.leave()
-                    print("username accepted \($0)")
-                    print("dispatch leave3")
-//                    self.updateUser.updateUserInfo(parameters: ["username": self.userTextField.text!], user_id: self.user_profile!.sub)
-//                    print("dismissed")
-                    }
-                }
-        } else {
-            self.dispatchGroup.leave()
-            print("dispatch leave3 else")
-         }
-    }
-    
-    func updateUserInfo() {
-    
-        dispatchGroup.notify(queue: .main) {
-        print("updated")
-        if self.userTextField.text != "" {
-        print("username updated")
-        self.updateUser.updateUserInfo(parameters: ["username": self.userTextField.text!], user_id: self.user_profile!.sub)
-        } else {
-            print("false username update")
-            }
-        
-        if self.emailTextField.text != "" {
-        print("email updated")
-        self.updateUser.updateUserInfo(parameters: ["email": self.emailTextField.text!], user_id: self.user_profile!.sub)
-        } else {
-            print("false email update")
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let usernameTextfield = UsernameTextField()
+        let emailTextfield = EmailTextField()
+        print("cell clicked")
+        if userInfoArr[indexPath.row].title == "Username:" {
+            print("username clicked")
+            navigationController?.pushViewController(usernameTextfield, animated: true)
         }
-      }
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField == userTextField {
-            self.usernameWarning?.isHidden = true
-        }
-        if textField == emailTextField {
-            self.emailWarning?.isHidden = true
+        if userInfoArr[indexPath.row].title == "Email:" {
+            print("email clicked")
+            navigationController?.pushViewController(emailTextfield, animated: true)
         }
     }
-    
-    
-    func isValidEmail(_ email: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
-    }
-    
-    
-    func usernameTaken() {
-        usernameWarning = UILabel()
-        usernameWarning?.text = "⚠ This username is already taken"
-        usernameWarning?.textColor = UIColor.red
-        usernameWarning?.isHidden = true
-        view.addSubview(usernameWarning!)
-        usernameWarningConstraints()
-    }
-    
-    func usernameWarningConstraints() {
-        usernameWarning?.translatesAutoresizingMaskIntoConstraints = false
-        
-        usernameWarning?.topAnchor.constraint(equalTo: userTextField.bottomAnchor, constant: 7).isActive = true
-
-        usernameWarning?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        usernameWarning?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
-    }
-    
-    func emailTaken() {
-        emailWarning = UILabel()
-        emailWarning?.text = "⚠ This email is already taken"
-        emailWarning?.textColor = UIColor.red
-        emailWarning?.isHidden = true
-        view.addSubview(emailWarning!)
-        emailWarningConstraints()
-    }
-    
-    func emailWarningConstraints() {
-        emailWarning?.translatesAutoresizingMaskIntoConstraints = false
-        
-        emailWarning?.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 7).isActive = true
-
-        emailWarning?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        emailWarning?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        <#code#>
+        userInfoArr.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        <#code#>
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PersonInformationTableViewCell") as! PersonInformationTableViewCell
+        cell.setUpView(title: userInfoArr[indexPath.row].title, value: userInfoArr[indexPath.row].value)
+        return cell
     }
     
     
