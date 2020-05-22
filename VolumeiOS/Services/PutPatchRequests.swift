@@ -10,8 +10,8 @@ import Foundation
 
 class UpdateUserInfo {
     
-    func updateUserInfo(parameters:[String:String], user_id: String) {
-        
+    func updateUserInfo(parameters:[String:String], user_id: String, completion: @escaping () -> ()) {
+        let accessToken = AccessToken().accessToken
         let headers = [
             "authorization": "Bearer \(accessToken)",
             "content-type": "application/json"
@@ -42,6 +42,9 @@ class UpdateUserInfo {
             } else {
                 let httpResponse = response as? HTTPURLResponse
                 print(httpResponse)
+            }
+            DispatchQueue.main.async {
+                completion()
             }
         })
         

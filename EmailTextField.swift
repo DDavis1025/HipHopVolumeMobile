@@ -9,9 +9,14 @@
 import Foundation
 import UIKit
 
+protocol EmailDelegateProtocol {
+    func sendEmailToEditProfileVC(myData: Bool)
+}
+
+
 class EmailTextField: Toolbar, UITextFieldDelegate {
     
-    
+    var delegate: EmailDelegateProtocol? = nil
     var user_profile = SessionManager.shared.profile
     let emailTextField = UITextField()
     let emailLabel = UILabel()
@@ -111,7 +116,9 @@ class EmailTextField: Toolbar, UITextFieldDelegate {
                     print("email accepted \($0)")
                     self.emailWarning?.isHidden = true
                     print("dispatch leave2")
-                    self.updateUser.updateUserInfo(parameters: ["email": self.emailTextField.text!], user_id: self.user_profile!.sub)
+                    self.updateUser.updateUserInfo(parameters: ["email": self.emailTextField.text!], user_id: self.user_profile!.sub, completion: {
+                        self.delegate?.sendEmailToEditProfileVC(myData: true)
+                    })
                     print("dismissed")
                     self.navigationController?.popViewController(animated: true)
                     

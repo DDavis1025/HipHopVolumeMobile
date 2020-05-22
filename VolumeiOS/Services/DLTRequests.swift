@@ -39,7 +39,7 @@ class DLTFollowingRequest {
                     return
                 }
         
-//                completion(nil)
+                completion(nil)
            
             }
             dataTask.resume()

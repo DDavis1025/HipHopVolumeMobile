@@ -10,7 +10,18 @@ import Foundation
 import UIKit
 import Auth0
 
-class ProfileVC: ArtistProfileVC {
+
+class ProfileVC: ArtistProfileVC, UserInfoDelegateProtocol {
+    func sendUsernameToArtistPF(myString: String) {
+        label?.text = myString
+    }
+    
+    func sendDataToProfileVC(myData: Bool) {
+    if myData {
+        userPhotoUpdated()
+        print("photo sent")
+    }
+}
     
     var user_profile: UserInfo!
     
@@ -55,7 +66,9 @@ class ProfileVC: ArtistProfileVC {
     
     
            @objc func buttonClicked() {
-            navigationController?.pushViewController(EditProfileVC(), animated: true)
+            let editPF = EditProfileVC()
+            editPF.delegate = self
+            navigationController?.pushViewController(editPF, animated: true)
            }
    
 }

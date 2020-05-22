@@ -10,7 +10,17 @@ import Foundation
 import SwiftUI
 import UIKit
 
-class AlbumVC: Toolbar {
+class AlbumVC: Toolbar, FollowDelegateProtocol {
+    func sendFollowData(myData: Bool) {
+        if myData {
+            followButton.buttonState = .add
+            print(".ADD")
+        } else {
+            followButton.buttonState = .delete
+            print(".DELETE")
+        }
+    }
+    
     
     var post:Post?
     var components = URLComponents()
@@ -43,9 +53,11 @@ class AlbumVC: Toolbar {
     
        components.scheme = "http"
        components.host = "localhost"
-       components.port = 8000
     
+     
+       components.port = 8000
     authorID = self.post?.author!
+    print("authorID \(authorID)")
     self.userModel = GetUserByIDVM(id: (authorID!))
 
     
@@ -74,11 +86,21 @@ class AlbumVC: Toolbar {
             if let picture = users[0].picture {
             self?.imageLoader?.downloadImage(urlString: picture)
                 }
-            self?.setupButton(id: self!.user_id)
-            if self!.user_id! != self!.profile!.sub {
-                self!.view.addSubview(self!.followButton)
-                self?.setFollowButtonConstraints()
-               }
+            if let user_id = self?.user_id {
+            self?.setupButton(id: user_id)
+                }
+                if let user_id = self?.user_id {
+                    if let profile_sub = self?.profile?.sub {
+                        if user_id != profile_sub {
+                            self!.view.addSubview(self!.followButton)
+                            self?.setFollowButtonConstraints()
+                        }
+                    }
+                }
+//            if self!.user_id! != self!.profile!.sub {
+//                self!.view.addSubview(self!.followButton)
+//                self?.setFollowButtonConstraints()
+//               }
         }
         addImage()
         
@@ -100,6 +122,11 @@ class AlbumVC: Toolbar {
 
         
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let authorID2 = self.post?.author!
+        print("authorID2 \(authorID)")
+    }
 
     
     
@@ -113,11 +140,13 @@ class AlbumVC: Toolbar {
     
     func setupButton(id:String?) {
            if let followingUsers = self.following {
-               if (followingUsers.contains(id!)) {
+            if let id = id {
+               if (followingUsers.contains(id)) {
                 followButton.buttonState = .delete
                } else {
                 followButton.buttonState = .add
            }
+        }
     }
 }
     
@@ -219,6 +248,7 @@ class AlbumVC: Toolbar {
     @objc func userAction(sender : UITapGestureRecognizer) {
     let artistPFVC = ArtistProfileVC()
     artistPFVC.artistID = authorID
+    artistPFVC.delegate = self
     navigationController?.pushViewController(artistPFVC, animated: true)
     print("clicked")
     }

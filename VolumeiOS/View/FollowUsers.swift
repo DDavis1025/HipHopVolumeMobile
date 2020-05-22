@@ -96,12 +96,20 @@ class FollowUsers: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
-        cell.textLabel!.text = users![indexPath.row].name
+        cell.textLabel!.text = users?[indexPath.row].username ?? "undefined"
         self.imageLoader = DownloadImage()
            imageLoader?.imageDidSet = { [weak self] image in
             cell.imageView?.image = image
               }
         imageLoader?.downloadImage(urlString: users![indexPath.row].picture!)
+        let itemSize = CGSize.init(width: 100, height: 100)
+        UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
+        let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+        cell.imageView?.image!.draw(in: imageRect)
+        cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+        UIGraphicsEndImageContext();
+        cell.layoutIfNeeded()
+        cell.setNeedsLayout()
         cell.translatesAutoresizingMaskIntoConstraints = false
         cell.layoutMargins = UIEdgeInsets.zero
         return cell

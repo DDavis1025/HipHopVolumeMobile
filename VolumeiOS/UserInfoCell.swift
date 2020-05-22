@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 
 class PersonInformationTableViewCell: UITableViewCell {
+    let titleLabel = UILabel()
+    let valueLabel = UILabel()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
        super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
@@ -17,15 +19,20 @@ class PersonInformationTableViewCell: UITableViewCell {
       required init?(coder: NSCoder) {
           fatalError("init(coder:) has not been implemented")
       }
+    
+    override func prepareForReuse() {
+            super.prepareForReuse()
+             valueLabel.text = ""
+
+        }
   
     func setUpView(title: String, value: String) {
-    let titleLabel = UILabel()
+//    let titleLabel = UILabel()
     titleLabel.text = title
     
     titleLabel.translatesAutoresizingMaskIntoConstraints = false
     titleLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
     
-    let valueLabel = UILabel()
     valueLabel.text = value
     
     let stackView = UIStackView(arrangedSubviews: [titleLabel, valueLabel])

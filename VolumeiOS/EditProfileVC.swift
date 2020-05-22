@@ -11,30 +11,77 @@ import UIKit
 
 struct EditPFStruct {
     static var photoDidChange:Bool? = false
+    static var usernameDidChange:Bool? = false
     
     func updatePhotoBool(newBool: Bool) {
         EditPFStruct.self.photoDidChange = newBool
     }
+    
+    func updateUsernameBool(newBool: Bool) {
+        EditPFStruct.self.usernameDidChange = newBool
+    }
 }
 
-class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource {
+protocol UserInfoDelegateProtocol {
+    func sendDataToProfileVC(myData: Bool)
+    func sendUsernameToArtistPF(myString: String)
+}
+
+
+class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, MyDataSendingDelegateProtocol, EmailDelegateProtocol {
+    
+    var delegate: UserInfoDelegateProtocol? = nil
+    
+    func sendEmailToEditProfileVC(myData: Bool) {
+        if myData {
+          print("my data")
+          if let userID = user_profile?.sub {
+          print("user")
+          var getUser = GetUsersById(id:userID)
+          getUser.getAllPosts {
+              let user = $0
+              self.userInfoArr[1].value = user[0].email!
+              DispatchQueue.main.async {
+                  self.myTableView?.reloadData()
+              }
+              
+           }
+          }
+        }
+    }
+    
+    func sendDataToEditProfileVC(myData: Bool) {
+          if myData {
+            print("my data")
+            if let userID = user_profile?.sub {
+            print("user")
+            var getUser = GetUsersById(id:userID)
+            getUser.getAllPosts {
+                let user = $0
+                if let username = user[0].username {
+                self.userInfoArr[0].value = username
+                print("username from delegate \(user[0].username)")
+                DispatchQueue.main.async {
+                    self.myTableView?.reloadData()
+                }
+                self.delegate?.sendUsernameToArtistPF(myString: username)
+            }
+          }
+        }
+      }
+    }
+    
+    
     
     
     var user_profile = SessionManager.shared.profile
     var imageLoader:DownloadImage?
     var imageView = UIImageView()
     var button = UIButton()
-    let userTextField =  UITextField()
-    let emailTextField = UITextField()
-    let userLabel = UILabel()
-    let emailLabel = UILabel()
     var save = UIButton()
     let pictureBool = EditPFStruct()
-    let updateUser = UpdateUserInfo()
     var pictureAdded:Bool = false
-    var emailWarning:UILabel?
-    var usernameWarning:UILabel?
-    var dispatchGroup = DispatchGroup()
+    let updateUser = UpdateUserInfo()
     var photo:[UserPhoto]?
     var imagePH = UIImageView()
     var userInfoArr:[(title: String, value: String)] = []
@@ -53,8 +100,8 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        photoDidUpdate()
+    override func viewDidAppear(_ animated: Bool) {
+//        photoDidUpdate()
     }
     
     
@@ -72,6 +119,7 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
     
     
     func photoDidUpdate() {
+    let editPF = EditPFStruct()
     if EditPFStruct.photoDidChange! {
      if let profile = user_profile {
         print("hellur 2")
@@ -89,22 +137,28 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
                }
          }
       }
+        editPF.updatePhotoBool(newBool: false)
+        
     }
     
     
     func setProfileImage() {
-        imageLoader = DownloadImage()
-        self.imageLoader?.imageDidSet = { [weak self] image in
-            self?.imageView.image = image
-            print("image \(image)")
-            if let imageView = self?.imageView {
-                self?.view?.addSubview(imageView)
-                self?.setImageContraints()
-                self?.imagePH.isHidden = true
+       if let profile = user_profile {
+       GetUsersById(id: profile.sub).getAllPosts {
+            let photo = $0
+            self.imageLoader = DownloadImage()
+            self.imageLoader?.imageDidSet = { [weak self] image in
+                DispatchQueue.main.async {
+                    self?.imageView.image = image
+                    self?.view?.addSubview(self!.imageView)
+                }
             }
+        if let picture = photo[0].picture {
+            self.imageLoader?.downloadImage(urlString: picture)
         }
-        imageLoader?.downloadImage(urlString: (user_profile?.picture!.absoluteString)!)
-        print("url string \((user_profile?.picture!.absoluteString)!)")
+        }
+      }
+        print("got image")
     }
     
     func imagePlaceHolder() {
@@ -162,12 +216,15 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
     
     
     @objc func cancelTapped(sender: UIBarButtonItem) {
-        print("hello")
         navigationController?.popViewController(animated: true)
     }
     
     @objc func doneTapped(sender: UIBarButtonItem) {
+        if pictureAdded {
         userPhotoUpload()
+        }
+        
+        self.navigationController?.popViewController(animated: true)
         
     }
     
@@ -193,12 +250,15 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
                     if let photo_path = self.photo![0].path {
                     component2.path = "/\(photo_path)"
                     }
-                    self.updateUser.updateUserInfo(parameters: ["picture": component2.url!.absoluteString], user_id: self.user_profile!.sub)
-                    editPF.updatePhotoBool(newBool: true)
+                    self.updateUser.updateUserInfo(parameters: ["picture": component2.url!.absoluteString], user_id: self.user_profile!.sub, completion: {
+                        self.delegate?.sendDataToProfileVC(myData: true)
+                        print("sendData")
+                    })
+    
 //
                 }
             }
-        }
+          }
         }
         
     
@@ -237,10 +297,12 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
         print("cell clicked")
         if userInfoArr[indexPath.row].title == "Username:" {
             print("username clicked")
+            usernameTextfield.delegate = self
             navigationController?.pushViewController(usernameTextfield, animated: true)
         }
         if userInfoArr[indexPath.row].title == "Email:" {
             print("email clicked")
+            emailTextfield.delegate = self
             navigationController?.pushViewController(emailTextfield, animated: true)
         }
     }
@@ -255,6 +317,7 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PersonInformationTableViewCell") as! PersonInformationTableViewCell
         cell.setUpView(title: userInfoArr[indexPath.row].title, value: userInfoArr[indexPath.row].value)
+        
         return cell
     }
     

@@ -74,14 +74,15 @@ class FeedCell:UITableViewCell {
         self.imageLoader = DownloadImage()
         imageLoader?.imageDidSet = { [weak self] image in
             self?.albumImage.image = image
+            self?.albumPH.image = nil
             }
         imageLoader?.downloadImage(urlString: components.url!.absoluteString)
         albumTitle.text = post.title
-        albumPH.image = nil
         
         
     }
     
+
     func setUser(user: UsersModel?) {
         albumArtist.text = user?.username ?? "undefined"
         self.imageLoader = DownloadImage()

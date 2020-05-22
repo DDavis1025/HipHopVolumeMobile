@@ -11,8 +11,13 @@ import UIKit
 import Auth0
 import SwiftUI
 
+protocol FollowDelegateProtocol {
+    func sendFollowData(myData: Bool)
+}
 
-class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
+class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
+    
+    var delegate: FollowDelegateProtocol? = nil
 
     var profile: UserInfo!
     var isLoaded:Bool? = false
@@ -27,6 +32,8 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var usersWhoFollowVC:FollowUsers?
     let stackview = UIStackView()
     var button = UIButton()
+    var followButton = FollowerButton()
+    var refresher:UIRefreshControl?
     
     var post:Post? {
         didSet {
@@ -53,21 +60,30 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     var usersFollowed = [UsersModel]() {
         didSet {
+            DispatchQueue.main.async {
                 self.followUsersVC = FollowUsers(users: self.usersFollowed)
+            }
+                
 //                self.usersWhoFollowLabels()
+                print("user flwed \(usersFollowed)")
                 followingLabel.text = String(usersFollowed.count)
-                followingTitle.isHidden = false
-                followingLabel.isHidden = false
+                
+//                followingTitle.isHidden = false
+//                followingLabel.isHidden = false
 //                self.followLabels()
         }
     }
     
     var usersWhoFollow = [UsersModel]() {
            didSet {
-                    self.usersWhoFollowVC = FollowUsers(users: self.usersWhoFollow)
+            DispatchQueue.main.async {
+                self.usersWhoFollowVC = FollowUsers(users: self.usersWhoFollow)
+            }
+                   
                     followsLabel.text = String(usersWhoFollow.count)
-                    followsTitle.isHidden = false
-                    followsLabel.isHidden = false
+                    print("users who flw \(usersWhoFollow)")
+//                    followsTitle.isHidden = false
+//                    followsLabel.isHidden = false
 //                    self.usersWhoFollowLabels()
 //                    self.followLabels()
           }
@@ -112,6 +128,13 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    var checkFollowing: Set<String>? {
+        didSet {
+            setupButton(id: artistID)
+            
+        }
+    }
+    
     
     static var shared = ArtistProfileVC()
     
@@ -129,6 +152,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
         override func viewDidLoad() {
             super.viewDidLoad()
+            profile = SessionManager.shared.profile
             addSpinner()
             addTableView()
 
@@ -141,19 +165,64 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             
             self.usersWhoFollowLabels()
             self.followLabels()
+            
+            self.view.addSubview(self.followButton)
+            self.setFollowButtonConstraints()
 
+            if let artistID = artistID {
+             if artistID != profile.sub {
+              getFollowing(id: profile.sub)
+             }
+            }
+            
+            addActionToFlwBtn()
+            
+            refresher = UIRefreshControl()
+            refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
+            refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
+            
+            myTableView.addSubview(refresher!)
             
             view.backgroundColor = UIColor.white
             
         }
     
-    override func viewWillAppear(_ animated: Bool) {
-       userPhotoUpdated()
+//    override func viewDidAppear(_ animated: Bool) {
+//        userPhotoUpdated()
+//    }
+    
+    @objc func refresh() {
+        GETUsersByFollowerId(id: artistID).getAllById {
+            self.following = $0
+        }
+        
+        GETFollowersByUserID(id: artistID).getAllById {
+            self.follows = $0
+        }
     }
+    
+    func getFollowing(id: String) {
+        GETUsersByFollowerId(id: id).getAllById {
+            self.checkFollowing = Set($0.map{String($0.user_id!)})
+        }
+    }
+    
+    func setupButton(id:String?) {
+        if let followingUsers = self.checkFollowing {
+            if (followingUsers.contains(id!)) {
+                followButton.buttonState = .delete
+                print("delete flwer btn")
+            } else {
+                followButton.buttonState = .add
+                print("add flwer btn")
+            }
+        }
+        print("setupButton")
+    }
+    
     
     func userPhotoUpdated() {
         profile = SessionManager.shared.profile
-        if EditPFStruct.photoDidChange! {
          if let profile = profile {
             print("hellur 2")
                    GetUsersById(id: profile.sub).getAllPosts {
@@ -169,7 +238,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
                        print("photo \(photo[0].picture)")
                    }
                }
-        }
     }
     
     func setContraints() {
@@ -225,8 +293,8 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         view.addSubview(followingLabel)
         followLabelContraints()
         
-        followingTitle.isHidden = true
-        followingLabel.isHidden = true
+//        followingTitle.isHidden = true
+//        followingLabel.isHidden = true
         
         
         followingLabel.isUserInteractionEnabled = true
@@ -242,8 +310,8 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         followsLabel.font = followingLabel.font.withSize(14)
         view.addSubview(followsTitle)
         view.addSubview(followsLabel)
-        followsTitle.isHidden = true
-        followsLabel.isHidden = true
+//        followsTitle.isHidden = true
+//        followsLabel.isHidden = true
         usersWhoFollowLabelContraints()
         
         followsLabel.isUserInteractionEnabled = true
@@ -253,8 +321,10 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     @objc func followingLabelAction(_ sender : UITapGestureRecognizer) {
         if let followUsersVC = followUsersVC {
+        if usersFollowed.count != 0 {
         navigationController?.pushViewController(followUsersVC, animated: true)
         self.followUsersVC?.followTitle = "Following"
+            }
         }
         print("followingLabel clicked")
 
@@ -262,9 +332,11 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     @objc func followsLabelAction(_ sender : UITapGestureRecognizer) {
         if let usersWhoFollowVC = usersWhoFollowVC {
+        if usersWhoFollow.count != 0 {
         navigationController?.pushViewController(usersWhoFollowVC, animated: true)
         self.usersWhoFollowVC?.followTitle = "Followers"
         print("followingLabel clicked")
+            }
         }
 
     }
@@ -341,6 +413,70 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             self.follows = $0
         }
     }
+    
+    
+    func setFollowButtonConstraints() {
+        followButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        followButton.trailingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: -10).isActive = true
+        
+        followButton.topAnchor.constraint(equalTo: imageView.topAnchor).isActive = true
+    }
+    
+    @objc func setButtonAction() {
+        if followButton.buttonState == .add {
+            let follower_id = (profile?.sub)!
+              let follower = Follower(user_id: artistID!, follower_id: follower_id)
+              let postRequest = FollowerPostRequest(endpoint: "follower")
+              
+              postRequest.save(follower) { (result) in
+                  switch result {
+                  case .success(let follower):
+                      print("Followed the user")
+                      GetUsersById(id: follower_id).getAllPosts {
+                          self.usersWhoFollow.append(contentsOf: $0)
+                          print("usersFollowed \(self.usersFollowed.count)")
+                      }
+                      DispatchQueue.main.async {
+                        self.delegate?.sendFollowData(myData: false)
+                      }
+                  case .failure(let error):
+                      print("An error occurred \(error)")
+                  }
+              }
+              followButton.buttonState = .delete
+        } else if followButton.buttonState == .delete {
+          
+                print("delete button pressed")
+                if let id = artistID {
+                let deleteRequest = DLTFollowingRequest(id: id)
+                
+                deleteRequest.delete {(err) in
+                    if let err = err {
+                        print("Failed to delete", err)
+                        return
+                    }
+                    print("Successfully deleted followed user from server")
+                    DispatchQueue.main.async {
+                    self.usersWhoFollow.removeAll(where: {
+                        $0.user_id == id
+                        print("id \(id)")
+                        return true
+                    })
+                    self.delegate?.sendFollowData(myData: true)
+                    }
+                    
+                }
+             }
+             followButton.buttonState = .add
+        }
+               
+    }
+    
+    func addActionToFlwBtn() {
+        followButton.addTarget(self, action: #selector(setButtonAction), for: .touchUpInside)
+    }
+    
     
     
     

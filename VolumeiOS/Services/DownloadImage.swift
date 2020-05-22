@@ -44,13 +44,14 @@ class DownloadImage: ObservableObject {
                 
                 guard let data = data else { return }
               
-             if let image = UIImage(data: data) {
-               imageCache.setObject(image, forKey: urlString as AnyObject)
+           if let image = UIImage(data: data) {
+            imageCache.setObject(image, forKey: urlString as AnyObject)
                 
                 DispatchQueue.main.async {
                     self.image = image
                 }
-          }
+        }
+          
         }
         dataTask?.resume()
 

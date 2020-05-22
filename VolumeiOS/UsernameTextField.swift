@@ -9,7 +9,13 @@
 import Foundation
 import UIKit
 
+protocol MyDataSendingDelegateProtocol {
+    func sendDataToEditProfileVC(myData: Bool)
+}
+
 class UsernameTextField: Toolbar, UITextFieldDelegate {
+    
+    var delegate: MyDataSendingDelegateProtocol? = nil
     
     var user_profile = SessionManager.shared.profile
     let userTextField =  UITextField()
@@ -17,6 +23,7 @@ class UsernameTextField: Toolbar, UITextFieldDelegate {
     var save = UIButton()
     let updateUser = UpdateUserInfo()
     var usernameWarning:UILabel?
+    let editPF = EditPFStruct()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,7 +108,10 @@ class UsernameTextField: Toolbar, UITextFieldDelegate {
                     self.usernameWarning?.isHidden = true
                     print("username accepted \($0)")
                     print("username text field \(self.userTextField.text!)")
-                    self.updateUser.updateUserInfo(parameters: ["username": self.userTextField.text!], user_id: self.user_profile!.sub)
+                    self.updateUser.updateUserInfo(parameters: ["username": self.userTextField.text!], user_id: self.user_profile!.sub) {
+                        print("done")
+                        self.delegate?.sendDataToEditProfileVC(myData: true)
+                    }
                     self.navigationController?.popViewController(animated: true)
                     }
                 }
