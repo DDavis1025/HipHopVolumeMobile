@@ -17,6 +17,11 @@
 		CD08ADBF2474575700AC3A39 /* UserInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */; };
 		CD08ADC12474803000AC3A39 /* UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADC02474803000AC3A39 /* UsernameTextField.swift */; };
 		CD08ADC3247486FF00AC3A39 /* EmailTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */; };
+		CD08ADC52486F07800AC3A39 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADC42486F07800AC3A39 /* VideoPlayerView.swift */; };
+		CD08ADC72488528D00AC3A39 /* testVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = CD08ADC62488528C00AC3A39 /* testVideo.mp4 */; };
+		CD08ADC9248978D400AC3A39 /* testVideo2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = CD08ADC8248978D300AC3A39 /* testVideo2.mp4 */; };
+		CD08ADCB248AD65100AC3A39 /* MenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADCA248AD64F00AC3A39 /* MenuBar.swift */; };
+		CD08ADCD248C8AA300AC3A39 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADCC248C8A9E00AC3A39 /* HomeViewController.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -60,6 +65,11 @@
 		CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoCell.swift; sourceTree = "<group>"; };
 		CD08ADC02474803000AC3A39 /* UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameTextField.swift; sourceTree = "<group>"; };
 		CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailTextField.swift; sourceTree = "<group>"; };
+		CD08ADC42486F07800AC3A39 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
+		CD08ADC62488528C00AC3A39 /* testVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = testVideo.mp4; sourceTree = "<group>"; };
+		CD08ADC8248978D300AC3A39 /* testVideo2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = testVideo2.mp4; sourceTree = "<group>"; };
+		CD08ADCA248AD64F00AC3A39 /* MenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBar.swift; sourceTree = "<group>"; };
+		CD08ADCC248C8A9E00AC3A39 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -112,7 +122,8 @@
 		CD57110F244FDF3300FAAC5D = {
 			isa = PBXGroup;
 			children = (
-				CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */,
+				CD08ADC8248978D300AC3A39 /* testVideo2.mp4 */,
+				CD08ADC62488528C00AC3A39 /* testVideo.mp4 */,
 				CD57111A244FDF3300FAAC5D /* VolumeiOS */,
 				CD571119244FDF3300FAAC5D /* Products */,
 				E62E44DBBB1BF71774D16723 /* Pods */,
@@ -131,6 +142,7 @@
 		CD57111A244FDF3300FAAC5D /* VolumeiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */,
 				CD5711662450CF1500FAAC5D /* Assets.xcassets */,
 				CD5711642450AC0900FAAC5D /* Info.plist */,
 				CD5711622450AB6700FAAC5D /* SceneDelegate.swift */,
@@ -153,6 +165,7 @@
 				CD08ADB8246B452800AC3A39 /* EditProfileVC.swift */,
 				CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */,
 				CD08ADC02474803000AC3A39 /* UsernameTextField.swift */,
+				CD08ADC42486F07800AC3A39 /* VideoPlayerView.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -171,6 +184,8 @@
 				CD571172245382FA00FAAC5D /* MainView.swift */,
 				CD48B1802460AE9D00A2FD12 /* ProfileVC.swift */,
 				CD08ADA72460C34E00AC3A39 /* FollowUsers.swift */,
+				CD08ADCA248AD64F00AC3A39 /* MenuBar.swift */,
+				CD08ADCC248C8A9E00AC3A39 /* HomeViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -285,6 +300,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD08ADC9248978D400AC3A39 /* testVideo2.mp4 in Resources */,
+				CD08ADC72488528D00AC3A39 /* testVideo.mp4 in Resources */,
 				CD5711672450CF1500FAAC5D /* Assets.xcassets in Resources */,
 				CD571148244FDF6600FAAC5D /* Auth0.plist in Resources */,
 			);
@@ -340,6 +357,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD571169245115A200FAAC5D /* Toolbar.swift in Sources */,
+				CD08ADC52486F07800AC3A39 /* VideoPlayerView.swift in Sources */,
 				CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */,
 				CD571156244FDF6600FAAC5D /* ImageLoader.swift in Sources */,
 				CD57114E244FDF6600FAAC5D /* ImageView.swift in Sources */,
@@ -370,8 +388,10 @@
 				CD57117124522E3100FAAC5D /* DownloadImage.swift in Sources */,
 				CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */,
 				CD5711632450AB6700FAAC5D /* SceneDelegate.swift in Sources */,
+				CD08ADCB248AD65100AC3A39 /* MenuBar.swift in Sources */,
 				CD571173245382FA00FAAC5D /* MainView.swift in Sources */,
 				CD57114D244FDF6600FAAC5D /* WhoToFollow.swift in Sources */,
+				CD08ADCD248C8AA300AC3A39 /* HomeViewController.swift in Sources */,
 				CD08ADB5246391C300AC3A39 /* AuthorizationServer.swift in Sources */,
 				CD571151244FDF6600FAAC5D /* Models.swift in Sources */,
 				CD08ADB9246B452900AC3A39 /* EditProfileVC.swift in Sources */,

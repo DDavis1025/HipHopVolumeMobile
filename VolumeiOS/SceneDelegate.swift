@@ -30,8 +30,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             let mainVC = MainView()
             let authVC = AuthVC()
+            let homeVC = HomeViewController()
             
-            navigationController = UINavigationController(rootViewController: authVC)
+            let videoVC = VideoVC()
+            
+            navigationController = UINavigationController(rootViewController: homeVC)
             
             window.rootViewController = navigationController
 //            window.addSubview(mainVC.view)

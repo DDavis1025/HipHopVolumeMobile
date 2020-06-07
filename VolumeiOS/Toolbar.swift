@@ -82,14 +82,14 @@ override func viewDidLoad()
 }
 
 
-struct ToolbarController: UIViewControllerRepresentable {
-    func makeUIViewController(context: UIViewControllerRepresentableContext<ToolbarController>) -> Toolbar {
-        return Toolbar()
-    }
-    
-    func updateUIViewController(_ uiViewController: Toolbar, context: UIViewControllerRepresentableContext<ToolbarController>) {
-
-    }
-    
-    
-}
+//struct ToolbarController: UIViewControllerRepresentable {
+//    func makeUIViewController(context: UIViewControllerRepresentableContext<ToolbarController>) -> Toolbar {
+//        return Toolbar()
+//    }
+//
+//    func updateUIViewController(_ uiViewController: Toolbar, context: UIViewControllerRepresentableContext<ToolbarController>) {
+//
+//    }
+//
+//
+//}
