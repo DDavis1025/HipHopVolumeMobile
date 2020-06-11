@@ -100,13 +100,13 @@ class FollowUsers: Toolbar, UITableViewDelegate, UITableViewDataSource {
         self.imageLoader = DownloadImage()
            imageLoader?.imageDidSet = { [weak self] image in
             cell.imageView?.image = image
-              }
+            }
         imageLoader?.downloadImage(urlString: users![indexPath.row].picture!)
         let itemSize = CGSize.init(width: 100, height: 100)
         UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
         let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
-        cell.imageView?.image!.draw(in: imageRect)
-        cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+        cell.imageView?.image?.draw(in: imageRect)
+        cell.imageView?.image = UIGraphicsGetImageFromCurrentImageContext()!;
         UIGraphicsEndImageContext();
         cell.layoutIfNeeded()
         cell.setNeedsLayout()

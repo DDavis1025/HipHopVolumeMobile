@@ -19,17 +19,68 @@ import SwiftUI
 import Auth0
     
 
-class HomeViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     let cellId = "cellId"
+    let videoId = "videoId"
+    let tracksId = "tracksId"
+    var albumVC:AlbumVC?
+    var userAndFollowVC:UserPfAndFollow?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupMenuBar()
         setupCollectionView()
+        
+        let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
+               
+        let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
+                          
+        let whoToFollow = UIBarButtonItem(title: "toFollow", style: .plain, target: self, action: #selector(toFollowTapped))
+        
+
+        navigationItem.leftBarButtonItem = profile
+        navigationItem.rightBarButtonItem = whoToFollow
+        navigationItem.rightBarButtonItem = logout
+         
+         self.navigationController?.isToolbarHidden = false
+         self.navigationController?.isNavigationBarHidden = false
+
 //        auth0()
 
     }
+    
+    func pushToAlbumVC(post: Post) {
+        albumVC = AlbumVC(post: post)
+        navigationController?.pushViewController(self.albumVC!, animated: true)
+    }
+    
+    @objc func addTapped() {
+            let profileVC = ProfileViewController()
+            let profileView = ProfileVC()
+            self.navigationController?.pushViewController(profileView, animated: true)
+        }
+        
+    @objc func toFollowTapped() {
+        let toFollowVC = WhoToFollowVC()
+        self.navigationController?.pushViewController(toFollowVC, animated: true)
+    }
+     
+     @objc func logoutTapped() {
+             let authVC = AuthVC()
+             SessionManager.shared.logout { (error) in
+                 guard error == nil else {
+                 // Handle error
+                 print("Error: \(error)")
+                 return
+             }
+         }
+             print("Session manager credentials \(SessionManager.shared.credentials)")
+             self.navigationController?.popToRootViewController(animated: true)
+             self.navigationController?.isToolbarHidden = true
+             self.navigationController?.isNavigationBarHidden = true
+         }
+
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -42,6 +93,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         return cv
     }()
     
+    
     func setupCollectionView() {
         
         view.addSubview(collectionView)
@@ -49,6 +101,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         view.bringSubviewToFront(collectionView)
         
         collectionView.isPagingEnabled = true
+        
         
 //        collectionView.backgroundColor = UIColor.gray
         
@@ -58,10 +111,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         collectionView.topAnchor.constraint(equalTo: menuBar.bottomAnchor).isActive = true
         
         
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellId)
-        
-//        collectionView.contentInset = UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
-//        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
+        collectionView.register(AlbumCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView.register(TracksCell.self, forCellWithReuseIdentifier: tracksId)
+        collectionView.register(VideoCell.self, forCellWithReuseIdentifier: videoId)
         
         
     }
@@ -76,9 +128,11 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
         view.addSubview(menuBar)
         self.menuBar.translatesAutoresizingMaskIntoConstraints = false
         self.menuBar.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        self.menuBar.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor).isActive = true
+//        self.menuBar.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         self.menuBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         self.menuBar.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        self.menuBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        self.menuBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         
     }
     
@@ -103,7 +157,19 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
+    
+        if indexPath.item == 1 {
+            let tracksCell = collectionView.dequeueReusableCell(withReuseIdentifier: tracksId, for: indexPath) as! TracksCell
+            tracksCell.parent = self
+            return tracksCell
+        } else if indexPath.item == 2 {
+            let videoCell = collectionView.dequeueReusableCell(withReuseIdentifier: videoId, for: indexPath) as! VideoCell
+            videoCell.parent = self
+            return videoCell
+        }
+         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! AlbumCell
+         cell.parent = self
+        
         
          let colors: [UIColor] = [.yellow, .orange, .red]
          cell.backgroundColor = colors[indexPath.item]
@@ -111,7 +177,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: view.frame.height)
+        return CGSize(width: view.safeAreaLayoutGuide.layoutFrame.size.width, height: view.safeAreaLayoutGuide.layoutFrame.size.height)
     }
     
     

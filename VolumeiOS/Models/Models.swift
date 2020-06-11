@@ -83,6 +83,7 @@ class ModelClass : NSObject
     static var theViewLoaded:Bool? = false
     static var justClicked:Bool? = false
     static var clickedFromAT:Bool? = false
+    static var viewAppeared:Bool? = false
     
     func updatePlaying(newBool: Bool) {
            ModelClass.self.playing = newBool
@@ -123,6 +124,10 @@ class ModelClass : NSObject
     func updateClickedFromAT(newBool: Bool) {
         ModelClass.self.clickedFromAT = newBool
     }
+    
+    func updateViewAppeared(newBool: Bool) {
+        ModelClass.self.viewAppeared = newBool
+    }
 }
  
 
@@ -143,4 +148,8 @@ struct Email:Codable {
 
 struct Username:Codable {
     var username:String?
+}
+
+struct MediaPath:Codable {
+    var path:String?
 }

@@ -123,11 +123,11 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
             UIGraphicsEndImageContext();
         }
         imageLoader?.downloadImage(urlString: (users?[indexPath.row].picture)!)
-       let itemSize = CGSize.init(width: 120, height: 120)
-       UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
-       let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
-       cell.imageView?.image!.draw(in: imageRect)
-       cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
+        let itemSize = CGSize.init(width: 120, height: 120)
+        UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
+        let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+        cell.imageView?.image!.draw(in: imageRect)
+        cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
        UIGraphicsEndImageContext();
         cell.translatesAutoresizingMaskIntoConstraints = false
         cell.layoutMargins = UIEdgeInsets.zero

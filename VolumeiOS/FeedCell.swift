@@ -11,10 +11,10 @@ import UIKit
 import Combine
 
 class FeedCell:UITableViewCell {
-    var albumImage = UIImageView()
-    var albumPH = UIImageView()
-    var albumArtist = UILabel()
-    var albumTitle = UILabel()
+    var mediaImage = UIImageView()
+    var mediaPH = UIImageView()
+    var mediaArtist = UILabel()
+    var mediaTitle = UILabel()
     var artistImage = UIImageView()
     var artistPH = UIImageView()
     var imageLoader:DownloadImage?
@@ -35,16 +35,16 @@ class FeedCell:UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        albumPH.image = UIImage(named: "music-placeholder")
+        mediaPH.image = UIImage(named: "music-placeholder")
         artistPH.image = UIImage(named: "profile-placeholder-user")
-//        albumPH.image = UIImage(named: "music-placeholder")
-        addSubview(albumPH)
+//        mediaPH.image = UIImage(named: "music-placeholder")
+        addSubview(mediaPH)
         addSubview(artistPH)
         setImagePHConstraints()
 
-        addSubview(albumImage)
-        addSubview(albumTitle)
-        addSubview(albumArtist)
+        addSubview(mediaImage)
+        addSubview(mediaTitle)
+        addSubview(mediaArtist)
         addSubview(artistPH)
         setArtistPHConstraints()
         addSubview(artistImage)
@@ -63,8 +63,8 @@ class FeedCell:UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         imageLoader?.dataTask?.cancel()
-        albumImage.image = nil
-//        albumPH.image = nil
+        mediaImage.image = nil
+//        mediaPH.image = nil
 
     }
     
@@ -73,18 +73,18 @@ class FeedCell:UITableViewCell {
        
         self.imageLoader = DownloadImage()
         imageLoader?.imageDidSet = { [weak self] image in
-            self?.albumImage.image = image
-            self?.albumPH.image = nil
+            self?.mediaImage.image = image
+            self?.mediaPH.image = nil
             }
         imageLoader?.downloadImage(urlString: components.url!.absoluteString)
-        albumTitle.text = post.title
+        mediaTitle.text = post.title
         
         
     }
     
 
     func setUser(user: UsersModel?) {
-        albumArtist.text = user?.username ?? "undefined"
+        mediaArtist.text = user?.username ?? "undefined"
         self.imageLoader = DownloadImage()
            imageLoader?.imageDidSet = { [weak self] image in
                 self?.artistImage.image = image
@@ -104,55 +104,55 @@ class FeedCell:UITableViewCell {
     }
     
     func setImageConstraints() {
-        albumImage.translatesAutoresizingMaskIntoConstraints = false
-        albumImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        albumImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
-        albumImage.heightAnchor.constraint(equalToConstant: 90).isActive = true
-        albumImage.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        mediaImage.translatesAutoresizingMaskIntoConstraints = false
+        mediaImage.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        mediaImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
+        mediaImage.heightAnchor.constraint(equalToConstant: 90).isActive = true
+        mediaImage.widthAnchor.constraint(equalToConstant: 90).isActive = true
         
     }
     
     func setImagePHConstraints() {
-        albumPH.translatesAutoresizingMaskIntoConstraints = false
-        albumPH.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        albumPH.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
-        albumPH.heightAnchor.constraint(equalToConstant: 90).isActive = true
-        albumPH.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        mediaPH.translatesAutoresizingMaskIntoConstraints = false
+        mediaPH.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        mediaPH.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12).isActive = true
+        mediaPH.heightAnchor.constraint(equalToConstant: 90).isActive = true
+        mediaPH.widthAnchor.constraint(equalToConstant: 90).isActive = true
         
     }
     
     func setArtistPHConstraints() {
         artistPH.translatesAutoresizingMaskIntoConstraints = false
-        artistPH.centerYAnchor.constraint(equalTo: albumArtist.centerYAnchor).isActive = true
-        artistPH.trailingAnchor.constraint(equalTo: albumArtist.leadingAnchor, constant: -3).isActive = true
+        artistPH.centerYAnchor.constraint(equalTo: mediaArtist.centerYAnchor).isActive = true
+        artistPH.trailingAnchor.constraint(equalTo: mediaArtist.leadingAnchor, constant: -3).isActive = true
         artistPH.heightAnchor.constraint(equalToConstant: 25).isActive = true
-        artistPH.leadingAnchor.constraint(equalTo: albumTitle.leadingAnchor).isActive = true
+        artistPH.leadingAnchor.constraint(equalTo: mediaTitle.leadingAnchor).isActive = true
         artistPH.widthAnchor.constraint(equalToConstant: 25).isActive = true
         
     }
     
     func setArtistContstraints() {
-          albumArtist.translatesAutoresizingMaskIntoConstraints = false
-          albumArtist.centerXAnchor.constraint(equalTo: albumTitle.centerXAnchor).isActive = true
-           albumArtist.bottomAnchor.constraint(equalTo: albumTitle.topAnchor, constant: -5).isActive = true
-           albumArtist.heightAnchor.constraint(equalToConstant: 20).isActive = true
+          mediaArtist.translatesAutoresizingMaskIntoConstraints = false
+          mediaArtist.centerXAnchor.constraint(equalTo: mediaTitle.centerXAnchor).isActive = true
+           mediaArtist.bottomAnchor.constraint(equalTo: mediaTitle.topAnchor, constant: -5).isActive = true
+           mediaArtist.heightAnchor.constraint(equalToConstant: 20).isActive = true
        }
     
     func setArtistImageContstraints() {
               artistImage.translatesAutoresizingMaskIntoConstraints = false
-              artistImage.centerYAnchor.constraint(equalTo: albumArtist.centerYAnchor).isActive = true
-              artistImage.trailingAnchor.constraint(equalTo: albumArtist.leadingAnchor, constant: -3).isActive = true
+              artistImage.centerYAnchor.constraint(equalTo: mediaArtist.centerYAnchor).isActive = true
+              artistImage.trailingAnchor.constraint(equalTo: mediaArtist.leadingAnchor, constant: -3).isActive = true
               artistImage.heightAnchor.constraint(equalToConstant: 25).isActive = true
-              artistImage.leadingAnchor.constraint(equalTo: albumTitle.leadingAnchor).isActive = true
+              artistImage.leadingAnchor.constraint(equalTo: mediaTitle.leadingAnchor).isActive = true
               artistImage.widthAnchor.constraint(equalToConstant: 25).isActive = true
           }
     
     
     func setTitleContstraints() {
-        albumTitle.translatesAutoresizingMaskIntoConstraints = false
-        albumTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        albumTitle.leadingAnchor.constraint(equalTo: albumImage.trailingAnchor, constant: 20).isActive = true
-        albumTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        mediaTitle.translatesAutoresizingMaskIntoConstraints = false
+        mediaTitle.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        mediaTitle.leadingAnchor.constraint(equalTo: mediaImage.trailingAnchor, constant: 20).isActive = true
+        mediaTitle.heightAnchor.constraint(equalToConstant: 20).isActive = true
     }
     
     

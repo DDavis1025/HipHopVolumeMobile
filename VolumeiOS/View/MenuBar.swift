@@ -43,7 +43,6 @@ class MenuBar: UIView, UICollectionViewDelegate, UICollectionViewDataSource, UIC
         self.collectionView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         self.collectionView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         self.collectionView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        self.collectionView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
         
         let selectedIndexPath = NSIndexPath(item: 0, section: 0)
         collectionView.selectItem(at: selectedIndexPath as IndexPath, animated: false, scrollPosition: [])
@@ -89,9 +88,9 @@ class MenuBar: UIView, UICollectionViewDelegate, UICollectionViewDataSource, UIC
         return CGSize(width: frame.width / 4, height: frame.height)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
-    }
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+//        return 0
+//    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -128,11 +127,10 @@ class MenuCell: UICollectionViewCell {
        addSubview(label)
        self.label.translatesAutoresizingMaskIntoConstraints = false
        self.label.heightAnchor.constraint(equalToConstant: 28).isActive = true
-       self.label.widthAnchor.constraint(equalToConstant: 80).isActive = true
-//       self.label.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-//       self.label.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+       self.label.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
        self.label.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
        self.label.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        self.label.leftAnchor.constraint(equalTo: leftAnchor, constant: 23).isActive = true
     
     }
     

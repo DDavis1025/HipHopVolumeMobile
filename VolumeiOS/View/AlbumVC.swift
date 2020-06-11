@@ -37,6 +37,7 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
     var userImage:String?
     var authorID:String?
     var user_id:String?
+    var userAndFollow:UserPfAndFollow?
     var followButton = FollowerButton()
     var following: Set<String>? {
            didSet {
@@ -56,14 +57,8 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
     
      
        components.port = 8000
-    authorID = self.post?.author!
-    print("authorID \(authorID)")
-    self.userModel = GetUserByIDVM(id: (authorID!))
-
-    
     
     super.init(nibName: nil, bundle: nil)
-    
     
     
 
@@ -75,43 +70,21 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
     
     override func viewDidLoad() {
     super.viewDidLoad()
-        addSpinner()
+        print("albumVC View controller loaded")
+//        addSpinner()
         
-            self.userModel?.usersDidChange = { [weak self] users in
-            self?.user = UILabel()
-            self?.user!.text = users[0].username ?? "undefined"
-            self?.user_id = users[0].user_id
-            self?.view.addSubview(self!.user!)
-            self?.addImageAfterLoad()
-            if let picture = users[0].picture {
-            self?.imageLoader?.downloadImage(urlString: picture)
-                }
-            if let user_id = self?.user_id {
-            self?.setupButton(id: user_id)
-                }
-                if let user_id = self?.user_id {
-                    if let profile_sub = self?.profile?.sub {
-                        if user_id != profile_sub {
-                            self!.view.addSubview(self!.followButton)
-                            self?.setFollowButtonConstraints()
-                        }
-                    }
-                }
-//            if self!.user_id! != self!.profile!.sub {
-//                self!.view.addSubview(self!.followButton)
-//                self?.setFollowButtonConstraints()
-//               }
+        
+        authorID = self.post?.author!
+        self.userModel = GetUserByIDVM(id: (authorID!))
+        if let id = authorID {
+        addUserAndFollowView(id: id)
         }
-        addImage()
-        
         imageView.image = UIImage(named: "music-placeholder")
         self.view.addSubview(imageView)
         setImageViewConstraints()
-        getFollowing(id: profile!.sub)
         
 
         
-        addActionToFlwBtn()
         addAlbumImage()
         addLabels()
         addViewController()
@@ -123,104 +96,6 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
         
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        let authorID2 = self.post?.author!
-        print("authorID2 \(authorID)")
-    }
-
-    
-    
-    func getFollowing(id: String) {
-        GETUsersByFollowerId(id: id).getAllById {
-            self.following = Set($0.map{String($0.user_id!)})
-        }
-    }
-    
-    
-    
-    func setupButton(id:String?) {
-           if let followingUsers = self.following {
-            if let id = id {
-               if (followingUsers.contains(id)) {
-                followButton.buttonState = .delete
-               } else {
-                followButton.buttonState = .add
-           }
-        }
-    }
-}
-    
-    @objc func setButtonAction() {
-        
-        if followButton.buttonState == .add {
-            let follower_id = (profile?.sub)!
-              let follower = Follower(user_id: user_id!, follower_id: follower_id)
-              let postRequest = FollowerPostRequest(endpoint: "follower")
-              
-              postRequest.save(follower) { (result) in
-                  switch result {
-                  case .success(let follower):
-                      print("The following follower has been added \(follower.follower_id) to user \(follower.user_id)")
-                  case .failure(let error):
-                      print("An error occurred \(error)")
-                  }
-              }
-              followButton.buttonState = .delete
-        } else if followButton.buttonState == .delete {
-          
-                if let id = user_id {
-                let deleteRequest = DLTFollowingRequest(id: id)
-                
-                deleteRequest.delete {(err) in
-                    if let err = err {
-                        print("Failed to delete", err)
-                        return
-                    }
-                    print("Successfully deleted followed user from server")
-                    
-                }
-             }
-             followButton.buttonState = .add
-        }
-               
-    }
-    
-    func addActionToFlwBtn() {
-        followButton.addTarget(self, action: #selector(setButtonAction), for: .touchUpInside)
-    }
-    
-    
-    
-    func addImage() {
-        let imagePH = UIImage(named: "profile-placeholder-user")
-        userImageView = UIImageView(image: imagePH)
-        view.addSubview(userImageView!)
-        setUsersConstraints()
-    }
-    
-    func addImageAfterLoad() {
-        imageLoader = DownloadImage()
-        self.imageLoader?.imageDidSet = { [weak self] image in
-              self?.userImageView?.image = image
-              self!.view.addSubview(self!.userImageView!)
-              
-              self!.setUsersConstraints()
-              self?.child?.willMove(toParent: nil)
-              self?.child?.view.removeFromSuperview()
-              self?.child?.removeFromParent()
-            
-            let tap = UITapGestureRecognizer(target: self, action:  #selector(self?.userAction))
-            let tap2 = UITapGestureRecognizer(target: self, action:  #selector(self?.userAction))
-            
-            self?.userImageView?.addGestureRecognizer(tap)
-            self?.user?.addGestureRecognizer(tap2)
-//
-            self?.user?.isUserInteractionEnabled = true
-            self?.userImageView?.isUserInteractionEnabled = true
-    }
-
-}
-    
     func addSpinner() {
         self.child = SpinnerViewController()
         addChild(self.child!)
@@ -231,27 +106,36 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
         self.view.bringSubviewToFront(self.child!.view)
     }
     
-    func setUsersConstraints() {
-               userImageView?.translatesAutoresizingMaskIntoConstraints = false
-        userImageView?.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-               userImageView?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
-               userImageView?.widthAnchor.constraint(equalToConstant: 50).isActive = true
-               userImageView?.heightAnchor.constraint(equalToConstant: 50).isActive = true
-               user?.translatesAutoresizingMaskIntoConstraints = false
-               user?.leadingAnchor.constraint(equalTo: userImageView!.trailingAnchor, constant: 10).isActive = true
-               user?.centerYAnchor.constraint(equalTo: userImageView!.centerYAnchor).isActive = true
-        
-        
+    func addUserAndFollowView(id: String) {
+        userAndFollow = UserPfAndFollow(id: id)
+        if let userAndFollow = userAndFollow {
+          addChild(userAndFollow)
+          userAndFollow.view.frame = view.frame
+          userAndFollow.view.isUserInteractionEnabled = true
+          view.addSubview(userAndFollow.view)
+          view.bringSubviewToFront(userAndFollow.view)
+          
+          userAndFollow.didMove(toParent: self)
+          userAndFollow.view.backgroundColor = UIColor.yellow
+          self.view.bringSubviewToFront(userAndFollow.view)
+          userAndFollow.view.translatesAutoresizingMaskIntoConstraints = false
+          userAndFollow.view.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+          userAndFollow.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+          userAndFollow.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+          userAndFollow.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+          userAndFollow.view.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        }
          
     }
     
-    @objc func userAction(sender : UITapGestureRecognizer) {
-    let artistPFVC = ArtistProfileVC()
-    artistPFVC.artistID = authorID
-    artistPFVC.delegate = self
-    navigationController?.pushViewController(artistPFVC, animated: true)
-    print("clicked")
+    
+    override func viewDidAppear(_ animated: Bool) {
+        _ = self.post?.author!
+        print("authorID2 \(authorID)")
     }
+
+    
+    
     
 
     
@@ -273,10 +157,12 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
     
     func setImageViewConstraints() {
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 310).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 310).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 290).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 290).isActive = true
         imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        imageView.topAnchor.constraint(equalTo: userImageView!.bottomAnchor, constant: 20).isActive = true
+        if let userAndFollow = userAndFollow?.view {
+            imageView.topAnchor.constraint(equalTo: userAndFollow.bottomAnchor, constant: 20).isActive = true
+        }
 }
     
     func addLabels() {

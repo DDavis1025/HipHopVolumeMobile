@@ -22,6 +22,16 @@
 		CD08ADC9248978D400AC3A39 /* testVideo2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = CD08ADC8248978D300AC3A39 /* testVideo2.mp4 */; };
 		CD08ADCB248AD65100AC3A39 /* MenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADCA248AD64F00AC3A39 /* MenuBar.swift */; };
 		CD08ADCD248C8AA300AC3A39 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADCC248C8A9E00AC3A39 /* HomeViewController.swift */; };
+		CD08ADCF248C90B100AC3A39 /* AlbumsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADCE248C90B100AC3A39 /* AlbumsCell.swift */; };
+		CD08ADD1248ED5B700AC3A39 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADD0248ED5B400AC3A39 /* VideoCell.swift */; };
+		CD08ADD3248EDD8600AC3A39 /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADD2248EDD8600AC3A39 /* VideoTableViewCell.swift */; };
+		CD08ADD524900C5600AC3A39 /* TracksCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADD424900C5500AC3A39 /* TracksCell.swift */; };
+		CD08ADD7249012B500AC3A39 /* TrackPlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADD6249012B500AC3A39 /* TrackPlay.swift */; };
+		CD08ADDA2491431B00AC3A39 /* ArtistAlbumsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADD92491431A00AC3A39 /* ArtistAlbumsCell.swift */; };
+		CD08ADDC249146A400AC3A39 /* ArtistPFContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADDB249146A400AC3A39 /* ArtistPFContainerView.swift */; };
+		CD08ADDE2491676500AC3A39 /* ArtistTracksCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADDD2491676500AC3A39 /* ArtistTracksCell.swift */; };
+		CD08ADE0249174B500AC3A39 /* ArtistVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADDF249174B500AC3A39 /* ArtistVideoCell.swift */; };
+		CD08ADE22491889600AC3A39 /* UserPfAndFollow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADE12491889600AC3A39 /* UserPfAndFollow.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -70,6 +80,16 @@
 		CD08ADC8248978D300AC3A39 /* testVideo2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = testVideo2.mp4; sourceTree = "<group>"; };
 		CD08ADCA248AD64F00AC3A39 /* MenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBar.swift; sourceTree = "<group>"; };
 		CD08ADCC248C8A9E00AC3A39 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		CD08ADCE248C90B100AC3A39 /* AlbumsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsCell.swift; sourceTree = "<group>"; };
+		CD08ADD0248ED5B400AC3A39 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
+		CD08ADD2248EDD8600AC3A39 /* VideoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTableViewCell.swift; sourceTree = "<group>"; };
+		CD08ADD424900C5500AC3A39 /* TracksCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TracksCell.swift; sourceTree = "<group>"; };
+		CD08ADD6249012B500AC3A39 /* TrackPlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackPlay.swift; sourceTree = "<group>"; };
+		CD08ADD92491431A00AC3A39 /* ArtistAlbumsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistAlbumsCell.swift; sourceTree = "<group>"; };
+		CD08ADDB249146A400AC3A39 /* ArtistPFContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistPFContainerView.swift; sourceTree = "<group>"; };
+		CD08ADDD2491676500AC3A39 /* ArtistTracksCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistTracksCell.swift; sourceTree = "<group>"; };
+		CD08ADDF249174B500AC3A39 /* ArtistVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistVideoCell.swift; sourceTree = "<group>"; };
+		CD08ADE12491889600AC3A39 /* UserPfAndFollow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPfAndFollow.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -119,6 +139,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CD08ADD8249142E900AC3A39 /* ArtistPF */ = {
+			isa = PBXGroup;
+			children = (
+				CD08ADD92491431A00AC3A39 /* ArtistAlbumsCell.swift */,
+				CD08ADDB249146A400AC3A39 /* ArtistPFContainerView.swift */,
+				CD08ADDD2491676500AC3A39 /* ArtistTracksCell.swift */,
+				CD08ADDF249174B500AC3A39 /* ArtistVideoCell.swift */,
+			);
+			path = ArtistPF;
+			sourceTree = "<group>";
+		};
 		CD57110F244FDF3300FAAC5D = {
 			isa = PBXGroup;
 			children = (
@@ -142,6 +173,7 @@
 		CD57111A244FDF3300FAAC5D /* VolumeiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CD08ADD8249142E900AC3A39 /* ArtistPF */,
 				CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */,
 				CD5711662450CF1500FAAC5D /* Assets.xcassets */,
 				CD5711642450AC0900FAAC5D /* Info.plist */,
@@ -166,6 +198,11 @@
 				CD08ADBE2474575700AC3A39 /* UserInfoCell.swift */,
 				CD08ADC02474803000AC3A39 /* UsernameTextField.swift */,
 				CD08ADC42486F07800AC3A39 /* VideoPlayerView.swift */,
+				CD08ADCE248C90B100AC3A39 /* AlbumsCell.swift */,
+				CD08ADD0248ED5B400AC3A39 /* VideoCell.swift */,
+				CD08ADD2248EDD8600AC3A39 /* VideoTableViewCell.swift */,
+				CD08ADD424900C5500AC3A39 /* TracksCell.swift */,
+				CD08ADE12491889600AC3A39 /* UserPfAndFollow.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -186,6 +223,7 @@
 				CD08ADA72460C34E00AC3A39 /* FollowUsers.swift */,
 				CD08ADCA248AD64F00AC3A39 /* MenuBar.swift */,
 				CD08ADCC248C8A9E00AC3A39 /* HomeViewController.swift */,
+				CD08ADD6249012B500AC3A39 /* TrackPlay.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -361,13 +399,17 @@
 				CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */,
 				CD571156244FDF6600FAAC5D /* ImageLoader.swift in Sources */,
 				CD57114E244FDF6600FAAC5D /* ImageView.swift in Sources */,
+				CD08ADD3248EDD8600AC3A39 /* VideoTableViewCell.swift in Sources */,
 				CD5711612450AB5B00FAAC5D /* AppDelegate.swift in Sources */,
+				CD08ADD524900C5600AC3A39 /* TracksCell.swift in Sources */,
 				CD57115F245096AE00FAAC5D /* AlbumTrackVC.swift in Sources */,
 				CD57117524550C4900FAAC5D /* FeedCell.swift in Sources */,
 				CD571155244FDF6600FAAC5D /* ImageCache.swift in Sources */,
 				CD08ADBF2474575700AC3A39 /* UserInfoCell.swift in Sources */,
 				CD57116D2451D5BA00FAAC5D /* AlbumVC.swift in Sources */,
+				CD08ADE22491889600AC3A39 /* UserPfAndFollow.swift in Sources */,
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
+				CD08ADDC249146A400AC3A39 /* ArtistPFContainerView.swift in Sources */,
 				CD08ADC12474803000AC3A39 /* UsernameTextField.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,
 				CD57114F244FDF6600FAAC5D /* ContentView.swift in Sources */,
@@ -376,14 +418,18 @@
 				CD57116F2451F7C400FAAC5D /* ViewModels.swift in Sources */,
 				CD08ADBB246DED8000AC3A39 /* ImageToServer.swift in Sources */,
 				CD571152244FDF6600FAAC5D /* PlayAudio.swift in Sources */,
+				CD08ADE0249174B500AC3A39 /* ArtistVideoCell.swift in Sources */,
 				CD08ADA82460C34E00AC3A39 /* FollowUsers.swift in Sources */,
 				CD08ADB7246A081800AC3A39 /* AuthVC.swift in Sources */,
+				CD08ADCF248C90B100AC3A39 /* AlbumsCell.swift in Sources */,
 				CD48B1812460AE9D00A2FD12 /* ProfileVC.swift in Sources */,
 				CD571157244FDF6600FAAC5D /* Webservice.swift in Sources */,
 				CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */,
 				CD08ADC3247486FF00AC3A39 /* EmailTextField.swift in Sources */,
 				CD08ADBD246F4D6D00AC3A39 /* PutPatchRequests.swift in Sources */,
 				CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */,
+				CD08ADDE2491676500AC3A39 /* ArtistTracksCell.swift in Sources */,
+				CD08ADD1248ED5B700AC3A39 /* VideoCell.swift in Sources */,
 				CD571153244FDF6600FAAC5D /* ProfileViewController.swift in Sources */,
 				CD57117124522E3100FAAC5D /* DownloadImage.swift in Sources */,
 				CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */,
@@ -392,9 +438,11 @@
 				CD571173245382FA00FAAC5D /* MainView.swift in Sources */,
 				CD57114D244FDF6600FAAC5D /* WhoToFollow.swift in Sources */,
 				CD08ADCD248C8AA300AC3A39 /* HomeViewController.swift in Sources */,
+				CD08ADD7249012B500AC3A39 /* TrackPlay.swift in Sources */,
 				CD08ADB5246391C300AC3A39 /* AuthorizationServer.swift in Sources */,
 				CD571151244FDF6600FAAC5D /* Models.swift in Sources */,
 				CD08ADB9246B452900AC3A39 /* EditProfileVC.swift in Sources */,
+				CD08ADDA2491431B00AC3A39 /* ArtistAlbumsCell.swift in Sources */,
 				CD571150244FDF6600FAAC5D /* OtherView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

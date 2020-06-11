@@ -15,14 +15,13 @@ protocol FollowDelegateProtocol {
     func sendFollowData(myData: Bool)
 }
 
-class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
+class ArtistProfileVC: Toolbar {
     
     var delegate: FollowDelegateProtocol? = nil
 
     var profile: UserInfo!
     var isLoaded:Bool? = false
     var imageView:UIImageView!
-    var myTableView: UITableView!
     var author:[PostById]!
     var album:[Post]!
     var images:[UIImage]?
@@ -35,13 +34,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
     var followButton = FollowerButton()
     var refresher:UIRefreshControl?
     
-    var post:Post? {
-        didSet {
-            let vc = AlbumVC(post: self.post!)
-            self.navigationController?.pushViewController(vc, animated: true)
-            print("posty \(post)")
-        }
-    }
     var label:UILabel? = nil
     var followingLabel = UILabel()
     var followingTitle = UILabel()
@@ -53,7 +45,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
             DispatchQueue.main.async {
                 print("usersdid \(self.users)")
                 self.userInfo()
-                self.setContraints()
             }
         }
     }
@@ -88,20 +79,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
 //                    self.followLabels()
           }
        }
-    var artistData = [ArtistModel]() {
-        didSet {
-            DispatchQueue.main.async {
-                self.child?.willMove(toParent: nil)
-                self.child?.view.removeFromSuperview()
-                self.child?.removeFromParent()
-                self.myTableView.reloadData()
-                print("Artist Data \(self.artistData)")
-                print("worked")
-                self.isLoaded = true
-
-            }
-        }
-    }
     var posts:Array<Any> = []
     var artistID:String?
 
@@ -153,10 +130,9 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
         override func viewDidLoad() {
             super.viewDidLoad()
             profile = SessionManager.shared.profile
-            addSpinner()
-            addTableView()
 
             addImagePH()
+            addCollectionView()
             
                 if let artistID = self.artistID {
                 self.getArtist(id: artistID)
@@ -177,11 +153,7 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
             
             addActionToFlwBtn()
             
-            refresher = UIRefreshControl()
-            refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
-            refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
             
-            myTableView.addSubview(refresher!)
             
             view.backgroundColor = UIColor.white
             
@@ -191,15 +163,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
 //        userPhotoUpdated()
 //    }
     
-    @objc func refresh() {
-        GETUsersByFollowerId(id: artistID).getAllById {
-            self.following = $0
-        }
-        
-        GETFollowersByUserID(id: artistID).getAllById {
-            self.follows = $0
-        }
-    }
     
     func getFollowing(id: String) {
         GETUsersByFollowerId(id: id).getAllById {
@@ -240,10 +203,21 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
                }
     }
     
-    func setContraints() {
-        self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
-        self.myTableView?.topAnchor.constraint(equalTo: self.label!.bottomAnchor, constant: 20).isActive = true
+    func addCollectionView() {
+          let child = ArtistPFContainerView()
+          addChild(child)
+          child.view.frame = view.frame
+          view.addSubview(child.view)
+          child.didMove(toParent: self)
+          child.view.backgroundColor = UIColor.white
+          self.view.bringSubviewToFront(child.view)
+          child.view.translatesAutoresizingMaskIntoConstraints = false
+          child.view.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 60).isActive = true
+          child.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+          child.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+          child.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
+    
     
     func addImagePH() {
            let imagePH = UIImage(named:"profile-placeholder-user")
@@ -364,43 +338,11 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
             self.followsLabel.centerXAnchor.constraint(equalTo: followsTitle.centerXAnchor).isActive = true
         }
            
-    func addSpinner() {
-          let child = SpinnerViewController()
-          addChild(child)
-          child.view.frame = view.frame
-
-          view.addSubview(child.view)
-          child.didMove(toParent: self)
-
-          self.view.bringSubviewToFront(child.view)
-
-          self.child?.view?.translatesAutoresizingMaskIntoConstraints = false
-
-          self.child?.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-
-          self.child?.view?.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-
-          self.child?.view?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        
-          self.child?.view?.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        
-    }
-    
-    func getAlbum(id: String) {
-         GETAlbum(id: id).getPostsById() {
-            self.post = $0
-    }
-    }
 
     func getArtist(id: String) {
         GetUsersById(id: id).getAllPosts {
             self.users = $0
         }
-        
-        let getArtistById =  GETArtistById(id: id)
-        getArtistById.getAllById {
-            self.artistData = $0
-       }
         
         GETUsersByFollowerId(id: id).getAllById {
             self.following = $0
@@ -480,89 +422,6 @@ class ArtistProfileVC: Toolbar, UITableViewDelegate, UITableViewDataSource{
     
     
     
-    
-    func addTableView() {
-        self.myTableView = UITableView()
-        self.myTableView.register(UITableViewCell.self, forCellReuseIdentifier: "MyCell")
-        self.myTableView.dataSource = self
-        self.myTableView.delegate = self
-
-        self.view.addSubview(self.myTableView)
-        
-        print("tbl view")
-
-        self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
-        self.imageView?.translatesAutoresizingMaskIntoConstraints = false
-
-        self.myTableView?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-
-        self.myTableView?.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-
-        self.myTableView?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-
-            myTableView.layoutMargins = UIEdgeInsets.zero
-            myTableView.separatorInset = UIEdgeInsets.zero
-            
-        }
-        
-        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 110
-        }
-    
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Num: \(indexPath.row)")
-        print("Value: \(artistData[indexPath.row].title)")
-//        getAlbumById(id: artistData[indexPath.row].id!)
-        getAlbum(id: artistData[indexPath.row].id!)
-
-        
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return artistData.count
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-           return " Albums"
-       }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-           let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
-           cell.textLabel!.text = "playa playa"
-           cell.textLabel!.text = "\(artistData[indexPath.row].title!)"
-           components.path = "/\(artistData[indexPath.row].path!)"
-            self.imageLoader = DownloadImage()
-            imageLoader?.imageDidSet = { [weak self] image in
-//                    cell.imageView?.image = nil
-                self!.imageLoaded = true
-                cell.imageView!.image = image
-                let itemSize = CGSize.init(width: 100, height: 100)
-                            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
-                            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
-                            cell.imageView?.image!.draw(in: imageRect)
-                            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
-                            UIGraphicsEndImageContext();
-                cell.layoutIfNeeded()
-                cell.setNeedsLayout()
-                }
-            imageLoader?.downloadImage(urlString: components.url!.absoluteString)
-            print("components url \(components.url?.absoluteString)")
-    
-           if !imageLoaded! {
-            cell.imageView!.image = UIImage(named: "music-placeholder")
-            let itemSize = CGSize.init(width: 100, height: 100)
-            UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
-            let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
-            cell.imageView?.image!.draw(in: imageRect)
-            cell.imageView?.image! = UIGraphicsGetImageFromCurrentImageContext()!;
-            UIGraphicsEndImageContext();
-           print("Artist data \(artistData)")
-        }
-           cell.translatesAutoresizingMaskIntoConstraints = false
-           cell.layoutMargins = UIEdgeInsets.zero
-           return cell
-       }
     
    
 }

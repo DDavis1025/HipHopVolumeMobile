@@ -13,12 +13,22 @@ class VideoPlayerView: UIView {
     private var playerLayer: AVPlayerLayer?
     var player:AVPlayer?
     var isPlaying = false
+    var videoURL:String?
     var secondToFadeOut = 5 // How many second do you want the view to idle before the button fades. You can change this to whatever you'd like.
     var timer:Timer = Timer() // Create the timer!
     var isTimerRunning:Bool = false // Need this to prevent multiple timers from running at the same time.
     
+    func addVideoURL(video: String) {
+        videoURL = video
+        setupPlayer()
+        playerLayer?.frame = bounds
+        bringSubviewToFront(controlsContainerView)
+        print("video URL \(videoURL)")
+    }
+    
     let activityIndicatorView:UIActivityIndicatorView = {
         let aiv = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.large)
+        aiv.color = UIColor.white
         aiv.translatesAutoresizingMaskIntoConstraints = false
         aiv.startAnimating()
         return aiv
@@ -157,9 +167,9 @@ class VideoPlayerView: UIView {
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.tap(_:)))
         self.addGestureRecognizer(tapRecognizer)
         
-        setupPlayer()
         
         addSubview(controlsContainerView)
+        
         
         
         NSLayoutConstraint.activate([
@@ -253,8 +263,9 @@ class VideoPlayerView: UIView {
 
     
     private func setupPlayer() {
-        let urlString = "http://localhost:8000/public/1591313659836-Spotify.mp4"
-        
+        print("videoURL \(videoURL)")
+        let urlString = videoURL
+        if let urlString = urlString {
         if let url = URL(string: urlString) {
         player = AVPlayer(url: url)
         
@@ -283,6 +294,7 @@ class VideoPlayerView: UIView {
         })
       }
     }
+    }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "currentItem.loadedTimeRanges" {
@@ -308,13 +320,23 @@ class VideoPlayerView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        playerLayer?.frame = bounds
+        
     }
     
 }
 
 
 class VideoVC: UIViewController {
+    var id:String = ""
+    var path:String?
+    init(id:String) {
+        self.id = id
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     private lazy var playerView: VideoPlayerView = {
         let playerView = VideoPlayerView(frame: .zero)
         playerView.backgroundColor = .black
@@ -325,6 +347,21 @@ class VideoVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
+        GetMedia(id: id, path: "video_path").getMedia {
+            self.path = $0[0].path!
+            print("video path \(self.path)")
+            var components = URLComponents()
+            components.scheme = "http"
+            components.host = "localhost"
+            components.port = 8000
+            if let path = self.path {
+            components.path = "/\(path)"
+            if let url = components.url?.absoluteString {
+              print("url \(url)")
+              self.playerView.addVideoURL(video: url)
+            }
+            }
+        }
         view.addSubview(playerView)
     }
     

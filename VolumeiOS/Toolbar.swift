@@ -56,7 +56,7 @@ override func viewDidLoad()
     @objc func playBtnAction(sender: UIBarButtonItem)
 {
 
-    if ModelClass.playing! {
+    if ModelClass.playing! || TrackPlay.playing! {
      player!.play()
      print("play")
     }
@@ -64,7 +64,7 @@ override func viewDidLoad()
 
     @objc func pauseBtnAction(sender: UIBarButtonItem)
 {
-    if ModelClass.playing! {
+    if ModelClass.playing! || TrackPlay.playing! {
       print("pause")
       player!.pause()
     }
@@ -73,8 +73,16 @@ override func viewDidLoad()
     
     @objc func checkAction(sender : UITapGestureRecognizer) {
         let albumTrackVC = AlbumTrackVC()
-        if ModelClass.theViewLoaded! {
-        self.present(albumTrackVC, animated: true, completion: nil)
+        let trackVC = TrackPlayVC()
+        
+        if ModelClass.viewAppeared! {
+            self.present(albumTrackVC, animated: true, completion: nil)
+        } else if TrackPlay.viewAppeared! {
+            print("track view appeared")
+            let modalVC = UINavigationController(rootViewController: trackVC)
+
+            self.present(modalVC, animated: true, completion: nil)
+//            self.present(trackVC, animated: true, completion: nil)
         }
 
 }
