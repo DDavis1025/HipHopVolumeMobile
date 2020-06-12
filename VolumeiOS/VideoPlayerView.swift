@@ -9,9 +9,9 @@
 import UIKit
 import AVFoundation
 
+var video_player:AVPlayer?
 class VideoPlayerView: UIView {
     private var playerLayer: AVPlayerLayer?
-    var player:AVPlayer?
     var isPlaying = false
     var videoURL:String?
     var secondToFadeOut = 5 // How many second do you want the view to idle before the button fades. You can change this to whatever you'd like.
@@ -329,6 +329,8 @@ class VideoPlayerView: UIView {
 class VideoVC: UIViewController {
     var id:String = ""
     var path:String?
+    var author:String?
+    var userAndFollow:UserPfAndFollow?
     init(id:String) {
         self.id = id
         super.init(nibName: nil, bundle: nil)
@@ -346,7 +348,14 @@ class VideoVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.backgroundColor = UIColor.white
+        navigationController?.isToolbarHidden = true
+        let dismiss = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(dismissVC))
+        dismiss.tintColor = UIColor.black
+               
+        navigationItem.leftBarButtonItem = dismiss
+        
         GetMedia(id: id, path: "video_path").getMedia {
             self.path = $0[0].path!
             print("video path \(self.path)")
@@ -363,11 +372,39 @@ class VideoVC: UIViewController {
             }
         }
         view.addSubview(playerView)
+        if let author = author {
+            addUserAndFollowView(id: author)
+        }
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let height = view.safeAreaLayoutGuide.layoutFrame.size.width / 1.777777777777778
         playerView.frame = CGRect(x: view.safeAreaLayoutGuide.layoutFrame.origin.x, y: view.safeAreaLayoutGuide.layoutFrame.origin.y, width: view.safeAreaLayoutGuide.layoutFrame.size.width, height: height)
+    }
+    
+    @objc func dismissVC() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func addUserAndFollowView(id: String) {
+        userAndFollow = UserPfAndFollow(id: id)
+        userAndFollow?.fromPushedVC = true
+        if let userAndFollow = userAndFollow {
+          addChild(userAndFollow)
+          userAndFollow.view.isUserInteractionEnabled = true
+          view.addSubview(userAndFollow.view)
+          view.bringSubviewToFront(userAndFollow.view)
+          
+          userAndFollow.didMove(toParent: self)
+          self.view.bringSubviewToFront(userAndFollow.view)
+          userAndFollow.view.translatesAutoresizingMaskIntoConstraints = false
+          userAndFollow.view.topAnchor.constraint(equalTo: playerView.bottomAnchor).isActive = true
+          userAndFollow.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+          userAndFollow.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+          userAndFollow.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+          userAndFollow.view.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        }
+         
     }
 }

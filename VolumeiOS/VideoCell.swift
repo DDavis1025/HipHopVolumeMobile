@@ -54,10 +54,16 @@ class VideoCell: AlbumCell {
             videoStruct.updateVideoId(newString: id)
             if let video_id = VideoStruct.id {
             let videoVC = VideoVC(id: video_id)
-                
-            parent?.navigationController?.pushViewController(videoVC, animated: true)
-                }
+            if let author = posts[indexPath.row].author {
+            videoVC.author = posts[indexPath.row].author
             }
+            let modalVC = UINavigationController(rootViewController: videoVC)
+            modalVC.modalPresentationStyle = .fullScreen
+
+            parent?.navigationController?.present(modalVC, animated: true, completion: nil)
+
+          }
+       }
     }
 
     

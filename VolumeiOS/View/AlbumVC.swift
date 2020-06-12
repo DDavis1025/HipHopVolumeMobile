@@ -46,7 +46,7 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
            }
        }
 
-    var profile = SessionManager.shared.profile
+ var profile = SessionManager.shared.profile
  init(post: Post) {
     self.post = post
     print("post Album \(post)")
@@ -71,8 +71,11 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
     override func viewDidLoad() {
     super.viewDidLoad()
         print("albumVC View controller loaded")
+
+        
 //        addSpinner()
         
+        navigationController?.isToolbarHidden = false
         
         authorID = self.post?.author!
         self.userModel = GetUserByIDVM(id: (authorID!))
@@ -96,6 +99,8 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
         
     }
     
+    
+    
     func addSpinner() {
         self.child = SpinnerViewController()
         addChild(self.child!)
@@ -108,6 +113,7 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
     
     func addUserAndFollowView(id: String) {
         userAndFollow = UserPfAndFollow(id: id)
+        userAndFollow?.fromPushedVC = true
         if let userAndFollow = userAndFollow {
           addChild(userAndFollow)
           userAndFollow.view.frame = view.frame
@@ -116,7 +122,6 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
           view.bringSubviewToFront(userAndFollow.view)
           
           userAndFollow.didMove(toParent: self)
-          userAndFollow.view.backgroundColor = UIColor.yellow
           self.view.bringSubviewToFront(userAndFollow.view)
           userAndFollow.view.translatesAutoresizingMaskIntoConstraints = false
           userAndFollow.view.topAnchor.constraint(equalTo: view.topAnchor).isActive = true

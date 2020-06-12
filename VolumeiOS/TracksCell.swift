@@ -45,11 +45,14 @@ class TracksCell: AlbumCell {
              if let path = posts[indexPath.row].title {
                 if let author_id = posts[indexPath.row].author {
               let trackVC = TrackPlayVC()
+              let author = Author()
               trackVC.captureId(id: id)
               trackVC.trackName = path
-              trackVC.author_id = author_id
+//              trackVC.author_id = author_id
               trackVC.justClicked = true
+              author.updateAuthorID(newString: author_id)
               let modalVC = UINavigationController(rootViewController: trackVC)
+              modalVC.modalPresentationStyle = .fullScreen
 
               parent?.navigationController?.present(modalVC, animated: true, completion: nil)
             }

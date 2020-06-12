@@ -26,11 +26,15 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
     let tracksId = "tracksId"
     var albumVC:AlbumVC?
     var userAndFollowVC:UserPfAndFollow?
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupMenuBar()
         setupCollectionView()
+        
+        navigationController?.isToolbarHidden = false
         
         let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
                
@@ -101,8 +105,6 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         view.bringSubviewToFront(collectionView)
         
         collectionView.isPagingEnabled = true
-        
-        
 //        collectionView.backgroundColor = UIColor.gray
         
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -169,7 +171,6 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         }
          let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! AlbumCell
          cell.parent = self
-        
         
          let colors: [UIColor] = [.yellow, .orange, .red]
          cell.backgroundColor = colors[indexPath.item]

@@ -14,7 +14,6 @@ import SwiftUI
 protocol FollowDelegateProtocol {
     func sendFollowData(myData: Bool)
 }
-
 class ArtistProfileVC: Toolbar {
     
     var delegate: FollowDelegateProtocol? = nil
@@ -33,7 +32,6 @@ class ArtistProfileVC: Toolbar {
     var button = UIButton()
     var followButton = FollowerButton()
     var refresher:UIRefreshControl?
-    
     var label:UILabel? = nil
     var followingLabel = UILabel()
     var followingTitle = UILabel()
@@ -111,6 +109,7 @@ class ArtistProfileVC: Toolbar {
             
         }
     }
+    var fromNowPlaying:Bool = false
     
     
     static var shared = ArtistProfileVC()
@@ -131,6 +130,8 @@ class ArtistProfileVC: Toolbar {
             super.viewDidLoad()
             profile = SessionManager.shared.profile
 
+            print("fromNowPlaying \(fromNowPlaying)")
+            
             addImagePH()
             addCollectionView()
             
@@ -154,8 +155,13 @@ class ArtistProfileVC: Toolbar {
             addActionToFlwBtn()
             
             
+            print("navigation artistPF \(navigationController)")
             
             view.backgroundColor = UIColor.white
+            
+            if fromNowPlaying {
+                navigationController?.isToolbarHidden = true
+            }
             
         }
     

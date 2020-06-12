@@ -9,14 +9,17 @@
 import Foundation
 import UIKit
 
+
 class ArtistPFContainerView: HomeViewController {
     
     var albumId = "albumId"
     var atrackId = "atrackId"
     var avideoId = "avideoId"
     
+    
     override func setupCollectionView() {
       super.setupCollectionView()
+        
             
         collectionView.register(ArtistAlbumsCell.self, forCellWithReuseIdentifier: albumId)
         collectionView.register(ArtistTracksCell.self, forCellWithReuseIdentifier: atrackId)

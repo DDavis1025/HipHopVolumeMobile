@@ -18,6 +18,7 @@ struct TrackPlay {
     static var track:String?
     static var imgPath:String?
     static var id:String?
+    static var author_id:String?
     
     func updatePlaying(newBool: Bool) {
         TrackPlay.self.playing = newBool
@@ -42,9 +43,14 @@ struct TrackPlay {
     func updateID(newText: String) {
         TrackPlay.self.id = newText
     }
+    
+    func updateAuthorID(newString: String) {
+        TrackPlay.self.author_id = newString
+    }
 }
 
 class TrackPlayVC: UIViewController {
+    
     var post:Post?
     var trackNameLabel:UILabel?
     var playing:Bool?
@@ -93,8 +99,13 @@ class TrackPlayVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isToolbarHidden = true
+        let dismiss = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(dismissVC))
+        dismiss.tintColor = UIColor.black
+        
+        navigationItem.leftBarButtonItem = dismiss
         print("track view loaded")
-        if let author_id = author_id {
+        if let author_id = Author.author_id {
          addUserAndFollowView(id: author_id)
         }
         
@@ -148,9 +159,6 @@ class TrackPlayVC: UIViewController {
                button?.setImage(UIImage(named: "play"), for: .normal)
            }
         
-           trackPlay.updateViewAppeared(newBool: true)
-           album.updateViewAppeared(newBool: false)
-           
            if trackName != "" {
              trackPlay.updateTrackNameLabel(newText: trackName)
            }
@@ -178,6 +186,15 @@ class TrackPlayVC: UIViewController {
 //        timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
        }
     
+    override func viewDidAppear(_ animated: Bool) {
+        trackPlay.updateViewAppeared(newBool: true)
+        album.updateViewAppeared(newBool: false)
+    }
+    
+    @objc func dismissVC() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     func addUserAndFollowView(id: String) {
         userAndFollow = UserPfAndFollow(id: id)
         if let userAndFollow = userAndFollow {
@@ -187,10 +204,9 @@ class TrackPlayVC: UIViewController {
           view.bringSubviewToFront(userAndFollow.view)
           
           userAndFollow.didMove(toParent: self)
-          userAndFollow.view.backgroundColor = UIColor.yellow
           self.view.bringSubviewToFront(userAndFollow.view)
           userAndFollow.view.translatesAutoresizingMaskIntoConstraints = false
-            userAndFollow.view.topAnchor.constraint(equalTo: view.topAnchor, constant: 40).isActive = true
+          userAndFollow.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
           userAndFollow.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
           userAndFollow.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
           userAndFollow.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -238,7 +254,7 @@ class TrackPlayVC: UIViewController {
         if let user_view = userAndFollow?.view {
             imageView.topAnchor.constraint(equalTo: user_view.bottomAnchor, constant: 20).isActive = true
         } else {
-            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         }
 
         

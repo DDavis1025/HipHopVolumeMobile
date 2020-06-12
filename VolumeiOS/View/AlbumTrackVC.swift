@@ -12,7 +12,7 @@ import SwiftUI
 import AVFoundation
 
 var player:AVPlayer?
-class AlbumTrackVC: Toolbar {
+class AlbumTrackVC: UIViewController {
 
     var post:Post?
     var albumNameLabel:UILabel?
@@ -29,6 +29,7 @@ class AlbumTrackVC: Toolbar {
     var imageLoader:DownloadImage?
     let modelClass = ModelClass()
     let trackPlay = TrackPlay()
+    var userAndFollow:UserPfAndFollow?
     
     let timeRemainingLabel: UILabel = {
          let timeRemaining = UILabel()
@@ -55,6 +56,17 @@ class AlbumTrackVC: Toolbar {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("it loaded")
+        navigationController?.isToolbarHidden = true
+        let dismiss = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(dismissVC))
+        dismiss.tintColor = UIColor.black
+        navigationItem.leftBarButtonItem = dismiss
+        
+        print("Author \(Author.author_id)")
+        if let author_id = Author.author_id {
+         addUserAndFollowView(id: author_id)
+         print("it worked author_id \(author_id)")
+        }
         imageView.image = UIImage(named: "music-placeholder")
         view.addSubview(imageView)
         setImageViewConstraints()
@@ -108,6 +120,30 @@ class AlbumTrackVC: Toolbar {
 
     }
     
+    @objc func dismissVC() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func addUserAndFollowView(id: String) {
+        userAndFollow = UserPfAndFollow(id: id)
+        if let userAndFollow = userAndFollow {
+          addChild(userAndFollow)
+          userAndFollow.view.isUserInteractionEnabled = true
+          view.addSubview(userAndFollow.view)
+          view.bringSubviewToFront(userAndFollow.view)
+          
+          userAndFollow.didMove(toParent: self)
+          self.view.bringSubviewToFront(userAndFollow.view)
+          userAndFollow.view.translatesAutoresizingMaskIntoConstraints = false
+          userAndFollow.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+          userAndFollow.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+          userAndFollow.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+          userAndFollow.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+          userAndFollow.view.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        }
+         
+    }
+    
     
     func addLabels() {
         albumNameLabel = UILabel()
@@ -153,8 +189,11 @@ class AlbumTrackVC: Toolbar {
     func setImageViewConstraints() {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
-        
-        imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        if let userView = userAndFollow?.view {
+            imageView.topAnchor.constraint(equalTo: userView.bottomAnchor, constant: 20).isActive = true
+        } else {
+            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        }
 
         
         imageView.widthAnchor.constraint(equalToConstant: 320).isActive = true

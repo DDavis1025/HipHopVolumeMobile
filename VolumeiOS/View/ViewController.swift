@@ -39,7 +39,7 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
                 let imagePath = self.albumData.filter { i in i.id == self.post.id
                 }
                 
-                
+
                 self.listArray = self.albumData.filter { i in i.album_id == self.post.id && i.id != self.post.id
                 }
 
@@ -222,11 +222,20 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
         trackVC.trackNameLabel?.text = "\(listArray[indexPath.row].name!)"
         modelClass.updateTrackNameLabel(newText: "\(listArray[indexPath.row].name!)")
 
+        print("listArray \(listArray)")
         modelClass.updateTrackPath(newText: (trackPath?[indexPath.row])!)
 
         if !albumTrackBtnClicked! {
           modelClass.updateClickedFromAT(newBool: false)
-          self.present(trackVC, animated: true, completion: nil)
+          let author = Author()
+          if let author_id = self.albumData[0].author {
+             print("view controller author id \(author_id)")
+             author.updateAuthorID(newString: author_id)
+           }
+          let modalVC = UINavigationController(rootViewController: trackVC)
+          modalVC.modalPresentationStyle = .fullScreen
+
+          self.navigationController?.present(modalVC, animated: true, completion: nil)
         } else {
           trackVC.play(url: (NSURL(string: (ModelClass.track!))!))
           modelClass.updateClickedFromAT(newBool: true)
@@ -273,17 +282,5 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
 }
 
-struct IntegratedController: UIViewControllerRepresentable {
-    var post:Post
-    func makeUIViewController(context: UIViewControllerRepresentableContext<IntegratedController>) -> ViewController {
-        return ViewController(post: post)
-    }
-    
-    func updateUIViewController(_ uiViewController: ViewController, context: UIViewControllerRepresentableContext<IntegratedController>) {
-
-    }
-    
-    
-}
 
 

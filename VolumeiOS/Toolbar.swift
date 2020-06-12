@@ -76,11 +76,13 @@ override func viewDidLoad()
         let trackVC = TrackPlayVC()
         
         if ModelClass.viewAppeared! {
-            self.present(albumTrackVC, animated: true, completion: nil)
+            let atVC = UINavigationController(rootViewController: albumTrackVC)
+            atVC.modalPresentationStyle = .fullScreen
+            self.present(atVC, animated: true, completion: nil)
         } else if TrackPlay.viewAppeared! {
             print("track view appeared")
             let modalVC = UINavigationController(rootViewController: trackVC)
-
+            modalVC.modalPresentationStyle = .fullScreen
             self.present(modalVC, animated: true, completion: nil)
 //            self.present(trackVC, animated: true, completion: nil)
         }

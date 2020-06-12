@@ -9,6 +9,10 @@
 import Foundation
 import UIKit
 
+protocol MyCollectionViewCellDelegate: class {
+    func didPressTVCell()
+}
+
 class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSource {
        var myTableView: UITableView!
        var parent:HomeViewController?
@@ -87,6 +91,7 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
        var albumVC:AlbumVC?
        var imageLoader:DownloadImage?
        var refresher:UIRefreshControl?
+       weak var delegate:MyCollectionViewCellDelegate?
        
        var components:URLComponents = {
               var component = URLComponents()
@@ -140,6 +145,7 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
         spinner.startAnimating()
         spinner.hidesWhenStopped = true
     }
+    
     
 //    func addSpinner() {
 //             let child = SpinnerViewController()
@@ -200,6 +206,9 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             tableView.deselectRow(at: indexPath, animated: true)
             let albumVC = AlbumVC(post: posts[indexPath.row])
+            if let del = self.delegate {
+               del.didPressTVCell()
+            }
             parent?.navigationController?.pushViewController(albumVC, animated: true)
     }
 

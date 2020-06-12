@@ -153,3 +153,11 @@ struct Username:Codable {
 struct MediaPath:Codable {
     var path:String?
 }
+
+struct Author {
+    static var author_id:String?
+    
+    func updateAuthorID(newString: String) {
+        Author.self.author_id = newString
+    }
+}
