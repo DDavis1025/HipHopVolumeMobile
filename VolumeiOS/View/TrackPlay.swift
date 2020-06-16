@@ -148,6 +148,10 @@ class TrackPlayVC: UIViewController {
            view.addSubview(imageView.view)
            }
          setupConstraints()
+        
+        trackPlay.updateViewAppeared(newBool: true)
+        album.updateViewAppeared(newBool: false)
+        print("track play view appeared \(TrackPlay.viewAppeared)")
             
         
     }
@@ -187,8 +191,7 @@ class TrackPlayVC: UIViewController {
        }
     
     override func viewDidAppear(_ animated: Bool) {
-        trackPlay.updateViewAppeared(newBool: true)
-        album.updateViewAppeared(newBool: false)
+        print("track play appeared")
     }
     
     @objc func dismissVC() {

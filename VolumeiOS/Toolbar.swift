@@ -30,13 +30,10 @@ override func viewDidLoad()
     super.viewDidLoad()
     
         navigationController?.setToolbarHidden(false, animated: false)
-        let gesture = UITapGestureRecognizer(target: self, action:  #selector(self.checkAction))
-         navigationController?.toolbar.addGestureRecognizer(gesture)
-         navigationController?.toolbar.barTintColor = UIColor.darkGray
-         navigationController?.toolbar.isTranslucent = false
-         self.extendedLayoutIncludesOpaqueBars = true
-
-//        toolBar.isUserInteractionEnabled = true
+        navigationController?.toolbar.barTintColor = UIColor.darkGray
+        navigationController?.toolbar.isTranslucent = false
+        self.extendedLayoutIncludesOpaqueBars = true
+    
         self.playBtn = UIBarButtonItem(barButtonSystemItem: .play , target: self, action: #selector(playBtnAction(sender:)))
         self.pauseBtn = UIBarButtonItem(barButtonSystemItem: .pause , target: self, action: #selector(pauseBtnAction(sender:)))
     
@@ -46,12 +43,18 @@ override func viewDidLoad()
         toolbarItems = [playBtn, pauseBtn]
     
         view.isUserInteractionEnabled = true
+        self.navigationController?.toolbar.isUserInteractionEnabled = true
+    
+        addGesture()
+    
 
 }
     
+    func addGesture() {
+        let gesture = UITapGestureRecognizer(target: self, action:  #selector(self.checkAction))
+        navigationController?.toolbar.addGestureRecognizer(gesture)
+    }
     
-    
-            
     
     @objc func playBtnAction(sender: UIBarButtonItem)
 {
@@ -74,7 +77,7 @@ override func viewDidLoad()
     @objc func checkAction(sender : UITapGestureRecognizer) {
         let albumTrackVC = AlbumTrackVC()
         let trackVC = TrackPlayVC()
-        
+        print("toolbar track play view \(TrackPlay.viewAppeared)")
         if ModelClass.viewAppeared! {
             let atVC = UINavigationController(rootViewController: albumTrackVC)
             atVC.modalPresentationStyle = .fullScreen

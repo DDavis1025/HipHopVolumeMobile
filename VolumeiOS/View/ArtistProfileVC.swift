@@ -14,6 +14,7 @@ import SwiftUI
 protocol FollowDelegateProtocol {
     func sendFollowData(myData: Bool)
 }
+
 class ArtistProfileVC: Toolbar {
     
     var delegate: FollowDelegateProtocol? = nil
@@ -38,6 +39,7 @@ class ArtistProfileVC: Toolbar {
     var followsLabel = UILabel()
     var followsTitle = UILabel()
     var child:SpinnerViewController?
+    var videoStruct = Video()
     var users = [UsersModel]() {
         didSet {
             DispatchQueue.main.async {
@@ -168,6 +170,10 @@ class ArtistProfileVC: Toolbar {
 //    override func viewDidAppear(_ animated: Bool) {
 //        userPhotoUpdated()
 //    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        videoStruct.updateDidGoBack(newBool: true)
+    }
     
     
     func getFollowing(id: String) {

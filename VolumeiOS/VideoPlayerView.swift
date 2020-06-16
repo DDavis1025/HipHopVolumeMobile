@@ -9,9 +9,9 @@
 import UIKit
 import AVFoundation
 
-var video_player:AVPlayer?
 class VideoPlayerView: UIView {
     private var playerLayer: AVPlayerLayer?
+    var player:AVPlayer?
     var isPlaying = false
     var videoURL:String?
     var secondToFadeOut = 5 // How many second do you want the view to idle before the button fades. You can change this to whatever you'd like.
@@ -52,7 +52,7 @@ class VideoPlayerView: UIView {
     @objc func handlePause(_ sender: UIButton!) {
         print("pause clicked")
         if isPlaying {
-            player?.pause()
+            self.player?.pause()
             let button = UIButton(type: .system)
             let config = UIImage.SymbolConfiguration(pointSize: 35, weight: .bold, scale: .medium)
             let play = UIImage(systemName: "play.fill", withConfiguration: config) as UIImage?
@@ -64,7 +64,7 @@ class VideoPlayerView: UIView {
             let image = UIImage(systemName: "pause.fill", withConfiguration: config) as UIImage?
             let whiteImage = image?.withTintColor(.white, renderingMode: .alwaysOriginal)
             pausePlayButton.setImage(whiteImage, for: .normal)
-            player?.play()
+            self.player?.play()
         }
         
         isPlaying = !isPlaying
@@ -121,18 +121,18 @@ class VideoPlayerView: UIView {
     }()
     
     @objc func mySliderBeganTracking() {
-        player?.pause()
+        self.player?.pause()
     }
     
     @objc func mySliderEndedTracking() {
         if isPlaying {
-        player?.play()
+        self.player?.play()
         }
     }
     
     @objc func mySliderEndedTrackingOut() {
         if isPlaying {
-        player?.play()
+        self.player?.play()
         }
     }
     
@@ -140,7 +140,7 @@ class VideoPlayerView: UIView {
     
     @objc func handleSliderChange() {
     
-         if let duration = player?.currentItem?.duration{
+         if let duration = self.player?.currentItem?.duration{
 
            let totalSeconds = CMTimeGetSeconds(duration)
             let value = Float64(videoSlider.value) * totalSeconds
@@ -148,7 +148,7 @@ class VideoPlayerView: UIView {
             print("videoSlider.value \(videoSlider.value)")
             print("value \(value)")
             let seekTime = CMTime(seconds: Double(value) , preferredTimescale: 600)
-            player?.seek(to: seekTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (completedSeek) in
+            self.player?.seek(to: seekTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: { (completedSeek) in
             })
         }
     }
@@ -162,7 +162,7 @@ class VideoPlayerView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.tap(_:)))
         self.addGestureRecognizer(tapRecognizer)
@@ -267,21 +267,21 @@ class VideoPlayerView: UIView {
         let urlString = videoURL
         if let urlString = urlString {
         if let url = URL(string: urlString) {
-        player = AVPlayer(url: url)
+        self.player = AVPlayer(url: url)
         
-        let playerLayer = AVPlayerLayer(player: player)
+        let playerLayer = AVPlayerLayer(player: self.player)
             playerLayer.videoGravity = .resizeAspect
         
         self.layer.addSublayer(playerLayer)
         
         self.playerLayer = playerLayer
-        player?.play()
+        self.player?.play()
         
-        player?.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
+        self.player?.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
         
         //track player progress
        let interval = CMTime(value: 1, timescale: 2)
-        player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: { (progressTime) in
+        self.player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: { (progressTime) in
             let seconds = CMTimeGetSeconds(progressTime)
             let minutsString = String(format: "%02d", Int(seconds/60))
             let secondsString = String(format: "%02d", Int(seconds.truncatingRemainder(dividingBy: 60)))
@@ -303,14 +303,17 @@ class VideoPlayerView: UIView {
             pausePlayButton.isHidden = false
             isPlaying = true
             
-            
-            if let duration = player?.currentItem?.duration{
+            if let player = self.player {
+            if let duration = player.currentItem?.duration {
                 let seconds = CMTimeGetSeconds(duration)
+                if !(seconds.isNaN || seconds.isInfinite) {
                 let minutsText = String(format: "%02d", Int(seconds)/60)
                 let secondsText = String(format: "%02d", Int(seconds.truncatingRemainder(dividingBy: 60)))
                 videoLengthLabel.text = "\(minutsText):\(secondsText)"
             }
-            }
+           }
+          }
+         }
         }
     
     
@@ -325,20 +328,32 @@ class VideoPlayerView: UIView {
     
 }
 
+struct Video {
+    static var didGoBack:Bool?
+    
+    func updateDidGoBack(newBool: Bool) {
+        Video.self.didGoBack = newBool
+    }
+}
 
 class VideoVC: UIViewController {
+    static let shared = VideoVC()
     var id:String = ""
     var path:String?
     var author:String?
+    var video_title:String?
+    var video_description:String?
     var userAndFollow:UserPfAndFollow?
-    init(id:String) {
-        self.id = id
-        super.init(nibName: nil, bundle: nil)
-    }
+    let title_label = UILabel()
+    let description_label = UILabel()
+
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    func passId(id:String) {
+        self.id = id
+        print("id \(id)")
     }
+
+    
     private lazy var playerView: VideoPlayerView = {
         let playerView = VideoPlayerView(frame: .zero)
         playerView.backgroundColor = .black
@@ -348,16 +363,27 @@ class VideoVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        print("VIDEO VIEW DID LOAD")
+        let back = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(goBack))
+                  back.tintColor = UIColor.black
+                  
+        self.navigationItem.leftBarButtonItem = back
+        
+        player?.pause()
+        
+
+        let trackPlay = TrackPlay()
+        let album = ModelClass()
+        trackPlay.updateViewAppeared(newBool: false)
+        album.updateViewAppeared(newBool: false)
         
         view.backgroundColor = UIColor.white
-        navigationController?.isToolbarHidden = true
-        let dismiss = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(dismissVC))
-        dismiss.tintColor = UIColor.black
-               
-        navigationItem.leftBarButtonItem = dismiss
         
         GetMedia(id: id, path: "video_path").getMedia {
-            self.path = $0[0].path!
+            if let path = $0[0].path {
+            self.path = path
+            }
             print("video path \(self.path)")
             var components = URLComponents()
             components.scheme = "http"
@@ -372,9 +398,25 @@ class VideoVC: UIViewController {
             }
         }
         view.addSubview(playerView)
+        
+        addTitle()
+        addDescription()
         if let author = author {
             addUserAndFollowView(id: author)
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        if Video.didGoBack == true {
+             let config = UIImage.SymbolConfiguration(pointSize: 35, weight: .bold, scale: .medium)
+             let play = UIImage(systemName: "play.fill", withConfiguration: config) as UIImage?
+             let playImage = play?.withTintColor(.white, renderingMode: .alwaysOriginal)
+             playerView.pausePlayButton.setImage(playImage, for: .normal)
+            print("didGoBack")
+        }
+        let videoStruct = Video()
+        print("video struct \(Video.didGoBack)")
+        videoStruct.updateDidGoBack(newBool: false)
     }
     
     override func viewDidLayoutSubviews() {
@@ -383,8 +425,54 @@ class VideoVC: UIViewController {
         playerView.frame = CGRect(x: view.safeAreaLayoutGuide.layoutFrame.origin.x, y: view.safeAreaLayoutGuide.layoutFrame.origin.y, width: view.safeAreaLayoutGuide.layoutFrame.size.width, height: height)
     }
     
-    @objc func dismissVC() {
-        self.dismiss(animated: true, completion: nil)
+    
+    @objc func goBack(sender: UIBarButtonItem) {
+        if let player = playerView.player {
+           player.pause()
+        }
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        if let player = playerView.player {
+           playerView.isPlaying = false
+           player.pause()
+        }
+    }
+    
+    func addTitle() {
+        if let video_title = video_title {
+        title_label.text = video_title
+        title_label.font = UIFont.boldSystemFont(ofSize: 17.0)
+        self.view.addSubview(title_label)
+        }
+        addTitleContraints()
+    }
+    
+    func addTitleContraints() {
+        title_label.translatesAutoresizingMaskIntoConstraints = false
+        title_label.topAnchor.constraint(equalTo: playerView.bottomAnchor, constant: 10).isActive = true
+        title_label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        title_label.widthAnchor.constraint(equalTo: view!.widthAnchor).isActive = true
+        title_label.heightAnchor.constraint(equalToConstant: 20).isActive = true
+    }
+    
+    func addDescription() {
+        if let video_desc = video_description {
+        description_label.text = video_desc
+        description_label.font = description_label.font.withSize(14.0)
+        self.view.addSubview(description_label)
+            
+        }
+        addDescContraints()
+    }
+    
+    func addDescContraints() {
+        description_label.translatesAutoresizingMaskIntoConstraints = false
+        description_label.topAnchor.constraint(equalTo: title_label.bottomAnchor, constant: 7).isActive = true
+        description_label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        description_label.widthAnchor.constraint(equalTo: view!.widthAnchor).isActive = true
+        description_label.heightAnchor.constraint(equalToConstant: 20).isActive = true
     }
     
     func addUserAndFollowView(id: String) {
@@ -399,7 +487,7 @@ class VideoVC: UIViewController {
           userAndFollow.didMove(toParent: self)
           self.view.bringSubviewToFront(userAndFollow.view)
           userAndFollow.view.translatesAutoresizingMaskIntoConstraints = false
-          userAndFollow.view.topAnchor.constraint(equalTo: playerView.bottomAnchor).isActive = true
+          userAndFollow.view.topAnchor.constraint(equalTo: description_label.bottomAnchor, constant: 8).isActive = true
           userAndFollow.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
           userAndFollow.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
           userAndFollow.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true

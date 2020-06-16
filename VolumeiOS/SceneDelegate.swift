@@ -28,9 +28,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let window = UIWindow(windowScene: windowScene)
             var navigationController: UINavigationController?
 
-            let mainVC = MainView()
             let authVC = AuthVC()
-            let homeVC = HomeViewController()
+
+            let commentVC = CommentVC()
+            let testTextView = TestTextView()
             
             navigationController = UINavigationController(rootViewController: authVC)
             

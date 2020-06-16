@@ -161,3 +161,34 @@ struct Author {
         Author.self.author_id = newString
     }
 }
+
+
+final class Comment: Codable {
+    var id:String?
+    var post_id:String?
+    var username:String?
+    var user_picture:String?
+    var user_id:String?
+    var text:String?
+    var parent_id:String?
+    
+    init(post_id:String, username:String, user_picture:String, user_id:String, text:String, parent_id: String) {
+        self.post_id = post_id
+        self.username = username
+        self.user_picture = user_picture
+        self.user_id = user_id
+        self.text = text
+        self.parent_id = parent_id
+    }
+}
+
+struct Comments: Codable {
+    var id:String?
+    var post_id:String?
+    var text:String?
+    var username:String?
+    var user_picture:String?
+    var user_id:String?
+    var parent_id:String?
+}
+

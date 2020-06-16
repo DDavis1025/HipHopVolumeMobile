@@ -75,8 +75,6 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
         
 //        addSpinner()
         
-        navigationController?.isToolbarHidden = false
-        
         authorID = self.post?.author!
         self.userModel = GetUserByIDVM(id: (authorID!))
         if let id = authorID {

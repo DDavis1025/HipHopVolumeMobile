@@ -13,7 +13,8 @@ class VideoCell: AlbumCell {
          override init(frame: CGRect) {
            super.init(frame: frame)
    //        addSpinner()
-           spinner.startAnimating()
+            spinner.startAnimating()
+            addTableView()
             GetAllOfMediaType(path:"videos").getAllPosts {
                        self.posts = $0
                    }
@@ -22,7 +23,6 @@ class VideoCell: AlbumCell {
            refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
            refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
            
-           addTableView()
                   
            myTableView.addSubview(refresher!)
        }
@@ -53,14 +53,21 @@ class VideoCell: AlbumCell {
             if let id = posts[indexPath.row].id {
             videoStruct.updateVideoId(newString: id)
             if let video_id = VideoStruct.id {
-            let videoVC = VideoVC(id: video_id)
-            if let author = posts[indexPath.row].author {
-            videoVC.author = posts[indexPath.row].author
+            let videoVC = VideoVC()
+            if let id = VideoStruct.id {
+            videoVC.passId(id: id)
             }
-            let modalVC = UINavigationController(rootViewController: videoVC)
-            modalVC.modalPresentationStyle = .fullScreen
+            if let author = posts[indexPath.row].author {
+              videoVC.author = author
+            }
+            if let description = posts[indexPath.row].description {
+              videoVC.video_description = description
+            }
+            if let title = posts[indexPath.row].title {
+              videoVC.video_title = title
+            }
 
-            parent?.navigationController?.present(modalVC, animated: true, completion: nil)
+            parent?.navigationController?.pushViewController(videoVC, animated: true)
 
           }
        }

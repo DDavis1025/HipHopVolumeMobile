@@ -34,29 +34,41 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         setupMenuBar()
         setupCollectionView()
         
-        navigationController?.isToolbarHidden = false
-        
         let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
                
         let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
                           
         let whoToFollow = UIBarButtonItem(title: "toFollow", style: .plain, target: self, action: #selector(toFollowTapped))
         
+        let comment = UIBarButtonItem(title: "Comment", style: .plain, target: self, action: #selector(toCommentTapped))
+        
 
         navigationItem.leftBarButtonItem = profile
-        navigationItem.rightBarButtonItem = whoToFollow
-        navigationItem.rightBarButtonItem = logout
+//        navigationItem.rightBarButtonItem = whoToFollow
+//        navigationItem.rightBarButtonItem = logout
+        navigationItem.rightBarButtonItem = comment
          
-         self.navigationController?.isToolbarHidden = false
          self.navigationController?.isNavigationBarHidden = false
 
 //        auth0()
 
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        print("view appeared")
+        addGesture()
+    }
+    
+    
+    
     func pushToAlbumVC(post: Post) {
         albumVC = AlbumVC(post: post)
         navigationController?.pushViewController(self.albumVC!, animated: true)
+    }
+    
+    @objc func toCommentTapped() {
+        let commentVC = CommentVC()
+        self.navigationController?.pushViewController(commentVC, animated: true)
     }
     
     @objc func addTapped() {

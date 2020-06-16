@@ -68,7 +68,8 @@ class ArtistVideoCell: ArtistAlbumsCell {
             if let id = artistData[indexPath.row].id {
             videoStruct.updateVideoId(newString: id)
             if let video_id = VideoStruct.id {
-            let videoVC = VideoVC(id: video_id)
+            let videoVC = VideoVC()
+            videoVC.passId(id: id)
                 
             parent?.navigationController?.pushViewController(videoVC, animated: true)
             }
