@@ -72,14 +72,6 @@ struct CommentPostRequest {
             
             let dataTask = URLSession.shared.dataTask(with: urlRequest) { data, response, _ in
                 
-                do {
-                   let json = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as? [[String: Any]]
-                   
-                   let posts = json
-                   print("json \(posts)")
-                } catch {
-                    print(error)
-                }
                 
                 guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let jsonData = data else {
                     completion(.failure(.responseProblem))

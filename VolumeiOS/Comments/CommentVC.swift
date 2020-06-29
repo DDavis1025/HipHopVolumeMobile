@@ -9,13 +9,33 @@
 import Foundation
 import UIKit
 
-class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, HeightForTextView, UITextViewDelegate {
-    func heightOfTextView(height: CGFloat) {
-        print("commentVC delegate function called")
-        textViewHeight = height
-        self.myTableView.beginUpdates()
-        self.myTableView.endUpdates()
+struct CommentStruct {
+    static var isSelected:Bool? = false
+    static var parent_id:String?
+    
+    func updateIsSelected(newBool: Bool) {
+        CommentStruct.self.isSelected = newBool
     }
+    
+    func updateParentId(newString: String) {
+        CommentStruct.self.parent_id = newString
+    }
+    
+    
+}
+
+class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UITextViewDelegate, UpdateTableView {
+    func updateTableView(bool: Bool) {
+         if bool == true {
+               print("it worked")
+//               self.myTableView.reloadData()
+            UIView.performWithoutAnimation {
+               self.myTableView.beginUpdates()
+               self.myTableView.endUpdates()
+            }
+        }
+    }
+    
     
     private var myTableView:UITableView!
     var textField = UITextField()
@@ -24,18 +44,28 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     var username:String?
     var imageLoader:DownloadImage?
     var comments:[Comments] = []
+    var sub_comments:[Comments] = []
     var textViewHeight = CGFloat()
     let countLabel = UILabel()
+    let textViewView = UIView()
+    let sendBtn = UIButton()
+    var tap: UITapGestureRecognizer?
+    let comment = CommentStruct()
+    var parent_id:String?
+    var reply:Bool = false
     
     lazy var textView:UITextView = {
         let tv = UITextView()
         tv.isScrollEnabled = false
+        tv.text = "Enter Comment"
+        tv.textColor = UIColor.lightGray
         tv.sizeToFit()
-        tv.returnKeyType = UIReturnKeyType.send
+        tv.returnKeyType = UIReturnKeyType.default
+        tv.layer.cornerRadius = 4
         tv.layer.borderColor = UIColor.lightGray.cgColor
         tv.layer.borderWidth = 0.5
         tv.keyboardType = UIKeyboardType.default
-        tv.backgroundColor = UIColor.yellow
+        tv.backgroundColor = UIColor.white
         tv.textContainer.maximumNumberOfLines = 0
         tv.textContainer.lineBreakMode = .byCharWrapping
         tv.font = UIFont(name: "GillSans", size: 18)
@@ -48,90 +78,104 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         getUser()
         self.textView.delegate = self
 //        addTextField()
-        view.addSubview(self.textView)
+        view.addSubview(self.textViewView)
+        view.bringSubviewToFront(self.textViewView)
+        textViewView.addSubview(textView)
+        textViewView.addSubview(sendBtn)
+        sendBtn.isEnabled = false
+        createViewForTextView()
         setupTextViewConstraints()
-        setupCountLabel()
+        createSendButton()
+//        setupCountLabel()
         addTableView()
+//        view.bringSubviewToFront(countLabel)
         loadComments()
         
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         
-        view.addGestureRecognizer(tap)
         
+//        tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+//
+//        if let tap = tap {
+//        view.addGestureRecognizer(tap)
+//        }
+//        tap?.isEnabled = false
+//
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardNotification), name: UIResponder.keyboardWillShowNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardNotification), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func getUser() {
+        print("getUser")
         if let id = profile?.sub {
             GetUsersById(id: id).getAllPosts {
+                print("gotUser $0 \($0)")
                 self.username = $0[0].username
+                print("got User \(self.username)")
             }
         }
     }
     
-    func setupCountLabel() {
-//        countLabel.backgroundColor = .clear
-//        countLabel.layer.cornerRadius = 2
-//        countLabel.layer.borderWidth = 1
-//        countLabel.layer.borderColor = UIColor.lightGray.cgColor
-        countLabel.text = "Hello World"
+   func setupCountLabel() {
         countLabel.textColor = UIColor.black
+        countLabel.textAlignment = .center
+        countLabel.layer.cornerRadius = 5
+        countLabel.layer.borderWidth = 1.0
+        countLabel.backgroundColor = UIColor.white
+        countLabel.layer.borderColor = UIColor.lightGray.cgColor
         view.addSubview(countLabel)
-        view.bringSubviewToFront(countLabel)
         countLabel.translatesAutoresizingMaskIntoConstraints = false
         countLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
         countLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        countLabel.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+        countLabel.bottomAnchor.constraint(equalTo: textView.topAnchor).isActive = true
         countLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         
     }
     
-    func setupTextViewConstraints() {
-           textView.translatesAutoresizingMaskIntoConstraints = false
-           textView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-           textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-           bottomConstraint = textView.bottomAnchor.constraint(equalTo: (view?.safeAreaLayoutGuide.bottomAnchor)!, constant: 0)
-           bottomConstraint?.isActive = true
-            var frame = self.textView.frame
-            frame.size.height = self.textView.contentSize.height
-            self.textView.frame = frame
-            
-        }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if CommentStruct.isSelected! && reply {
+            textView.text = nil
+            textView.textColor = UIColor.black
+            reply = false
+        }
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        }
         countLabel.text = "\(textView.text.count)"
         return textView.text.count + (text.count - range.length) <= 250
     }
     
-//    func setupTextViewConstraints() {
-//        textView.translatesAutoresizingMaskIntoConstraints = true
-////        var frame = self.textView.frame
-////        frame.size.height = self.textView.contentSize.height
-////        self.textView.frame = frame
-//
-////        textView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-//
-//        textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-//
-//        textView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-//        textView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-////        textView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-//
-////        textView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//
-//        bottomConstraint = textView.bottomAnchor.constraint(equalTo: (view?.safeAreaLayoutGuide.bottomAnchor)!, constant: 0)
-//        bottomConstraint?.isActive = true
-////        bottomConstraint = textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-////        bottomConstraint?.isActive = true
+    func textViewDidBeginEditing(_ textView: UITextView) {
+            print("did begin editing")
+            textView.text = nil
+            textView.textColor = UIColor.black
+    }
+    
+    
+    
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text == "" {
+            sendBtn.isEnabled = false
+        } else {
+            sendBtn.isEnabled = true
+        }
+    }
+    
+//    func textViewDidEndEditing(_ textView: UITextView) {
+//        if textView.text.isEmpty {
+//            textView.text = "Enter Comment"
+//            textView.textColor = UIColor.lightGray
+//        }
 //    }
 //
-    
+
     
     @objc func dismissKeyboard() {
-        //Causes the view (or one of its embedded text fields) to resign the first responder status.
-        view.endEditing(true)
+        textView.resignFirstResponder()
+        tap?.isEnabled = false
+        print("dismissKeyboard")
     }
     
     @objc func handleKeyBoardNotification(notification:NSNotification) {
@@ -149,7 +193,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
     
     func loadComments() {
-        let getComments = GETCommentsByPostId(id: "2d44a588-e47a-43c5-bd16-94e7073e4e14")
+        let getComments = GETComments(id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", path: "comments")
         getComments.getAllById {
             self.comments = $0
             DispatchQueue.main.async {
@@ -157,6 +201,8 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             }
         }
     }
+    
+
     
     func addTableView() {
         
@@ -197,37 +243,100 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         
     }
     
-    func addTextField() {
-        textField.placeholder = "Enter Comment"
-        textField.font = UIFont.systemFont(ofSize: 15)
-        textField.borderStyle = UITextField.BorderStyle.roundedRect
-        textField.autocorrectionType = UITextAutocorrectionType.no
-        textField.keyboardType = UIKeyboardType.default
-        textField.returnKeyType = UIReturnKeyType.send
-        textField.clearButtonMode = UITextField.ViewMode.whileEditing
-        textField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
-        textField.layer.borderColor = UIColor.gray.cgColor
-        textField.layer.borderWidth = 0.5
-        textField.delegate = self
-        self.view.addSubview(textField)
+
+    
+    func setupTextViewConstraints() {
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
+        textView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        textView.topAnchor.constraint(equalTo: textViewView.topAnchor).isActive = true
+        var frame = self.textView.frame
+        frame.size.height = self.textView.contentSize.height
+        self.textView.frame = frame
+                
+}
+    
+    func createViewForTextView() {
+        textViewView.backgroundColor = UIColor.white
+        textViewView.layer.borderColor = UIColor.lightGray.cgColor
+        textViewView.layer.borderWidth = 1.0
+        textViewView.translatesAutoresizingMaskIntoConstraints = false
+        textViewView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        textViewView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        textViewView.heightAnchor.constraint(equalTo: textView.heightAnchor, constant: 50).isActive = true
         
-        textFieldContraints()
+        
+        bottomConstraint = textViewView.bottomAnchor.constraint(equalTo: (self.view.safeAreaLayoutGuide.bottomAnchor), constant: 0)
+        bottomConstraint?.isActive = true
     }
     
+    func createSendButton() {
+        let btnConfiguration = UIImage.SymbolConfiguration(scale: .medium)
+        let btnSymbolImage = UIImage(systemName: "arrowshape.turn.up.right.fill", withConfiguration: btnConfiguration)
+        sendBtn.setImage(btnSymbolImage, for: .normal)
+        sendBtn.translatesAutoresizingMaskIntoConstraints = false
+        sendBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        sendBtn.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        sendBtn.trailingAnchor.constraint(equalTo: textViewView.trailingAnchor, constant: -8).isActive = true
+        sendBtn.bottomAnchor.constraint(equalTo: self.textViewView.bottomAnchor, constant: -15).isActive = true
+        sendBtn.addTarget(self, action: #selector(sendComment), for: .touchUpInside)
+        
+    }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()  //if desired
-        performActionSend()
-        return true
+    @objc func sendComment() {
+        if CommentStruct.isSelected == true {
+          sendSubComment()
+          print("sub comment sendComment")
+        } else {
+          ("main comment sendComment")
+          performActionSend()
+        }
+        view.endEditing(true)
     }
 
+    func sendSubComment() {
+        if let text = textView.text,
+        let username = username,
+        let user_picture = profile?.picture,
+        let user_id = profile?.sub,
+        let parent_id = parent_id {
+            print("got info")
+            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: parent_id)
+            
+            let postRequest = CommentPostRequest(endpoint: "sub_comment")
+            postRequest.save(comment) { (result) in
+                switch result {
+                case .success(let comment):
+                    print("the following comment has been sent: \(comment)")
+                    DispatchQueue.main.async {
+                    self.myTableView.reloadData()
+                    UIView.performWithoutAnimation {
+                       self.myTableView.beginUpdates()
+                       self.myTableView.endUpdates()
+                    }
+                    }
+                case .failure(let error):
+                    print("An error occurred: \(error)")
+                }
+            }
+        } else {
+            print("text \(textView.text)")
+            print("username \(username)")
+            print("user_picture \(profile?.picture)")
+            print("user_id \(profile?.sub)")
+            print("parent_id \(parent_id)")
+        }
+        print("sub comment send tapped")
+        textView.text = ""
+    }
+    
     func performActionSend() {
-        if let text = textField.text,
+        if let text = textView.text,
         let username = username,
         let user_picture = profile?.picture,
         let user_id = profile?.sub {
             print("got info")
-            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: "")
+            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: nil)
             
             let postRequest = CommentPostRequest(endpoint: "comment")
             postRequest.save(comment) { (result) in
@@ -239,37 +348,55 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                     print("An error occurred: \(error)")
                 }
             }
-        } 
-        print("send tapped")
-//        textField.text = ""
+        } else {
+            print("text \(textView.text)")
+            print("username \(username)")
+            print("user_picture \(profile?.picture)")
+            print("user_id \(profile?.sub)")
+        }
+        print("main comment send tapped")
+        textView.text = ""
     }
     
-//    self.post_id = post_id
-//    self.id = id
-//    self.username = username
-//    self.user_picture = user_picture
-//    self.user_id = user_id
-//    self.text = text
-//    self.parent_id = parent_id
-    
-    func textFieldContraints() {
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        textField.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        
-        textField.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        textField.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        
-        
-        
-        bottomConstraint = textField.bottomAnchor.constraint(equalTo: (view?.safeAreaLayoutGuide.bottomAnchor)!, constant: 0)
-        bottomConstraint?.isActive = true
-        
-    }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        textField.endEditing(true)
+        if !textView.isFirstResponder {
+           textView.becomeFirstResponder()
+           tableView.deselectRow(at: indexPath, animated: true)
+           comment.updateIsSelected(newBool: true)
+           parent_id = comments[indexPath.row].id
+           reply = true
+//           tap?.isEnabled = true
+
+            textView.text = nil
+           // If updated text view will be empty, add the placeholder
+           // and set the cursor to the beginning of the text view
+            if textView.text.isEmpty {
+
+               textView.text = "Reply"
+               textView.textColor = UIColor.lightGray
+
+               textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+           }
+
+           print("didSelect isFirst \(tap?.isEnabled)")
+        } else {
+            textView.text = nil
+            textView.resignFirstResponder()
+            if textView.text.isEmpty {
+
+                textView.text = "Enter Comment"
+                textView.textColor = UIColor.lightGray
+            }
+
+            tableView.deselectRow(at: indexPath, animated: false)
+            comment.updateIsSelected(newBool: false)
+        }
+//           tap?.isEnabled = true
+        print("didSelect \(tap?.isEnabled) + \(textView.isFirstResponder)")
     }
+    
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return comments.count
@@ -278,10 +405,12 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath) as! CommentCell
+        cell.delegate = self
         let comment = comments[indexPath.row]
-        cell.myDelegate = self
         cell.set(comment: comment)
-        
+        if let id = comment.id {
+        cell.parent_id = id
+        }
         return cell
     }
     

@@ -172,7 +172,7 @@ final class Comment: Codable {
     var text:String?
     var parent_id:String?
     
-    init(post_id:String, username:String, user_picture:String, user_id:String, text:String, parent_id: String) {
+    init(post_id:String, username:String, user_picture:String, user_id:String, text:String, parent_id: String?) {
         self.post_id = post_id
         self.username = username
         self.user_picture = user_picture

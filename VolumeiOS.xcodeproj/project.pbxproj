@@ -35,6 +35,7 @@
 		CD08ADE52495982300AC3A39 /* CommentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADE42495981F00AC3A39 /* CommentVC.swift */; };
 		CD08ADE72497FBD500AC3A39 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADE62497FBD400AC3A39 /* CommentCell.swift */; };
 		CD08ADE924996A5300AC3A39 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADE824996A5100AC3A39 /* File.swift */; };
+		CD422C9424A2E40400D9DF76 /* CommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9324A2E40400D9DF76 /* CommentViewModel.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -96,6 +97,7 @@
 		CD08ADE42495981F00AC3A39 /* CommentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentVC.swift; sourceTree = "<group>"; };
 		CD08ADE62497FBD400AC3A39 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		CD08ADE824996A5100AC3A39 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		CD422C9324A2E40400D9DF76 /* CommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewModel.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 				CD08ADE42495981F00AC3A39 /* CommentVC.swift */,
 				CD08ADE62497FBD400AC3A39 /* CommentCell.swift */,
 				CD08ADE824996A5100AC3A39 /* File.swift */,
+				CD422C9324A2E40400D9DF76 /* CommentViewModel.swift */,
 			);
 			path = Comments;
 			sourceTree = "<group>";
@@ -429,6 +432,7 @@
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
 				CD08ADDC249146A400AC3A39 /* ArtistPFContainerView.swift in Sources */,
 				CD08ADC12474803000AC3A39 /* UsernameTextField.swift in Sources */,
+				CD422C9424A2E40400D9DF76 /* CommentViewModel.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,
 				CD57114F244FDF6600FAAC5D /* ContentView.swift in Sources */,
 				CD57115B244FDF6700FAAC5D /* Spinner.swift in Sources */,
