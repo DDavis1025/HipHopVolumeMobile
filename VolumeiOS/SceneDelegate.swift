@@ -31,7 +31,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let authVC = AuthVC()
 
             let commentVC = CommentVC()
-            let testTextView = TestTextView()
             
             navigationController = UINavigationController(rootViewController: authVC)
             

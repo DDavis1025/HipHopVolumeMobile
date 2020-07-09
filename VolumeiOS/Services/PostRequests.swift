@@ -93,3 +93,87 @@ struct CommentPostRequest {
 }
 
 
+struct CommentLikePostRequest {
+    let resourceURL:URL
+    
+    init(endpoint:String) {
+        let resourceString = "http://localhost:8000/\(endpoint)"
+        guard let resourceURL = URL(string: resourceString) else {fatalError()}
+        
+        self.resourceURL = resourceURL
+    }
+    
+    func save(_ commentToSave: CommentLike, completion: @escaping(Result<[CommentLike], APIError>) -> Void) {
+        
+        do {
+            var urlRequest = URLRequest(url: resourceURL)
+            urlRequest.httpMethod = "POST"
+            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            urlRequest.httpBody = try JSONEncoder().encode(commentToSave)
+            
+            let dataTask = URLSession.shared.dataTask(with: urlRequest) { data, response, _ in
+                
+                
+                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let jsonData = data else {
+                    completion(.failure(.responseProblem))
+                    return
+                }
+                
+                do {
+                    let commentLikeData = try JSONDecoder().decode([CommentLike].self, from: jsonData)
+                    completion(.success(commentLikeData))
+                } catch {
+                    completion(.failure(.decodingProblem))
+                }
+            }
+            dataTask.resume()
+        } catch {
+            completion(.failure(.encodingProblem))
+        }
+    }
+}
+
+
+struct SubCommentLikePostRequest {
+    let resourceURL:URL
+    
+    init(endpoint:String) {
+        let resourceString = "http://localhost:8000/\(endpoint)"
+        guard let resourceURL = URL(string: resourceString) else {fatalError()}
+        
+        self.resourceURL = resourceURL
+    }
+    
+    func save(_ subCommentLikeToSave: SubCommentLike, completion: @escaping(Result<[SubCommentLike], APIError>) -> Void) {
+        print("sub Comment isLiked url \(self.resourceURL)")
+        
+        do {
+            var urlRequest = URLRequest(url: resourceURL)
+            urlRequest.httpMethod = "POST"
+            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            urlRequest.httpBody = try JSONEncoder().encode(subCommentLikeToSave)
+            
+            let dataTask = URLSession.shared.dataTask(with: urlRequest) { data, response, _ in
+                
+                
+                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let jsonData = data else {
+                    completion(.failure(.responseProblem))
+                    return
+                }
+                
+                do {
+                    let subCommentLikeData = try JSONDecoder().decode([SubCommentLike].self, from: jsonData)
+                    completion(.success(subCommentLikeData))
+                } catch {
+                    completion(.failure(.decodingProblem))
+                }
+            }
+            dataTask.resume()
+        } catch {
+            completion(.failure(.encodingProblem))
+        }
+    }
+}
+
+
+

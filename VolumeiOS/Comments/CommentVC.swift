@@ -24,10 +24,13 @@ struct CommentStruct {
     
 }
 
+protocol TableViewSubCommentDelegate {
+    func didSendSubComment(parent_id:String)
+}
+
 class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UITextViewDelegate, UpdateTableView {
     func updateTableView(bool: Bool) {
          if bool == true {
-               print("it worked")
 //               self.myTableView.reloadData()
             UIView.performWithoutAnimation {
                self.myTableView.beginUpdates()
@@ -43,8 +46,8 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     var profile = SessionManager.shared.profile
     var username:String?
     var imageLoader:DownloadImage?
-    var comments:[Comments] = []
-    var sub_comments:[Comments] = []
+    var comments:[CommentViewModel] = []
+    var sub_comments:[CommentViewModel] = []
     var textViewHeight = CGFloat()
     let countLabel = UILabel()
     let textViewView = UIView()
@@ -53,6 +56,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     let comment = CommentStruct()
     var parent_id:String?
     var reply:Bool = false
+    var delegate:TableViewSubCommentDelegate?
     
     lazy var textView:UITextView = {
         let tv = UITextView()
@@ -92,13 +96,12 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         loadComments()
         
         
-        
-//        tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
-//
-//        if let tap = tap {
-//        view.addGestureRecognizer(tap)
-//        }
-//        tap?.isEnabled = false
+        view.isUserInteractionEnabled = true
+        tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+
+        if let tap = tap {
+        view.addGestureRecognizer(tap)
+        }
 //
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardNotification), name: UIResponder.keyboardWillShowNotification, object: nil)
         
@@ -106,12 +109,9 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
     
     func getUser() {
-        print("getUser")
         if let id = profile?.sub {
             GetUsersById(id: id).getAllPosts {
-                print("gotUser $0 \($0)")
                 self.username = $0[0].username
-                print("got User \(self.username)")
             }
         }
     }
@@ -148,7 +148,6 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-            print("did begin editing")
             textView.text = nil
             textView.textColor = UIColor.black
     }
@@ -163,6 +162,13 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         }
     }
     
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text == "" {
+            textView.text = "Enter Comment"
+            textView.textColor = UIColor.lightGray
+        }
+    }
+    
 //    func textViewDidEndEditing(_ textView: UITextView) {
 //        if textView.text.isEmpty {
 //            textView.text = "Enter Comment"
@@ -174,8 +180,15 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     @objc func dismissKeyboard() {
         textView.resignFirstResponder()
-        tap?.isEnabled = false
-        print("dismissKeyboard")
+        if textView.text == "Reply" && self.textView.textColor == UIColor.lightGray {
+            textView.text = "Enter Comment"
+            textView.textColor = UIColor.lightGray
+        }
+        if textView.text == "" {
+            textView.text = "Enter Comment"
+            textView.textColor = UIColor.lightGray
+        }
+        print("dismissKeyBoard")
     }
     
     @objc func handleKeyBoardNotification(notification:NSNotification) {
@@ -194,11 +207,14 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     func loadComments() {
         let getComments = GETComments(id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", path: "comments")
-        getComments.getAllById {
-            self.comments = $0
-            DispatchQueue.main.async {
-                self.myTableView.reloadData()
+        getComments.getAllById { comments in
+            self.comments = comments.map { comment in
+                let ret = CommentViewModel()
+                ret.mainComment = comment
+        
+                return ret
             }
+            self.myTableView.reloadData()
         }
     }
     
@@ -245,6 +261,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
 
     
+    
     func setupTextViewConstraints() {
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
@@ -286,9 +303,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     @objc func sendComment() {
         if CommentStruct.isSelected == true {
           sendSubComment()
-          print("sub comment sendComment")
         } else {
-          ("main comment sendComment")
           performActionSend()
         }
         view.endEditing(true)
@@ -300,21 +315,22 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         let user_picture = profile?.picture,
         let user_id = profile?.sub,
         let parent_id = parent_id {
-            print("got info")
             let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: parent_id)
             
             let postRequest = CommentPostRequest(endpoint: "sub_comment")
             postRequest.save(comment) { (result) in
                 switch result {
                 case .success(let comment):
-                    print("the following comment has been sent: \(comment)")
+                    var viewModel = CommentViewModel()
+                    self.delegate?.didSendSubComment(parent_id: parent_id)
+                    print("delegate tableview \(self.delegate)")
                     DispatchQueue.main.async {
                     self.myTableView.reloadData()
                     UIView.performWithoutAnimation {
                        self.myTableView.beginUpdates()
                        self.myTableView.endUpdates()
                     }
-                    }
+                }
                 case .failure(let error):
                     print("An error occurred: \(error)")
                 }
@@ -326,7 +342,6 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             print("user_id \(profile?.sub)")
             print("parent_id \(parent_id)")
         }
-        print("sub comment send tapped")
         textView.text = ""
     }
     
@@ -335,7 +350,6 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         let username = username,
         let user_picture = profile?.picture,
         let user_id = profile?.sub {
-            print("got info")
             let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: nil)
             
             let postRequest = CommentPostRequest(endpoint: "comment")
@@ -343,6 +357,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 switch result {
                 case .success(let comment):
                     print("the following comment has been sent: \(comment)")
+                    
                     self.loadComments()
                 case .failure(let error):
                     print("An error occurred: \(error)")
@@ -354,47 +369,16 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             print("user_picture \(profile?.picture)")
             print("user_id \(profile?.sub)")
         }
-        print("main comment send tapped")
         textView.text = ""
     }
     
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if !textView.isFirstResponder {
-           textView.becomeFirstResponder()
-           tableView.deselectRow(at: indexPath, animated: true)
-           comment.updateIsSelected(newBool: true)
-           parent_id = comments[indexPath.row].id
-           reply = true
-//           tap?.isEnabled = true
-
-            textView.text = nil
-           // If updated text view will be empty, add the placeholder
-           // and set the cursor to the beginning of the text view
-            if textView.text.isEmpty {
-
-               textView.text = "Reply"
-               textView.textColor = UIColor.lightGray
-
-               textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
-           }
-
-           print("didSelect isFirst \(tap?.isEnabled)")
-        } else {
-            textView.text = nil
-            textView.resignFirstResponder()
-            if textView.text.isEmpty {
-
-                textView.text = "Enter Comment"
-                textView.textColor = UIColor.lightGray
-            }
-
-            tableView.deselectRow(at: indexPath, animated: false)
-            comment.updateIsSelected(newBool: false)
-        }
-//           tap?.isEnabled = true
-        print("didSelect \(tap?.isEnabled) + \(textView.isFirstResponder)")
-    }
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//        tableView.isUserInteractionEnabled = false
+//
+//        print("tapped")
+//    }
     
     
     
@@ -406,14 +390,46 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath) as! CommentCell
         cell.delegate = self
-        let comment = comments[indexPath.row]
-        cell.set(comment: comment)
-        if let id = comment.id {
-        cell.parent_id = id
-        }
+        cell.selectionStyle = .none
+        cell.commentDelegate = self
+        let item = comments[indexPath.item]
+        cell.viewModel = item
         return cell
     }
     
     
+}
+
+extension CommentVC: CommentCellDelegate {
+    func didTapReplyBtn(parent_id: String) {
+        if !textView.isFirstResponder {
+                   textView.becomeFirstResponder()
+                   comment.updateIsSelected(newBool: true)
+                   reply = true
+                   self.parent_id = parent_id
+        //           tap?.isEnabled = true
+
+                    textView.text = nil
+                   // If updated text view will be empty, add the placeholder
+                   // and set the cursor to the beginning of the text view
+                    if textView.text.isEmpty {
+
+                       textView.text = "Reply"
+                       textView.textColor = UIColor.lightGray
+
+                       textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+                   }
+
+                } else {
+                    textView.text = nil
+                    textView.resignFirstResponder()
+                    if textView.text.isEmpty {
+
+                        textView.text = "Enter Comment"
+                        textView.textColor = UIColor.lightGray
+         }
+     }
+    
+  }
 }
 

@@ -132,8 +132,8 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
               followButton.buttonState = .delete
         } else if followButton.buttonState == .delete {
           
-                if let id = user_id {
-                let deleteRequest = DLTFollowingRequest(id: id)
+            if let user_id = user_id, let follower_id = profile?.sub  {
+                let deleteRequest = DLTFollowingRequest(user_id: user_id, follower_id: follower_id)
                 
                 deleteRequest.delete {(err) in
                     if let err = err {

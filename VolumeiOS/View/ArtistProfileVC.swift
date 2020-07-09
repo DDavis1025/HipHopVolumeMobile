@@ -402,8 +402,8 @@ class ArtistProfileVC: Toolbar {
         } else if followButton.buttonState == .delete {
           
                 print("delete button pressed")
-                if let id = artistID {
-                let deleteRequest = DLTFollowingRequest(id: id)
+            if let user_id = artistID, let follower_id = profile?.sub {
+                let deleteRequest = DLTFollowingRequest(user_id: user_id, follower_id: follower_id)
                 
                 deleteRequest.delete {(err) in
                     if let err = err {
@@ -413,8 +413,7 @@ class ArtistProfileVC: Toolbar {
                     print("Successfully deleted followed user from server")
                     DispatchQueue.main.async {
                     self.usersWhoFollow.removeAll(where: {
-                        $0.user_id == id
-                        print("id \(id)")
+                        $0.user_id == user_id
                         return true
                     })
                     self.delegate?.sendFollowData(myData: true)

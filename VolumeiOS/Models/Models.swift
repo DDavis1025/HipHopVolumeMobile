@@ -190,5 +190,31 @@ struct Comments: Codable {
     var user_picture:String?
     var user_id:String?
     var parent_id:String?
+    var isliked:Bool?
+    var numberOfLikes:Int?
 }
+
+final class CommentLike: Codable {
+    var user_id:String?
+    var comment_id:String?
+    
+    init(user_id:String, comment_id:String) {
+        self.user_id = user_id
+        self.comment_id = comment_id
+    }
+}
+
+struct CommentLikes: Codable {
+    var user_id:String?
+}
+
+final class SubCommentLike: Codable {
+    var isLiked:Bool?
+    
+    init(isLiked:Bool) {
+        self.isLiked = isLiked
+    }
+}
+
+
 

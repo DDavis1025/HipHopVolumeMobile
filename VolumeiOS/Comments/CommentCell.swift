@@ -6,18 +6,27 @@ protocol UpdateTableView: class {
     func updateTableView(bool: Bool)
 }
 
+protocol CommentViewDelegate: class {
+    func subCommentLikePressed(sender: UIButton)
+}
+
+
 class CommentView: UIView {
+    
+    weak var delegate: CommentViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        sizeToFit()
-        addSubview(textView)
         addSubview(user_image)
         addSubview(username)
+        addSubview(textView)
+        addSubview(likeBtn)
+        addSubview(numberOfLikes)
         setImageConstraints()
         setUsernameConstraints()
         textViewContstraints()
+        commentLikeBtnConstraints()
+        commentLikesConstraints()
         
     }
     
@@ -25,6 +34,26 @@ class CommentView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
+    lazy var likeBtn:UIButton = {
+        let btn = UIButton()
+        let symbol = UIImage(systemName: "heart")
+        btn.setImage(symbol , for: .normal)
+        btn.tintColor = UIColor.darkGray
+        btn.isUserInteractionEnabled = true
+        btn.addTarget(self, action: #selector(subCommentLikePressed(sender:)), for: .touchUpInside)
+        return btn
+    }()
+    
+    var numberOfLikes:UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.text = "0"
+        return label
+    }()
+    
+    
     
     lazy var textView:UITextView = {
         let tv = UITextView()
@@ -51,6 +80,29 @@ class CommentView: UIView {
         return label
     }()
     
+    @objc func subCommentLikePressed(sender:UIButton) {
+        print("delegate \(delegate)")
+        if let delegate = delegate {
+            delegate.subCommentLikePressed(sender: sender)
+        }
+    }
+    
+    func commentLikesConstraints() {
+        numberOfLikes.translatesAutoresizingMaskIntoConstraints = false
+        numberOfLikes.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        numberOfLikes.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        numberOfLikes.centerXAnchor.constraint(equalTo: likeBtn.centerXAnchor).isActive = true
+        numberOfLikes.topAnchor.constraint(equalTo: likeBtn.bottomAnchor, constant: -5).isActive = true
+    }
+    
+    func commentLikeBtnConstraints() {
+        likeBtn.translatesAutoresizingMaskIntoConstraints = false
+        likeBtn.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        likeBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        likeBtn.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        likeBtn.topAnchor.constraint(equalTo: textView.topAnchor, constant: -5).isActive = true
+    }
+    
     func setImageConstraints() {
         user_image.translatesAutoresizingMaskIntoConstraints = false
         user_image.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
@@ -72,41 +124,218 @@ class CommentView: UIView {
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.topAnchor.constraint(equalTo: username.bottomAnchor, constant: 5).isActive = true
         textView.leadingAnchor.constraint(equalTo: user_image.trailingAnchor, constant: 8).isActive = true
-        textView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        textView.trailingAnchor.constraint(equalTo: likeBtn.leadingAnchor, constant: -3).isActive = true
         textView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5).isActive = true
-        //        var frame = self.textView.frame
-        //        frame.size.height = self.textView.contentSize.height
-        //        self.textView.frame = frame
-        //        textViewDidChange(textView: self.textView)
+//        textView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+//                var frame = self.textView.frame
+//                frame.size.height = self.textView.contentSize.height
+//                self.textView.frame = frame
+//        //        textViewDidChange(textView: self.textView)
         
     }
     
     
 }
 
+extension UITableViewCell {
+    var tableView: UITableView? {
+        var p = self.superview
+        while p != nil {
+            if let t = p as? UITableView {
+                return t
+            }
+            p = p?.superview
+        }
+        return nil
+    }
+    func viewContentLayoutIfNeed() {
+        self.tableView?.beginUpdates()
+        self.tableView?.endUpdates()
+    }
+    func viewContentSetNeedsDisplay() {
+        UIView.performWithoutAnimation {
+            self.tableView?.beginUpdates()
+            self.tableView?.endUpdates()
+        }
+    }
+}
+
+protocol CommentCellDelegate {
+    func didTapReplyBtn(parent_id: String)
+}
+
 class CommentCell:UITableViewCell {
     
     static var shared = CommentCell()
+    var imageLoader:DownloadImage?
     var user_image = UIImageView()
     var username = UILabel()
-    var imageLoader:DownloadImage?
     var stackView = UIStackView()
     var sub_comments:[Comments] = []
     var bottomConstraint:NSLayoutConstraint?
     var svBottomAnchor:NSLayoutConstraint?
     var parent_id:String?
+    var user_id:String?
     var offset:Int?
     weak var delegate:UpdateTableView?
+    var commentDelegate:CommentCellDelegate?
     let comment_view = CommentView()
-    
-    override func prepareForReuse() {
-        // invoke superclass implementation
-        super.prepareForReuse()
-            stackView.removeArrangedSubview(comment_view)
-            comment_view.removeFromSuperview()
-            viewMoreBtn.removeFromSuperview()
-    }
+    var liked:Bool = false
+    var subCommentView:CommentView?
+    var profile = SessionManager.shared.profile
+    var isLiked:Bool = false
+    var viewModel: CommentViewModel? {
+        didSet {
+            if let item = viewModel {
+                print("didSet cell")
+                if let id = item.mainComment?.id, let user_id = profile?.sub {
+                  parent_id = id
+                  item.loadCommentLikes(id: id)
+                  item.getCommentLikesBuIserId(comment_id: id, user_id: user_id)
+                }
+                
+                imageLoader = DownloadImage()
+                imageLoader?.imageDidSet = { [weak self] image in
+                    self?.user_image.image = image
+                }
+                if let picture = item.mainComment?.user_picture {
+                imageLoader?.downloadImage(urlString: picture)
+                }
+                username.text = item.mainComment?.username
+                textView.text = item.mainComment?.text
+                stackView.arrangedSubviews.forEach {
+                    stackView.removeArrangedSubview($0)
+                    $0.removeFromSuperview()
+                }
+                
+                var buttonTag:Int = 0
+                item.subComments.forEach { subComment in
+                    print("didSet subComment")
+                    subCommentView = CommentView()
+                    self.subCommentView?.delegate = self
+                    
+                    subCommentView?.textView.text = subComment.text
+                    imageLoader?.imageDidSet = { [weak self] image in
+                        self?.subCommentView?.user_image.image = image
+                    }
+                    if let picture = subComment.user_picture {
+                    imageLoader?.downloadImage(urlString: picture)
+                    }
+                    subCommentView?.username.text = subComment.username
+                    
+                    if let firstIndex = item.subComments.firstIndex(where: { $0.id == subComment.id }) {
+                        subCommentView?.likeBtn.tag = firstIndex
+                    }
+                    
+                    if subComment.isliked == true {
+                    self.isLiked = true
+                    let image = UIImage(systemName: "heart.fill")
+                    subCommentView?.likeBtn.setImage(image, for: .normal)
+                    subCommentView?.likeBtn.tintColor = .red
+                    } else {
+                        self.isLiked = false
+                    }
+
+                    if let commentView = subCommentView {
+                    stackView.addArrangedSubview(commentView)
+                    }
+                 
+                }
+                if item.subComments.isEmpty {
+                    repliesBtn.isHidden = false
+                    viewMoreBtn.isHidden = true
+                } else {
+                    repliesBtn.isHidden = true
+                    viewMoreBtn.isHidden = false
+                }
+                viewMoreBtn.isUserInteractionEnabled = true
+                repliesBtn.isUserInteractionEnabled = true
+                UIView.performWithoutAnimation {
+                    viewMoreBtn.setTitle("View More", for: .normal)
+                    repliesBtn.setTitle("View Replies", for: .normal)
+                    likeBtn.setImage(item.likeBtnImage, for: .normal)
+                    likeBtn.tintColor = item.likeBtnTintColor
+                    
+                }
+                
         
+                    item.likeBtnImageDidSet = { [weak self] in self?.likeBtn.setImage($0, for: .normal) }
+                    item.likeBtnTintColorDidSet = { [weak self] in self?.likeBtn.tintColor = $0 }
+
+               item.subCommentDidInserts = { [weak self] insertedSubComments in
+               guard let `self` = self else { return }
+               insertedSubComments.forEach { subComment in
+                let subCommentView = CommentView()
+                subCommentView.delegate = self
+                
+                subCommentView.textView.text = subComment.text
+                self.imageLoader?.imageDidSet = { [weak self] image in
+                    subCommentView.user_image.image = image
+                }
+                if let picture = subComment.user_picture {
+                    self.imageLoader?.downloadImage(urlString: picture)
+                }
+                
+                subCommentView.username.text = subComment.username
+                if let firstIndex = item.subComments.firstIndex(where: { $0.id == subComment.id }) {
+                    subCommentView.likeBtn.tag = firstIndex
+                    subCommentView.numberOfLikes.tag = firstIndex
+                }
+
+                    self.stackView.addArrangedSubview(subCommentView)
+                   
+                   if let comment_id = subComment.id, let user_id = self.profile?.sub {
+                       item.getSubCommentLikesByIserId(comment_id: comment_id, user_id: user_id) { [weak subCommentView] bool in
+                           if bool == true {
+                            self.isLiked = true
+                            let image = UIImage(systemName: "heart.fill")
+                            subCommentView?.likeBtn.setImage(image, for: .normal)
+                            subCommentView?.likeBtn.tintColor = .red
+                            if let index = subCommentView?.likeBtn.tag {
+                            item.subComments[index].isliked = true
+                         }
+                        } else {
+                            if let index = subCommentView?.likeBtn.tag {
+                             item.subComments[index].isliked = false
+                          }
+                        }
+                     }
+                   }
+                if let id = subComment.id {
+                    item.loadSubCommentLikes(id: id) {[weak subCommentView] likes in
+                        if let index = subCommentView?.likeBtn.tag {
+                            item.subComments[index].numberOfLikes = likes.count
+                        }
+                        subCommentView?.numberOfLikes.text = "\(likes.count)"
+                    }
+                }
+                   
+            }
+            
+                    
+                    UIView.animate(withDuration: 0.5, animations: {
+                        self.stackView.isHidden = false
+                        self.stackView.alpha = 1
+                    })
+                    self.viewMoreBtn.setTitle("View More", for: .normal)
+                    self.viewMoreBtn.isUserInteractionEnabled = true
+                    self.viewMoreBtn.isHidden = false
+                    self.repliesBtn.setTitle("View Replies", for: .normal)
+                    self.repliesBtn.isUserInteractionEnabled = true
+                    self.repliesBtn.isHidden = true
+                    self.viewContentLayoutIfNeed()
+                }
+                self.numberOfLikes.text = String(item.commentLikes.count)
+                print("hello")
+                
+                item.commentLikesDidInserts = { [weak self] likes in
+                    print("commentLikes comment cell \(likes)")
+                    self?.numberOfLikes.text = String(likes.count)
+                }
+                
+           }
+        }
+    }
     
     var components:URLComponents = {
         var component = URLComponents()
@@ -128,9 +357,36 @@ class CommentCell:UITableViewCell {
         return tv
     }()
     
+    lazy var likeBtn:UIButton = {
+        let btn = UIButton()
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+        let symbol = UIImage(systemName: "heart", withConfiguration: symbolConfig)
+        btn.setImage(symbol , for: .normal)
+        btn.tintColor = UIColor.darkGray
+        btn.addTarget(self, action: #selector(commentLikePressed), for: .touchUpInside)
+        return btn
+    }()
+    
+    lazy var numberOfLikes:UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.text = "0"
+        return label
+    }()
+    
+    lazy var mainReplyBtn:UIButton = {
+        let btn = UIButton()
+        btn.setTitle("Reply", for: .normal)
+        btn.setTitleColor(UIColor.gray, for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 12)
+        btn.contentHorizontalAlignment = .left
+        btn.addTarget(self, action: #selector(mainCommentReplyPressed), for: .touchUpInside)
+        return btn
+    }()
+    
     lazy var repliesBtn:UIButton = {
         let btn = UIButton()
-        btn.setTitle("View Replies ⌄", for: .normal)
+        btn.setTitle("View Replies", for: .normal)
         btn.setTitleColor(UIColor.gray, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 12)
         btn.contentHorizontalAlignment = .left
@@ -140,7 +396,7 @@ class CommentCell:UITableViewCell {
     
     lazy var viewMoreBtn:UIButton = {
         let btn = UIButton()
-        btn.setTitle("View More ⌄", for: .normal)
+        btn.setTitle("View More", for: .normal)
         btn.setTitleColor(UIColor.gray, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 12)
         btn.contentHorizontalAlignment = .left
@@ -157,11 +413,20 @@ class CommentCell:UITableViewCell {
         addSubview(username)
         setUsernameConstraints()
         addSubview(textView)
+        addSubview(mainReplyBtn)
         addSubview(repliesBtn)
+        addSubview(viewMoreBtn)
+        addSubview(likeBtn)
+        addSubview(numberOfLikes)
+        configureStackView()
         textViewContstraints()
+        commentLikeBtnConstraints()
+        commentLikesConstraints()
+        mainCommentReplyBtnConstraints()
+        print("Text view bottomAnchor init \(textView.bottomAnchor.description)")
+        setStackViewContstraints()
         repliesBtnConstraints()
-        print("contentView \(contentView.frame.height)")
-//        configureStackView()
+        viewMoreBtnConstraints()
         
     }
     
@@ -169,102 +434,93 @@ class CommentCell:UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc func commentLikePressed() {
+        guard let viewModel = viewModel else { return }
+        if viewModel.isLiked {
+            if let comment_id = parent_id, let user_id = profile?.sub {
+            viewModel.unlikeComment(comment_id: comment_id, user_id: user_id)
+            }
+        } else {
+            if let user_id = profile?.sub, let comment_id = parent_id {
+            viewModel.likeComment(user_id: user_id, comment_id: comment_id)
+            }
+        }
+    }
+    
+    
+    @objc func mainCommentReplyPressed() {
+        if let parent_id = parent_id {
+        commentDelegate?.didTapReplyBtn(parent_id: parent_id)
+        }
+    }
+    
     @objc func repliesBtnPressed() {
-        configureStackView()
-        self.repliesBtn.removeFromSuperview()
-        setStackViewContstraints()
-        offset = 0
-        setSuBComments()
+        repliesBtn.setTitle("Loading...", for: .normal)
+        repliesBtn.isUserInteractionEnabled = false
+        if let id = self.parent_id {
+        viewModel?.updateParentId(newString: id)
+        }
+        viewModel?.reply()
         
     }
     
     @objc func viewMorePressed() {
-        configureStackView()
-        self.repliesBtn.removeFromSuperview()
-        setStackViewContstraints()
-        offset! += 2
-        setSuBComments()
+        viewMoreBtn.setTitle("Loading...", for: .normal)
+        viewMoreBtn.isUserInteractionEnabled = false
+        if let id = self.parent_id {
+        viewModel?.updateParentId(newString: id)
+        }
+        viewModel?.viewMore()
     }
     
     
     func configureStackView() {
         addSubview(stackView)
         stackView.axis = .vertical
-        stackView.distribution = .fillEqually
+        stackView.distribution = .fillProportionally
         stackView.spacing = 5
 //        stackView.sizeToFit()
     }
     
-    func setSuBComments() {
-        print("setSubComments")
-        if let offset = offset {
-        let getSubComments = GETSubComments(id: parent_id, path: "subComments", offset: "\(offset)")
-               getSubComments.getAllById {
-                   print($0)
-                   self.sub_comments = $0
-                   self.addCommentViewsToStackView(subComments: $0)
-        }
-        }
+    func commentLikesConstraints() {
+        numberOfLikes.translatesAutoresizingMaskIntoConstraints = false
+        numberOfLikes.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        numberOfLikes.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        numberOfLikes.centerXAnchor.constraint(equalTo: likeBtn.centerXAnchor).isActive = true
+        numberOfLikes.topAnchor.constraint(equalTo: likeBtn.bottomAnchor, constant: -5).isActive = true
     }
     
-    func addCommentViewsToStackView(subComments: [Comments]) {
-       for i in subComments {
-             comment_view.textView.text = i.text
-             self.imageLoader = DownloadImage()
-             imageLoader?.imageDidSet = { [weak self] image in
-                self?.comment_view.user_image.image = image
-             }
-             if let picture = i.user_picture {
-             imageLoader?.downloadImage(urlString: picture)
-             }
-             comment_view.username.text = i.username
-             stackView.addArrangedSubview(comment_view)
-          }
-                addSubview(viewMoreBtn)
-                viewMoreBtnConstraints()
-                if let delegate = delegate {
-                    delegate.updateTableView(bool: true)
-                }
-       }
+    func commentLikeBtnConstraints() {
+        likeBtn.translatesAutoresizingMaskIntoConstraints = false
+        likeBtn.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        likeBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        likeBtn.leadingAnchor.constraint(equalTo: textView.trailingAnchor, constant: 3).isActive = true
+        likeBtn.topAnchor.constraint(equalTo: textView.topAnchor, constant: -5).isActive = true
+    }
+    
+    
+
+    func mainCommentReplyBtnConstraints() {
+        mainReplyBtn.translatesAutoresizingMaskIntoConstraints = false
+        mainReplyBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        mainReplyBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        mainReplyBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor).isActive = true
+        mainReplyBtn.topAnchor.constraint(equalTo: textView.bottomAnchor, constant: 1).isActive = true
+        
+    }
+
     
     func setStackViewContstraints() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -35).isActive = true
-        stackView.topAnchor.constraint(equalTo: textView.bottomAnchor, constant: 6).isActive = true
+//        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -50).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30).isActive = true
+        stackView.topAnchor.constraint(equalTo: mainReplyBtn.bottomAnchor, constant: 42).isActive = true
+        
         stackView.leadingAnchor.constraint(equalTo: textView.leadingAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: textView.trailingAnchor).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         
     }
     
-    
-    
-    func set(comment: Comments) {
-        
-        self.imageLoader = DownloadImage()
-        imageLoader?.imageDidSet = { [weak self] image in
-            self?.user_image.image = image
-        }
-        if (comment.user_picture?.contains("http"))! {
-            if let comment_picture = comment.user_picture {
-                imageLoader?.downloadImage(urlString: comment_picture)
-            }
-        } else {
-            components.path = "/\(comment.user_picture)"
-            if let comment_picture = components.url?.absoluteString {
-                imageLoader?.downloadImage(urlString: comment_picture)
-            }
-        }
-        
-        username.text = comment.username
-        if let comment_text = comment.text {
-            textView.text = comment_text
-        }
-        
-        
-        
-        
-        
-    }
     
     
     func setImageConstraints() {
@@ -295,10 +551,10 @@ class CommentCell:UITableViewCell {
         textView.topAnchor.constraint(equalTo: username.bottomAnchor, constant: 5).isActive = true
         textView.leadingAnchor.constraint(equalTo: user_image.trailingAnchor, constant: 8).isActive = true
         textView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -60).isActive = true
-//        textView.bottomAnchor.constraint(equalTo: repliesBtn.topAnchor).isActive = true
-        //        var frame = self.textView.frame
-        //        frame.size.height = self.textView.contentSize.height
-        //        self.textView.frame = frame
+//        textView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+//                var frame = self.textView.frame
+//                frame.size.height = self.textView.contentSize.height
+//                self.textView.frame = frame
         //        textViewDidChange(textView: self.textView)
         
     }
@@ -306,9 +562,9 @@ class CommentCell:UITableViewCell {
     func repliesBtnConstraints() {
         repliesBtn.translatesAutoresizingMaskIntoConstraints = false
         bottomConstraint =
-        repliesBtn.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -6)
+        repliesBtn.bottomAnchor.constraint(equalTo: stackView.topAnchor)
         bottomConstraint?.isActive = true
-        repliesBtn.widthAnchor.constraint(equalTo: textView.widthAnchor).isActive = true
+        repliesBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
         repliesBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
         repliesBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor).isActive = true
         repliesBtn.topAnchor.constraint(equalTo: textView.bottomAnchor).isActive = true
@@ -317,16 +573,62 @@ class CommentCell:UITableViewCell {
     
     func viewMoreBtnConstraints() {
         viewMoreBtn.translatesAutoresizingMaskIntoConstraints = false
-//        viewMoreBtn.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        viewMoreBtn.widthAnchor.constraint(equalTo: textView.widthAnchor).isActive = true
-        viewMoreBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        viewMoreBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        viewMoreBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
         viewMoreBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor, constant: 5).isActive = true
-        viewMoreBtn.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 5).isActive = true
+        viewMoreBtn.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 9).isActive = true
         
     }
     
-    
-    
-    
 }
+
+extension CommentCell: CommentViewDelegate{
+     @objc func subCommentLikePressed(sender:UIButton) {
+           var comment_id:String?
+           print("sender.tag now\(sender.tag)")
+           comment_id = viewModel?.subComments[sender.tag].id
+           guard let viewModel = viewModel else { return }
+           if viewModel.subComments[sender.tag].isliked == true {
+              if let user_id = profile?.sub, let comment_id = comment_id {
+               viewModel.unlikeSubComment(comment_id: comment_id, user_id: user_id)
+               }
+            let image = UIImage(systemName: "heart")
+            sender.setImage(image, for: .normal)
+            sender.tintColor = .darkGray
+            
+           viewModel.subComments[sender.tag].isliked = false
+           if let id = viewModel.subComments[sender.tag].id {
+           viewModel.loadSubCommentLikes(id: "\(id)", completion: { likes in
+               let subCommentView = sender.superview as! CommentView
+               subCommentView.numberOfLikes.text = "\(likes.count)"
+           })
+           
+           }
+            viewModel.subComments[sender.tag].isliked = false
+         } else if viewModel.subComments[sender.tag].isliked == false {
+            
+               if let user_id = profile?.sub, let comment_id = comment_id {
+               viewModel.likeSubComment(user_id: user_id, comment_id: comment_id)
+                let image = UIImage(systemName: "heart.fill")
+                sender.setImage(image, for: .normal)
+                sender.tintColor = .red
+                viewModel.subComments[sender.tag].isliked = true
+                if let id = viewModel.subComments[sender.tag].id {
+                viewModel.loadSubCommentLikes(id: "\(id)", completion: { likes in
+                    let subCommentView = sender.superview as! CommentView
+                    subCommentView.numberOfLikes.text = "\(likes.count)"
+                    
+                })
+                }
+                
+               }
+               viewModel.subComments[sender.tag].isliked = true
+          }
+       }
+}
+
+
+
+
+
 
