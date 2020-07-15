@@ -11,6 +11,7 @@ import UIKit
 
 struct CommentStruct {
     static var isSelected:Bool? = false
+    static var subCommentReplySelected:Bool? = false
     static var parent_id:String?
     
     func updateIsSelected(newBool: Bool) {
@@ -21,12 +22,21 @@ struct CommentStruct {
         CommentStruct.self.parent_id = newString
     }
     
+    func updatesubReplyIsSelected(newBool: Bool) {
+        CommentStruct.self.subCommentReplySelected = newBool
+    }
     
 }
 
 protocol TableViewSubCommentDelegate {
     func didSendSubComment(parent_id:String)
 }
+
+protocol TableViewDelegate: class {
+    func didSendSubComment()
+}
+
+
 
 class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UITextViewDelegate, UpdateTableView {
     func updateTableView(bool: Bool) {
@@ -56,7 +66,12 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     let comment = CommentStruct()
     var parent_id:String?
     var reply:Bool = false
+    var subReply:Bool = false
     var delegate:TableViewSubCommentDelegate?
+    weak var delegate2:TableViewDelegate?
+    var usernameReply:String?
+    var index:IndexPath?
+    var replyingCommentCell: CommentCell?
     
     lazy var textView:UITextView = {
         let tv = UITextView()
@@ -110,9 +125,13 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     func getUser() {
         if let id = profile?.sub {
+            print("profile?.sub id \(profile?.sub)")
             GetUsersById(id: id).getAllPosts {
                 self.username = $0[0].username
+                print("self.username \(self.username)")
             }
+        } else {
+            print("profile?.sub \(profile?.sub)")
         }
     }
     
@@ -138,6 +157,11 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             textView.text = nil
             textView.textColor = UIColor.black
             reply = false
+        }
+        if CommentStruct.subCommentReplySelected! && subReply {
+            textView.text = nil
+            textView.textColor = UIColor.black
+            subReply = false
         }
         if text == "\n" {
             textView.resignFirstResponder()
@@ -215,6 +239,9 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 return ret
             }
             self.myTableView.reloadData()
+//            if self.myTableView.numberOfRows(inSection: 0) != 0 {
+//                self.myTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+//            }
         }
     }
     
@@ -302,8 +329,12 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     @objc func sendComment() {
         if CommentStruct.isSelected == true {
+          print("true isSelected")
           sendSubComment()
+        } else if CommentStruct.subCommentReplySelected == true {
+          sendSubCommentReply()
         } else {
+          print("false not selected")
           performActionSend()
         }
         view.endEditing(true)
@@ -311,11 +342,100 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
 
     func sendSubComment() {
         if let text = textView.text,
-        let username = username,
+        let username = self.username,
         let user_picture = profile?.picture,
         let user_id = profile?.sub,
         let parent_id = parent_id {
             let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: parent_id)
+
+            let postRequest = CommentPostRequest(endpoint: "sub_comment")
+            postRequest.save(comment) { (result) in
+                switch result {
+                case .success(let comment):
+                    let viewModel = CommentViewModel()
+//                    viewModel.loadSubCommentsAfterReply(comment_id: parent_id)
+                    self.delegate?.didSendSubComment(parent_id: parent_id)
+//                    self.delegate2?.didSendSubComment()
+                    print("self.delegate2 \(self.delegate2)")
+                    print("delegate tableview \(self.delegate)")
+                    DispatchQueue.main.async {
+//                        if let index = self.index {
+//                        let cell = self.myTableView.cellForRow(at: index) as! CommentCell
+                            self.replyingCommentCell?.addedSubComment()
+//                        }
+                   
+                    self.delegate2?.didSendSubComment()
+                        print("self.delegate2 \(self.delegate2) main async")
+                    self.myTableView.reloadData()
+                    UIView.performWithoutAnimation {
+                       self.myTableView.beginUpdates()
+                       self.myTableView.endUpdates()
+                    }
+                }
+                case .failure(let error):
+                    print("An error occurred: \(error)")
+                }
+            }
+        } else {
+            print("text \(textView.text)")
+            print("username \(self.username)")
+            print("user_picture \(profile?.picture)")
+            print("user_id \(profile?.sub)")
+            print("parent_id \(parent_id)")
+        }
+        textView.text = ""
+    }
+    
+//    var comment2:[Comments]?
+//    func sendSubComment() {
+//           if let text = textView.text,
+//           let username = self.username,
+//           let user_picture = profile?.picture,
+//           let user_id = profile?.sub,
+//           let parent_id = parent_id {
+//            let comment = Comments(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", text: text, username: username, user_picture: user_picture.absoluteString, user_id: user_id, parent_id: parent_id, isliked: nil, numberOfLikes: nil)
+//
+//
+//
+//               let postRequest = CommentsPostRequest(endpoint: "sub_comment")
+//               postRequest.save(comment) { (result) in
+//                   switch result {
+//                   case .success(let comment):
+//                    self.delegate2?.didSendSubComment()
+////                       self.comment2 = comment
+//                       self.delegate?.didSendSubComment(parent_id: parent_id)
+//                       print("delegate tableview \(self.delegate)")
+//                       DispatchQueue.main.async {
+//
+//                       self.myTableView.reloadData()
+//                       UIView.performWithoutAnimation {
+//                          self.myTableView.beginUpdates()
+//                          self.myTableView.endUpdates()
+//                       }
+//                   }
+//                   case .failure(let error):
+//                       print("An error occurred: \(error)")
+//                   }
+//               }
+//           } else {
+//               print("text \(textView.text)")
+//               print("username \(username)")
+//               print("user_picture \(profile?.picture)")
+//               print("user_id \(profile?.sub)")
+//               print("parent_id \(parent_id)")
+//           }
+//           textView.text = ""
+//       }
+    
+    func sendSubCommentReply() {
+        if let text = textView.text,
+        let username = self.username,
+        let user_picture = profile?.picture,
+        let user_id = profile?.sub,
+        let parent_id = parent_id,
+        let usernameReply = usernameReply {
+            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text:
+                "Reply To @\(usernameReply): \(text)", parent_id: parent_id)
             
             let postRequest = CommentPostRequest(endpoint: "sub_comment")
             postRequest.save(comment) { (result) in
@@ -325,6 +445,11 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                     self.delegate?.didSendSubComment(parent_id: parent_id)
                     print("delegate tableview \(self.delegate)")
                     DispatchQueue.main.async {
+//                    if let index = self.index {
+//                    let cell = self.myTableView.cellForRow(at: index) as! CommentCell
+//                    cell.addedSubComment()
+                    self.replyingCommentCell?.addedSubComment()
+//                    }
                     self.myTableView.reloadData()
                     UIView.performWithoutAnimation {
                        self.myTableView.beginUpdates()
@@ -390,21 +515,32 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath) as! CommentCell
         cell.delegate = self
+        cell.delegate2 = self
         cell.selectionStyle = .none
+        cell.index = indexPath
         cell.commentDelegate = self
         let item = comments[indexPath.item]
         cell.viewModel = item
+//        if let comment = comment2 {
+//            cell.viewModel?.subComments += comment
+//        print("comment2 other \(comment)")
+//        } else  {
+//            print("comment2 nil \(comment2)")
+//        }
         return cell
     }
     
     
 }
 
+
 extension CommentVC: CommentCellDelegate {
-    func didTapReplyBtn(parent_id: String) {
+    func didTapReplyBtn(parent_id: String, cell: CommentCell) {
         if !textView.isFirstResponder {
                    textView.becomeFirstResponder()
                    comment.updateIsSelected(newBool: true)
+                   self.replyingCommentCell = cell
+//                   self.index = index
                    reply = true
                    self.parent_id = parent_id
         //           tap?.isEnabled = true
@@ -432,4 +568,46 @@ extension CommentVC: CommentCellDelegate {
     
   }
 }
+
+
+extension CommentVC: CommentCellDelegate2 {
+    
+    
+    func didTapSubReplyBtn(username: String, parent_id:String, cell: CommentCell) {
+        if !textView.isFirstResponder {
+                      textView.becomeFirstResponder()
+                      comment.updateIsSelected(newBool: false)
+                      comment.updatesubReplyIsSelected(newBool: true)
+                      subReply = true
+                      self.parent_id = parent_id
+                      self.usernameReply = username
+                      self.replyingCommentCell = cell
+//                      self.index = index
+           //           tap?.isEnabled = true
+
+                       textView.text = nil
+                      // If updated text view will be empty, add the placeholder
+                      // and set the cursor to the beginning of the text view
+                       if textView.text.isEmpty {
+
+                          textView.text = "Reply"
+                          textView.textColor = UIColor.lightGray
+
+                          textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+                      }
+
+                   } else {
+                       textView.text = nil
+                       textView.resignFirstResponder()
+                       if textView.text.isEmpty {
+
+                           textView.text = "Enter Comment"
+                           textView.textColor = UIColor.lightGray
+            }
+        }
+        
+    }
+    
+}
+
 

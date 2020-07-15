@@ -3,13 +3,14 @@ import Foundation
 
 class CommentViewModel {
     var offset: Int = 0
+    static var offsetForCell: Int = 0
     var buttonTag:[Int] = []
     static var parent_id:String?
     var mainComment: Comments?
     var mainCommentImage: UIImage?
-    var subComments: [Comments] = []
     var commentLikes: [CommentLikes] = []
     var commentLikesDidInserts: (([CommentLikes]) -> ())?
+    var subComments: [Comments] = []
     var subCommentDidInserts: (([Comments]) -> ())?
     var imageDownloader: DownloadImage?
     var symbolConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
@@ -19,6 +20,18 @@ class CommentViewModel {
     var likeBtnTintColorDidSet: ((UIColor?)->())?
     var isLiked: Bool = false
     var isLikedLoaded: Bool = false
+    var commentsExist:Bool?
+    var commentsExistDidInserts: ((Bool) -> ())?
+    var repliesExist:Bool?
+    var repliesExistDidInserts: ((Bool) -> ())?
+    var checkedReplies:Bool? = false
+    var repliesBtn: UIButton?  { didSet { repliesBtnDidSet?(repliesBtn) } }
+    var repliesBtnDidSet: ((UIButton?)->())?
+    var viewMoreBtn: UIButton?  { didSet { viewMoreBtnDidSet?(viewMoreBtn) } }
+    var viewMoreBtnDidSet: ((UIButton?)->())?
+
+    
+
 
     
     func viewMore() {
@@ -26,10 +39,15 @@ class CommentViewModel {
         loadSubComments()
     }
    
-    func reply() {
+    func reply(id:String) {
         offset = 0
         loadSubComments()
+        let offset2 = offset + 3
+        commentsExist(comment_id: id, offset: offset2, completion: {
+            
+        })
     }
+    
    
     func loadSubComments() {
         print("loadSubComments")
@@ -37,7 +55,28 @@ class CommentViewModel {
             getSubComments.getAllById {
                    self.subComments += $0
                    self.subCommentDidInserts?($0)
+                   print("self.subComments did insert lsc \(self.subCommentDidInserts)")
         }
+    }
+    
+    func commentsExist(comment_id: String, offset: String, completion: @escaping ([Comments]) -> ()) {
+        let getSubComments = GETSubComments(id: comment_id, path: "subComments", offset: "\(offset)")
+            getSubComments.getAllById {
+            completion($0)
+        }
+    }
+    
+    func loadSubCommentsAfterReply(comment_id:String?, user_id:String?) {
+        print("loadSubCommentsAfterReply")
+        if let id = comment_id {
+        let getSubComments = GETSubCommentAfterReply(id: id, user_id: user_id)
+
+            getSubComments.getSubComment {
+                   self.subComments += $0
+                   self.subCommentDidInserts?($0)
+                  
+        }
+      }
     }
     
     func loadCommentLikes(id:String) {
@@ -109,12 +148,12 @@ class CommentViewModel {
                if $0.count > 0 {
                completion(true)
             } else {
-              completion(false)
+               completion(false)
           }
        }
     }
     
-    func likeSubComment(user_id: String, comment_id: String) {
+    func likeSubComment(user_id: String, comment_id: String, completion: @escaping () -> ()) {
         let commentLike = CommentLike(user_id: user_id, comment_id: comment_id)
         
         let postRequest = CommentLikePostRequest(endpoint: "addCommentLike")
@@ -122,6 +161,7 @@ class CommentViewModel {
             switch result {
             case .success(let comment):
                 print("the following sub comment like has been sent: \(commentLike)")
+                completion()
             //                       self.loadCommentLikes(id: comment_id)
             case .failure(let error):
                 print("An error occurred: \(error)")
@@ -129,7 +169,7 @@ class CommentViewModel {
         }
     }
     
-    func unlikeSubComment(comment_id: String, user_id: String) {
+    func unlikeSubComment(comment_id: String, user_id: String, completion: @escaping () -> ()) {
        let deleteRequest = DLTCommentLike(comment_id: comment_id, user_id: user_id)
         
         deleteRequest.delete {(err) in
@@ -138,6 +178,7 @@ class CommentViewModel {
                 return
             }
 //            self.loadCommentLikes(id: comment_id)
+            completion()
             print("Successfully deleted sub comment like from server")
             }
     }
@@ -155,5 +196,14 @@ class CommentViewModel {
     func updateParentId(newString:String) {
         CommentViewModel.self.parent_id = newString
     }
+    
+    func updateOffsetForCell(newInt:Int) {
+        CommentViewModel.self.offsetForCell = newInt
+    }
+    
+//    func updateCommentsExist(newBool:Bool) {
+//        CommentViewModel.self.commentsExist = newBool
+//    }
+    
 }
 
