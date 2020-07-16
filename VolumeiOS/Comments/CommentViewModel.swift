@@ -24,11 +24,16 @@ class CommentViewModel {
     var commentsExistDidInserts: ((Bool) -> ())?
     var repliesExist:Bool?
     var repliesExistDidInserts: ((Bool) -> ())?
-    var checkedReplies:Bool? = false
-    var repliesBtn: UIButton?  { didSet { repliesBtnDidSet?(repliesBtn) } }
-    var repliesBtnDidSet: ((UIButton?)->())?
-    var viewMoreBtn: UIButton?  { didSet { viewMoreBtnDidSet?(viewMoreBtn) } }
-    var viewMoreBtnDidSet: ((UIButton?)->())?
+//    var checkedReplies:Bool? = Bool(".isHidden")
+//    var repliesBtn: UIButton? = UIButton()  { didSet { repliesBtnDidSet?(repliesBtn) } }
+//    var repliesBtnDidSet: ((UIButton?)->())?
+//    var viewMoreBtn: UIButton?  { didSet { viewMoreBtnDidSet?(viewMoreBtn) } }
+//    var viewMoreBtnDidSet: ((UIButton?)->())?
+    var viewMoreBtnState: Bool? = false { didSet { viewMoreBtnStateDidSet?(viewMoreBtnState) } }
+    var viewMoreBtnStateDidSet: ((Bool?)->())?
+    var repliesBtnState: Bool? = true { didSet { repliesBtnStateDidSet?(repliesBtnState) } }
+    var repliesBtnStateDidSet: ((Bool?)->())?
+    var notCheckedExists:Bool? = true
 
     
 
@@ -43,8 +48,23 @@ class CommentViewModel {
         offset = 0
         loadSubComments()
         let offset2 = offset + 3
-        commentsExist(comment_id: id, offset: offset2, completion: {
-            
+        commentsExist(comment_id: id, offset: "\(offset2)", completion: { comment in
+            if comment.count <= 0 {
+                self.viewMoreBtnState = true
+            } else {
+                self.viewMoreBtnState = false
+            }
+        })
+    }
+    
+    func viewRepliesExists(comment_id:String) {
+        commentsExist(comment_id: comment_id, offset: "0", completion: { comment in
+            self.notCheckedExists = false
+            if comment.count > 0 {
+                self.repliesBtnState = false
+            } else {
+                self.repliesBtnState = true
+            }
         })
     }
     
@@ -74,7 +94,14 @@ class CommentViewModel {
             getSubComments.getSubComment {
                    self.subComments += $0
                    self.subCommentDidInserts?($0)
-                  
+//                   self.commentsExist(comment_id: id, offset: "\(offset2)", completion: { comment in
+//                       if comment.count <= 0 {
+//                        self.viewMoreBtnState = true
+//                       } else {
+//                        self.viewMoreBtnState = false
+//                       }
+//                   })
+                
         }
       }
     }

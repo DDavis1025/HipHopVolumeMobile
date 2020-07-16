@@ -231,7 +231,18 @@ class CommentCell:UITableViewCell {
                   parent_id = id
                   item.loadCommentLikes(id: id)
                   item.getCommentLikesBuIserId(comment_id: id, user_id: user_id)
+                    if let commentsExist = item.notCheckedExists {
+                    if commentsExist  {
+                    item.viewRepliesExists(comment_id: id)
+                    } else {
+                        if let btnState = item.repliesBtnState {
+                        self.repliesBtn.isHidden = btnState
+                    }
+                   }
+                  }
                 }
+                
+                
 //                print("item.subCommentDidInserts \(item.subCommentDidInserts![0])")
                 imageLoader = DownloadImage()
                 imageLoader?.imageDidSet = { [weak self] image in
@@ -246,6 +257,14 @@ class CommentCell:UITableViewCell {
                     stackView.removeArrangedSubview($0)
                     $0.removeFromSuperview()
                 }
+                
+                item.repliesBtnStateDidSet = { [weak self] in
+                    if let bool = $0 {
+                    self?.repliesBtn.isHidden = bool
+                  }
+                }
+                
+
                 
 
                 
@@ -282,12 +301,14 @@ class CommentCell:UITableViewCell {
                  
                 }
                 if item.subComments.isEmpty {
-                    repliesBtn.isHidden = false
-                    repliesBtn.isEnabled = true
+//                    repliesBtn.isHidden = false
+//                    repliesBtn.isEnabled = true
                     viewMoreBtn.isHidden = true
                 } else {
                     repliesBtn.isHidden = true
-                    viewMoreBtn.isHidden = false
+                    if let bool = item.viewMoreBtnState {
+                    viewMoreBtn.isHidden = bool
+                    }
                     self.viewMoreBtn.isEnabled = true
                 }
                 viewMoreBtn.isUserInteractionEnabled = true
@@ -361,7 +382,7 @@ class CommentCell:UITableViewCell {
                     })
                     self.viewMoreBtn.setTitle("View More", for: .normal)
                     self.viewMoreBtn.isUserInteractionEnabled = true
-                    self.viewMoreBtn.isHidden = false
+                    self.viewMoreBtn.isHidden = item.viewMoreBtnState!
                     self.viewMoreBtn.isEnabled = true
                     self.repliesBtn.setTitle("View Replies", for: .normal)
                     self.repliesBtn.isUserInteractionEnabled = true
@@ -428,6 +449,7 @@ class CommentCell:UITableViewCell {
     
     lazy var repliesBtn:UIButton = {
         let btn = UIButton()
+        btn.isHidden = true
         btn.setTitle("View Replies", for: .normal)
         btn.setTitleColor(UIColor.gray, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 12)
@@ -507,7 +529,12 @@ class CommentCell:UITableViewCell {
         repliesBtn.isUserInteractionEnabled = false
         if let id = self.parent_id {
         viewModel?.updateParentId(newString: id)
-        viewModel?.reply(id: id)
+            viewModel?.reply(id: id)
+            viewModel?.viewMoreBtnStateDidSet = { [weak self] in
+                if let bool = $0 {
+                self?.viewMoreBtn.isHidden = bool
+              }
+            }
         }
         
     }
