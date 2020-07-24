@@ -9,6 +9,7 @@ protocol UpdateTableView: class {
 protocol CommentViewDelegate: class {
     func subCommentLikePressed(sender: UIButton)
     func replyToSubComment(sender: UIButton)
+    func deleteSubComment(sender:UIButton)
     
 }
 
@@ -27,13 +28,14 @@ class CommentView: UIView {
         addSubview(likeBtn)
         addSubview(numberOfLikes)
         addSubview(replyBtn)
+        addSubview(dltSubCommentBtn)
         replyBtnConstraints()
         setImageConstraints()
         setUsernameConstraints()
         textViewContstraints()
         commentLikeBtnConstraints()
         commentLikesConstraints()
-        
+        dltBtnConstraints()
     }
     
     
@@ -48,6 +50,17 @@ class CommentView: UIView {
         btn.titleLabel?.font = .systemFont(ofSize: 12)
         btn.contentHorizontalAlignment = .left
         btn.addTarget(self, action: #selector(replyToSubComment(sender:)), for: .touchUpInside)
+        return btn
+    }()
+    
+    lazy var dltSubCommentBtn:UIButton = {
+        let btn = UIButton()
+        btn.setTitle("Delete", for: .normal)
+        btn.setTitleColor(UIColor.gray, for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 12)
+        btn.sizeToFit()
+//        btn.contentHorizontalAlignment = .left
+        btn.addTarget(self, action: #selector(dltSubComment(sender:)), for: .touchUpInside)
         return btn
     }()
     
@@ -102,6 +115,12 @@ class CommentView: UIView {
         }
     }
     
+    @objc func dltSubComment(sender:UIButton) {
+        if let delegate = delegate {
+            delegate.deleteSubComment(sender: sender)
+        }
+    }
+    
     @objc func replyToSubComment(sender:UIButton) {
         print("delegate \(delegate)")
         if let delegate = delegate {
@@ -116,6 +135,16 @@ class CommentView: UIView {
         replyBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor).isActive = true
         replyBtn.topAnchor.constraint(equalTo: textView.bottomAnchor, constant: 1).isActive = true
         replyBtn.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
+    }
+    
+    func dltBtnConstraints() {
+        dltSubCommentBtn.translatesAutoresizingMaskIntoConstraints = false
+//        dltSubCommentBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        dltSubCommentBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        dltSubCommentBtn.trailingAnchor.constraint(equalTo: textView.trailingAnchor, constant: -8).isActive = true
+//        dltSubCommentBtn.topAnchor.constraint(equalTo: textView.bottomAnchor, constant: 1).isActive = true
+        dltSubCommentBtn.centerYAnchor.constraint(equalTo: replyBtn.centerYAnchor).isActive = true
         
     }
     
@@ -194,7 +223,11 @@ extension UITableViewCell {
 }
 
 protocol CommentCellDelegate {
-    func didTapReplyBtn(parent_id: String, cell: CommentCell)
+    func didTapReplyBtn(parent_id: String, cell: CommentCell, user_id:String)
+    func didTapDeleteComment(index: IndexPath)
+    func alertToDeleteComment(cell: CommentCell)
+    func alertToDeleteSubComment(cell: CommentCell)
+    func didTapProfile(user_id:String)
 }
 
 protocol CommentCellDelegate2: class {
@@ -219,37 +252,58 @@ class CommentCell:UITableViewCell {
     var commentDelegate:CommentCellDelegate?
     let comment_view = CommentView()
     var liked:Bool = false
+    var comment_userID:String?
     var subCommentView:CommentView?
     var profile = SessionManager.shared.profile
     var index:IndexPath?
     var commentsExist:Bool?
+    var deleteButtonSender:UIButton?
+    var post_id:String?
     var viewModel: CommentViewModel? {
         didSet {
             if let item = viewModel {
                 print("didSet cell")
+                comment_userID = item.mainComment?.user_id
+                post_id = item.mainComment?.post_id
                 if let id = item.mainComment?.id, let user_id = profile?.sub {
-                  parent_id = id
-                  item.loadCommentLikes(id: id)
-                  item.getCommentLikesBuIserId(comment_id: id, user_id: user_id)
-                    if let commentsExist = item.notCheckedExists {
-                    if commentsExist  {
-                    item.viewRepliesExists(comment_id: id)
-                    } else {
-                        if let btnState = item.repliesBtnState {
-                        self.repliesBtn.isHidden = btnState
+                    parent_id = id
+                    if !item.commentLikesLoaded {
+                    item.loadCommentLikes(id: id)
+                    } else if let likes = item.commentLikes {
+                    self.numberOfLikes.text = "\(likes)"
                     }
-                   }
-                  }
+                    if !item.isLiked {
+                    item.getCommentLikesBuIserId(comment_id: id, user_id: user_id)
+                    }
+                    if let checkCommentBelongs = item.notCheckedCommentBelongs {
+                        if checkCommentBelongs {
+                            item.doesCommentBelongToUser(comment_id: id, user_id: user_id)
+                        } else {
+                            if let bool = item.dltBtnIsHidden, let bool2 = item.dltBtnIsEnabled {
+                                self.dltCommentBtn.isHidden = bool
+                                self.dltCommentBtn.isEnabled = bool2
+                            }
+                        }
+                    }
+                    if let commentsExist = item.notCheckedExists {
+                        if commentsExist  {
+                            item.viewRepliesExists(comment_id: id)
+                        } else {
+                            if let btnState = item.repliesBtnState {
+                                self.repliesBtn.isHidden = btnState
+                            }
+                        }
+                    }
                 }
                 
                 
-//                print("item.subCommentDidInserts \(item.subCommentDidInserts![0])")
+                //                print("item.subCommentDidInserts \(item.subCommentDidInserts![0])")
                 imageLoader = DownloadImage()
                 imageLoader?.imageDidSet = { [weak self] image in
                     self?.user_image.image = image
                 }
                 if let picture = item.mainComment?.user_picture {
-                imageLoader?.downloadImage(urlString: picture)
+                    imageLoader?.downloadImage(urlString: picture)
                 }
                 username.text = item.mainComment?.username
                 textView.text = item.mainComment?.text
@@ -260,13 +314,23 @@ class CommentCell:UITableViewCell {
                 
                 item.repliesBtnStateDidSet = { [weak self] in
                     if let bool = $0 {
-                    self?.repliesBtn.isHidden = bool
-                  }
+                        self?.repliesBtn.isHidden = bool
+                    }
+                }
+                item.dltBtnIsHiddenDidSet = { [weak self] in
+                    if let bool = $0 {
+                        self?.dltCommentBtn.isHidden = bool
+                    }
+                }
+                item.dltBtnIsEnabledDidSet = { [weak self] in
+                    if let bool = $0 {
+                        self?.dltCommentBtn.isEnabled = bool
+                    }
                 }
                 
-
                 
-
+                
+                
                 
                 item.subComments.forEach { subComment in
                     print("didSet subComment")
@@ -278,37 +342,47 @@ class CommentCell:UITableViewCell {
                         self?.subCommentView?.user_image.image = image
                     }
                     if let picture = subComment.user_picture {
-                    imageLoader?.downloadImage(urlString: picture)
+                        imageLoader?.downloadImage(urlString: picture)
                     }
                     subCommentView?.username.text = subComment.username
                     
                     if let firstIndex = item.subComments.firstIndex(where: { $0.id == subComment.id }) {
                         subCommentView?.likeBtn.tag = firstIndex
+                        subCommentView?.dltSubCommentBtn.tag = firstIndex
                     }
                     
                     if subComment.isliked == true {
-                    let image = UIImage(systemName: "heart.fill")
-                    subCommentView?.likeBtn.setImage(image, for: .normal)
-                    subCommentView?.likeBtn.tintColor = .red
+                        let image = UIImage(systemName: "heart.fill")
+                        subCommentView?.likeBtn.setImage(image, for: .normal)
+                        subCommentView?.likeBtn.tintColor = .red
                     }
                     if let numberOfLikes = subComment.numberOfLikes {
-                    subCommentView?.numberOfLikes.text = "\(numberOfLikes)"
+                        subCommentView?.numberOfLikes.text = "\(numberOfLikes)"
                     }
-
+                    
                     if let commentView = subCommentView {
-                    stackView.addArrangedSubview(commentView)
+                        stackView.addArrangedSubview(commentView)
                     }
-                 
+                    
                 }
                 if item.subComments.isEmpty {
-//                    repliesBtn.isHidden = false
-//                    repliesBtn.isEnabled = true
+                    print("item.subComments.isEmpty")
+                    //                    repliesBtn.isHidden = false
+                    //                    repliesBtn.isEnabled = true
                     viewMoreBtn.isHidden = true
                 } else {
                     repliesBtn.isHidden = true
                     if let bool = item.viewMoreBtnState {
-                    viewMoreBtn.isHidden = bool
+                        viewMoreBtn.isHidden = bool
+                        viewMoreBtn.isEnabled = !bool
+                        print("viewMoreState 1 \(bool)")
                     }
+                    //                    self.viewModel?.viewMoreBtnStateDidSet = { [weak self] in
+                    //                    if let bool = $0 {
+                    //                        self?.viewMoreBtn.isHidden = bool
+                    //                        print("viewMoreState 1 \(bool)")
+                    //                    }
+                    //                    }
                     self.viewMoreBtn.isEnabled = true
                 }
                 viewMoreBtn.isUserInteractionEnabled = true
@@ -321,60 +395,61 @@ class CommentCell:UITableViewCell {
                     
                 }
                 
-        
+                
                 item.likeBtnImageDidSet = { [weak self] in self?.likeBtn.setImage($0, for: .normal) }
                 item.likeBtnTintColorDidSet = { [weak self] in self?.likeBtn.tintColor = $0 }
-
-               item.subCommentDidInserts = { [weak self] insertedSubComments in
-               print("hello thur")
-               guard let `self` = self else { return }
-               insertedSubComments.forEach { subComment in
-                let subCommentView = CommentView()
-                subCommentView.delegate = self
-                print("subComment.text didinsert \(subComment.text)")
-                subCommentView.textView.text = subComment.text
-                self.imageLoader?.imageDidSet = { [weak self] image in
-                    subCommentView.user_image.image = image
-                }
-                if let picture = subComment.user_picture {
-                    self.imageLoader?.downloadImage(urlString: picture)
-                }
                 
-                subCommentView.username.text = subComment.username
-                if let firstIndex = item.subComments.firstIndex(where: { $0.id == subComment.id }) {
-                    subCommentView.likeBtn.tag = firstIndex
-                    subCommentView.numberOfLikes.tag = firstIndex
-                }
-
-                    self.stackView.addArrangedSubview(subCommentView)
-                   
-                   if let comment_id = subComment.id, let user_id = self.profile?.sub {
-                       item.getSubCommentLikesByIserId(comment_id: comment_id, user_id: user_id) { [weak subCommentView] bool in
-                           if bool == true {
-                            let image = UIImage(systemName: "heart.fill")
-                            subCommentView?.likeBtn.setImage(image, for: .normal)
-                            subCommentView?.likeBtn.tintColor = .red
-                            if let index = subCommentView?.likeBtn.tag {
-                            item.subComments[index].isliked = true
-                         }
-                        } else {
-                            if let index = subCommentView?.likeBtn.tag {
-                             item.subComments[index].isliked = false
-                          }
+                item.subCommentDidInserts = { [weak self] insertedSubComments in
+                    print("hello thur")
+                    guard let `self` = self else { return }
+                    insertedSubComments.forEach { subComment in
+                        let subCommentView = CommentView()
+                        subCommentView.delegate = self
+                        print("subComment.text didinsert \(subComment.text)")
+                        subCommentView.textView.text = subComment.text
+                        self.imageLoader?.imageDidSet = { [weak self] image in
+                            subCommentView.user_image.image = image
                         }
-                     }
-                   }
-                if let id = subComment.id {
-                    item.loadSubCommentLikes(id: id) {[weak subCommentView] likes in
-                        if let index = subCommentView?.likeBtn.tag {
-                            item.subComments[index].numberOfLikes = likes.count
+                        if let picture = subComment.user_picture {
+                            self.imageLoader?.downloadImage(urlString: picture)
                         }
-                        subCommentView?.numberOfLikes.text = "\(likes.count)"
+                        
+                        subCommentView.username.text = subComment.username
+                        if let firstIndex = item.subComments.firstIndex(where: { $0.id == subComment.id }) {
+                            subCommentView.likeBtn.tag = firstIndex
+                            subCommentView.numberOfLikes.tag = firstIndex
+                            subCommentView.dltSubCommentBtn.tag = firstIndex
+                        }
+                        
+                        self.stackView.addArrangedSubview(subCommentView)
+                        
+                        if let comment_id = subComment.id, let user_id = self.profile?.sub {
+                            item.getSubCommentLikesByIserId(comment_id: comment_id, user_id: user_id) { [weak subCommentView] bool in
+                                if bool == true {
+                                    let image = UIImage(systemName: "heart.fill")
+                                    subCommentView?.likeBtn.setImage(image, for: .normal)
+                                    subCommentView?.likeBtn.tintColor = .red
+                                    if let index = subCommentView?.likeBtn.tag {
+                                        item.subComments[index].isliked = true
+                                    }
+                                } else {
+                                    if let index = subCommentView?.likeBtn.tag {
+                                        item.subComments[index].isliked = false
+                                    }
+                                }
+                            }
+                        }
+                        if let id = subComment.id {
+                            item.loadSubCommentLikes(id: id) {[weak subCommentView] likes in
+                                if let index = subCommentView?.likeBtn.tag {
+                                    item.subComments[index].numberOfLikes = likes.count
+                                }
+                                subCommentView?.numberOfLikes.text = "\(likes.count)"
+                            }
+                        }
+                        
                     }
-                }
-                   
-            }
-            
+                    
                     
                     UIView.animate(withDuration: 0.5, animations: {
                         self.stackView.isHidden = false
@@ -382,22 +457,44 @@ class CommentCell:UITableViewCell {
                     })
                     self.viewMoreBtn.setTitle("View More", for: .normal)
                     self.viewMoreBtn.isUserInteractionEnabled = true
-                    self.viewMoreBtn.isHidden = item.viewMoreBtnState!
+                    //                    if let viewMoreBtnState = item.viewMoreBtnState {
+                    //                    self.viewMoreBtn.isHidden = viewMoreBtnState
+                    //                    print("viewMoreState \(viewMoreBtnState)")
+                    //                    }
+                    self.viewModel?.viewMoreBtnStateDidSet = { [weak self] in
+                        if let bool = $0 {
+                            self?.viewMoreBtn.isHidden = bool
+                            self?.viewMoreBtn.isEnabled = !bool
+                            print("viewMoreState \(bool)")
+                        }
+                    }
                     self.viewMoreBtn.isEnabled = true
                     self.repliesBtn.setTitle("View Replies", for: .normal)
                     self.repliesBtn.isUserInteractionEnabled = true
                     self.repliesBtn.isHidden = true
                     self.viewContentLayoutIfNeed()
                 }
-                self.numberOfLikes.text = String(item.commentLikes.count)
+//                if let likes = item.commentLikes {
+//                self.numberOfLikes.text = "\(likes)"
+//                }
                 print("hello")
                 
                 item.commentLikesDidInserts = { [weak self] likes in
                     print("commentLikes comment cell \(likes)")
-                    self?.numberOfLikes.text = String(likes.count)
+                    self?.numberOfLikes.text = "\(likes)"
                 }
-           }
+                    
+            }
+            
+            
         }
+    }
+    
+    override func prepareForReuse() {
+        if let commentView = subCommentView {
+        stackView.removeArrangedSubview(commentView)
+        subCommentView?.removeFromSuperview()
+      }
     }
     
     var components:URLComponents = {
@@ -442,8 +539,20 @@ class CommentCell:UITableViewCell {
         btn.setTitle("Reply", for: .normal)
         btn.setTitleColor(UIColor.gray, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 12)
-        btn.contentHorizontalAlignment = .left
+        btn.sizeToFit()
+//        btn.contentHorizontalAlignment = .left
         btn.addTarget(self, action: #selector(mainCommentReplyPressed), for: .touchUpInside)
+        return btn
+    }()
+    
+    lazy var dltCommentBtn:UIButton = {
+        let btn = UIButton()
+        btn.setTitle("Delete", for: .normal)
+        btn.setTitleColor(UIColor.gray, for: .normal)
+        btn.titleLabel?.font = .systemFont(ofSize: 12)
+        btn.sizeToFit()
+//        btn.contentHorizontalAlignment = .left
+        btn.addTarget(self, action: #selector(dltCommentPressed), for: .touchUpInside)
         return btn
     }()
     
@@ -453,7 +562,8 @@ class CommentCell:UITableViewCell {
         btn.setTitle("View Replies", for: .normal)
         btn.setTitleColor(UIColor.gray, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 12)
-        btn.contentHorizontalAlignment = .left
+        btn.sizeToFit()
+//        btn.contentHorizontalAlignment = .left
         btn.addTarget(self, action: #selector(repliesBtnPressed), for: .touchUpInside)
         return btn
     }()
@@ -463,7 +573,8 @@ class CommentCell:UITableViewCell {
         btn.setTitle("View More", for: .normal)
         btn.setTitleColor(UIColor.gray, for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 12)
-        btn.contentHorizontalAlignment = .left
+        btn.sizeToFit()
+//        btn.contentHorizontalAlignment = .left
         btn.addTarget(self, action: #selector(viewMorePressed), for: .touchUpInside)
         return btn
     }()
@@ -473,11 +584,15 @@ class CommentCell:UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubview(user_image)
         setImageConstraints()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(userImageTap(_:)))
+        user_image.addGestureRecognizer(tap)
+        user_image.isUserInteractionEnabled = true
         setUsername()
         addSubview(username)
         setUsernameConstraints()
         addSubview(textView)
         addSubview(mainReplyBtn)
+        addSubview(dltCommentBtn)
         addSubview(repliesBtn)
         addSubview(viewMoreBtn)
         addSubview(likeBtn)
@@ -487,6 +602,7 @@ class CommentCell:UITableViewCell {
         commentLikeBtnConstraints()
         commentLikesConstraints()
         mainCommentReplyBtnConstraints()
+        dltCommentBtnConstraints()
         print("Text view bottomAnchor init \(textView.bottomAnchor.description)")
         setStackViewContstraints()
         repliesBtnConstraints()
@@ -498,11 +614,22 @@ class CommentCell:UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc func userImageTap(_ sender: UITapGestureRecognizer) {
+       
+    }
+    
     func addedSubComment() {
           if let id = self.parent_id, let user_id = profile?.sub {
             self.viewModel?.loadSubCommentsAfterReply(comment_id: id, user_id: user_id)
-      }
-    }
+          }
+            viewModel?.viewMoreBtnStateDidSet = { [weak self] in
+              if let bool = $0 {
+                  print("hello bool \($0)")
+                  self?.viewMoreBtn.isHidden = bool
+                  self?.viewMoreBtn.isEnabled = !bool
+            }
+          }
+        }
     
     @objc func commentLikePressed() {
         guard let viewModel = viewModel else { return }
@@ -511,16 +638,38 @@ class CommentCell:UITableViewCell {
             viewModel.unlikeComment(comment_id: comment_id, user_id: user_id)
             }
         } else {
-            if let user_id = profile?.sub, let comment_id = parent_id {
-            viewModel.likeComment(user_id: user_id, comment_id: comment_id)
+            if let user_id = profile?.sub, let comment_id = parent_id, let post_id = self.post_id, let comment_userID = self.comment_userID {
+                viewModel.likeComment(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, index: "\(self.index)")
             }
         }
     }
     
     
+    func dltComment() {
+        if let comment_id = parent_id, let user_id = profile?.sub {
+            let dltComment = DLTComment(comment_id: comment_id, user_id: user_id, path: "deleteComment")
+            dltComment.delete {(err) in
+            if let err = err {
+                print("Failed to delete comment", err)
+                return
+            } else {
+                DispatchQueue.main.async {
+                if let index = self.index {
+                    self.commentDelegate?.didTapDeleteComment(index: index)
+            }
+           }
+          }
+         }
+        }
+    }
+    
+    @objc func dltCommentPressed() {
+        self.commentDelegate?.alertToDeleteComment(cell: self)
+    }
+    
     @objc func mainCommentReplyPressed() {
-        if let parent_id = parent_id {
-            commentDelegate?.didTapReplyBtn(parent_id: parent_id, cell: self)
+        if let parent_id = parent_id, let user_id = self.comment_userID {
+            commentDelegate?.didTapReplyBtn(parent_id: parent_id, cell: self, user_id: user_id)
         }
     }
     
@@ -533,6 +682,8 @@ class CommentCell:UITableViewCell {
             viewModel?.viewMoreBtnStateDidSet = { [weak self] in
                 if let bool = $0 {
                 self?.viewMoreBtn.isHidden = bool
+                self?.viewMoreBtn.isEnabled = !bool
+                    
               }
             }
         }
@@ -545,8 +696,15 @@ class CommentCell:UITableViewCell {
         viewMoreBtn.isUserInteractionEnabled = false
         if let id = self.parent_id {
         viewModel?.updateParentId(newString: id)
-        }
-        viewModel?.viewMore()
+        viewModel?.viewMore(id: id)
+        viewModel?.viewMoreBtnStateDidSet = { [weak self] in
+            if let bool = $0 {
+                self?.viewMoreBtn.isHidden = bool
+                self?.viewMoreBtn.isEnabled = !bool
+            }
+          }
+        
+       }
     }
     
     
@@ -578,10 +736,19 @@ class CommentCell:UITableViewCell {
 
     func mainCommentReplyBtnConstraints() {
         mainReplyBtn.translatesAutoresizingMaskIntoConstraints = false
-        mainReplyBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        mainReplyBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        mainReplyBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        mainReplyBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
         mainReplyBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor).isActive = true
         mainReplyBtn.topAnchor.constraint(equalTo: textView.bottomAnchor, constant: 1).isActive = true
+        
+    }
+    
+    func dltCommentBtnConstraints() {
+        dltCommentBtn.translatesAutoresizingMaskIntoConstraints = false
+//        dltCommentBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        dltCommentBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        dltCommentBtn.trailingAnchor.constraint(equalTo: textView.trailingAnchor, constant: -8).isActive = true
+        dltCommentBtn.topAnchor.constraint(equalTo: textView.bottomAnchor, constant: 1).isActive = true
         
     }
     
@@ -641,8 +808,8 @@ class CommentCell:UITableViewCell {
         bottomConstraint =
         repliesBtn.bottomAnchor.constraint(equalTo: stackView.topAnchor)
         bottomConstraint?.isActive = true
-        repliesBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        repliesBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        repliesBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        repliesBtn.heightAnchor.constraint(equalToConstant: 30).isActive = true
         repliesBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor).isActive = true
         repliesBtn.topAnchor.constraint(equalTo: mainReplyBtn.bottomAnchor).isActive = true
         
@@ -652,7 +819,7 @@ class CommentCell:UITableViewCell {
     
     func viewMoreBtnConstraints() {
         viewMoreBtn.translatesAutoresizingMaskIntoConstraints = false
-        viewMoreBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        viewMoreBtn.widthAnchor.constraint(equalToConstant: 100).isActive = true
         viewMoreBtn.heightAnchor.constraint(equalToConstant: 20).isActive = true
         viewMoreBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor, constant: 5).isActive = true
         viewMoreBtn.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 9).isActive = true
@@ -664,6 +831,39 @@ class CommentCell:UITableViewCell {
 }
 
 extension CommentCell: CommentViewDelegate {
+   
+    func deleteSubComment(sender: UIButton) {
+       self.commentDelegate?.alertToDeleteSubComment(cell: self)
+       self.deleteButtonSender = sender
+    }
+    func deleteSubCommentAfterAlert() {
+        if let sender = self.deleteButtonSender {
+        let subCommentView = sender.superview as! CommentView
+        let stackView = subCommentView.superview as! UIStackView
+        let subComment = viewModel?.subComments[sender.tag]
+           if let comment_id = subComment?.id, let user_id = subComment?.user_id {
+               let dltComment = DLTComment(comment_id: comment_id, user_id: user_id, path: "deleteSubComment")
+               dltComment.delete { (err) in
+               if let err = err {
+                   print("Failed to delete comment", err)
+                   return
+               } else {
+                 DispatchQueue.main.async {
+                    print("stackview print \(stackView)")
+                    print("subCommentView print \(subCommentView.textView.text)")
+                    self.viewModel?.subComments.remove(at: sender.tag)
+                    stackView.removeArrangedSubview(subCommentView)
+                    subCommentView.removeFromSuperview()
+                    self.viewContentLayoutIfNeed()
+                    
+              }
+            }
+          }
+        }
+      }
+    }
+        
+    
     
 
     func replyToSubComment(sender: UIButton) {
@@ -715,8 +915,9 @@ extension CommentCell: CommentViewDelegate {
             viewModel.subComments[sender.tag].isliked = false
          } else if viewModel.subComments[sender.tag].isliked == false {
             print("order 3")
-               if let user_id = profile?.sub, let comment_id = comment_id {
-                viewModel.likeSubComment(user_id: user_id, comment_id: comment_id, completion: {
+            let comment_userID = viewModel.subComments[sender.tag].user_id
+            if let user_id = profile?.sub, let comment_id = comment_id, let post_id = self.post_id, let comment_userID = comment_userID {
+                viewModel.likeSubComment(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, index: "\(self.index)", completion: {
                     DispatchQueue.main.async {
                     if let id = viewModel.subComments[sender.tag].id {
                     viewModel.loadSubCommentLikes(id: "\(id)", completion: { likes in

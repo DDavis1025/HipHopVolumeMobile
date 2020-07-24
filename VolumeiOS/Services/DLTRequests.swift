@@ -92,3 +92,48 @@ class DLTCommentLike {
             dataTask.resume()
     }
 }
+
+
+class DLTComment {
+    
+    var comment_id:String?
+    var user_id:String?
+    var path:String?
+    init(comment_id:String, user_id:String, path:String) {
+      self.comment_id = comment_id
+      self.user_id = user_id
+      self.path = path
+    }
+    
+    func delete(completion: @escaping(Error?) -> ()) {
+        var components = URLComponents()
+        components.scheme = "http"
+        components.host = "localhost"
+        components.port = 8000
+        if let comment_id = comment_id, let user_id = user_id, let path = path {
+        components.path = "/\(path)/\(comment_id)/\(user_id)"
+        }
+        
+        guard let url = URL(string: components.url!.absoluteString) else {
+            fatalError("URL is not correct!")
+            
+        }
+
+        print("URL \(url)")
+            var urlRequest = URLRequest(url: url)
+            urlRequest.httpMethod = "DELETE"
+            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, err) in
+                
+                if let err = err {
+                    completion(err)
+                    return
+                }
+        
+                completion(nil)
+           
+            }
+            dataTask.resume()
+    }
+}

@@ -20,18 +20,18 @@ struct Post: Codable, Hashable, Identifiable {
     
     mutating func addUser(user: String) {
         userName = user
-       }
+    }
 }
 
 
 struct PostById: Codable, Hashable, Identifiable {
     
     
-    let id:String
+    let id:String?
     let title:String?
-    let album_id:String
+    let album_id:String?
     let name: String?
-    let path: String
+    let path: String?
     let author:String?
     
 }
@@ -171,14 +171,18 @@ final class Comment: Codable {
     var user_id:String?
     var text:String?
     var parent_id:String?
+    var comment_userID:String?
+    var tableView_index:String?
     
-    init(post_id:String, username:String, user_picture:String, user_id:String, text:String, parent_id: String?) {
+    init(post_id:String, username:String, user_picture:String, user_id:String, text:String, parent_id: String?, comment_userID:String?, tableView_index:String?) {
         self.post_id = post_id
         self.username = username
         self.user_picture = user_picture
         self.user_id = user_id
         self.text = text
         self.parent_id = parent_id
+        self.comment_userID = comment_userID
+        self.tableView_index = tableView_index
     }
 }
 
@@ -197,11 +201,22 @@ struct Comments: Codable {
 final class CommentLike: Codable {
     var user_id:String?
     var comment_id:String?
+    var post_id:String?
+    var comment_userID:String?
+    var tableView_index:String?
     
-    init(user_id:String, comment_id:String) {
+    init(user_id:String, comment_id:String, post_id:String, comment_userID:String, tableView_index:String) {
         self.user_id = user_id
         self.comment_id = comment_id
+        self.post_id = post_id
+        self.comment_userID = comment_userID
+        self.tableView_index = tableView_index
     }
+}
+
+struct UserAndComment: Codable {
+    var user_id:String?
+    var comment_id:String?
 }
 
 struct CommentLikes: Codable {
@@ -214,6 +229,20 @@ final class SubCommentLike: Codable {
     init(isLiked:Bool) {
         self.isLiked = isLiked
     }
+}
+
+
+struct Notifications: Codable {
+    var user_id:String?
+    var supporter_id:String?
+    var message:String?
+    var post_id:String?
+    var parent_commentid:String?
+    var comment_id:String?
+}
+
+struct PostPhoto: Codable {
+    var path:String?
 }
 
 

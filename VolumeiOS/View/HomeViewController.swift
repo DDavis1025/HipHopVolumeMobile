@@ -36,14 +36,17 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         
         let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
                
-        let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
+//        let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
+        
+        let notification = UIBarButtonItem(title: "Notification", style: .plain, target: self, action: #selector(addTapped))
                           
         let whoToFollow = UIBarButtonItem(title: "toFollow", style: .plain, target: self, action: #selector(toFollowTapped))
         
         let comment = UIBarButtonItem(title: "Comment", style: .plain, target: self, action: #selector(toCommentTapped))
         
 
-        navigationItem.leftBarButtonItem = profile
+//        navigationItem.leftBarButtonItem = profile
+        navigationItem.leftBarButtonItem = notification
 //        navigationItem.rightBarButtonItem = whoToFollow
 //        navigationItem.rightBarButtonItem = logout
         navigationItem.rightBarButtonItem = comment
@@ -72,9 +75,11 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
     }
     
     @objc func addTapped() {
-            let profileVC = ProfileViewController()
-            let profileView = ProfileVC()
-            self.navigationController?.pushViewController(profileView, animated: true)
+//            let profileVC = ProfileViewController()
+//            let profileView = ProfileVC()
+//            self.navigationController?.pushViewController(profileView, animated: true)
+         let notificationVC = NotificationVC()
+         self.navigationController?.pushViewController(notificationVC, animated: true)
         }
         
     @objc func toFollowTapped() {

@@ -120,11 +120,13 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
         refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
         let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
         
-        let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
+//        let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
+        let notification = UIBarButtonItem(title: "Notification", style: .plain, target: self, action: #selector(addTapped))
                    
         let whoToFollow = UIBarButtonItem(title: "toFollow", style: .plain, target: self, action: #selector(toFollowTapped))
 
-       navigationItem.leftBarButtonItem = profile
+//       navigationItem.leftBarButtonItem = profile
+       navigationItem.leftBarButtonItem = notification
        navigationItem.rightBarButtonItem = whoToFollow
        navigationItem.rightBarButtonItem = logout
         
@@ -149,9 +151,11 @@ class MainView: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     
     @objc func addTapped() {
-           let profileVC = ProfileViewController()
-           let profileView = ProfileVC()
-           self.navigationController?.pushViewController(profileView, animated: true)
+//           let profileVC = ProfileViewController()
+//           let profileView = ProfileVC()
+           let notificationVC = NotificationVC()
+           self.navigationController?.pushViewController(notificationVC, animated: true)
+//           self.navigationController?.pushViewController(profileView, animated: true)
        }
        
    @objc func toFollowTapped() {

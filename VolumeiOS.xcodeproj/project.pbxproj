@@ -35,6 +35,9 @@
 		CD08ADE52495982300AC3A39 /* CommentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADE42495981F00AC3A39 /* CommentVC.swift */; };
 		CD08ADE72497FBD500AC3A39 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD08ADE62497FBD400AC3A39 /* CommentCell.swift */; };
 		CD422C9424A2E40400D9DF76 /* CommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9324A2E40400D9DF76 /* CommentViewModel.swift */; };
+		CD422C9B24C8E0FE00D9DF76 /* NotificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9A24C8E0FD00D9DF76 /* NotificationVC.swift */; };
+		CD422C9D24C8E27B00D9DF76 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9C24C8E27B00D9DF76 /* NotificationCell.swift */; };
+		CD422C9F24C8E77E00D9DF76 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9E24C8E77E00D9DF76 /* NotificationViewModel.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -96,6 +99,9 @@
 		CD08ADE42495981F00AC3A39 /* CommentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentVC.swift; sourceTree = "<group>"; };
 		CD08ADE62497FBD400AC3A39 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
 		CD422C9324A2E40400D9DF76 /* CommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewModel.swift; sourceTree = "<group>"; };
+		CD422C9A24C8E0FD00D9DF76 /* NotificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVC.swift; sourceTree = "<group>"; };
+		CD422C9C24C8E27B00D9DF76 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
+		CD422C9E24C8E77E00D9DF76 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -166,6 +172,16 @@
 			path = Comments;
 			sourceTree = "<group>";
 		};
+		CD422C9924C8E0D300D9DF76 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				CD422C9A24C8E0FD00D9DF76 /* NotificationVC.swift */,
+				CD422C9C24C8E27B00D9DF76 /* NotificationCell.swift */,
+				CD422C9E24C8E77E00D9DF76 /* NotificationViewModel.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 		CD57110F244FDF3300FAAC5D = {
 			isa = PBXGroup;
 			children = (
@@ -189,6 +205,7 @@
 		CD57111A244FDF3300FAAC5D /* VolumeiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CD422C9924C8E0D300D9DF76 /* Notifications */,
 				CD08ADE3249591E000AC3A39 /* Comments */,
 				CD08ADD8249142E900AC3A39 /* ArtistPF */,
 				CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */,
@@ -412,6 +429,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD571169245115A200FAAC5D /* Toolbar.swift in Sources */,
+				CD422C9B24C8E0FE00D9DF76 /* NotificationVC.swift in Sources */,
 				CD08ADC52486F07800AC3A39 /* VideoPlayerView.swift in Sources */,
 				CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */,
 				CD571156244FDF6600FAAC5D /* ImageLoader.swift in Sources */,
@@ -427,12 +445,14 @@
 				CD57116D2451D5BA00FAAC5D /* AlbumVC.swift in Sources */,
 				CD08ADE22491889600AC3A39 /* UserPfAndFollow.swift in Sources */,
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
+				CD422C9F24C8E77E00D9DF76 /* NotificationViewModel.swift in Sources */,
 				CD08ADDC249146A400AC3A39 /* ArtistPFContainerView.swift in Sources */,
 				CD08ADC12474803000AC3A39 /* UsernameTextField.swift in Sources */,
 				CD422C9424A2E40400D9DF76 /* CommentViewModel.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,
 				CD57114F244FDF6600FAAC5D /* ContentView.swift in Sources */,
 				CD57115B244FDF6700FAAC5D /* Spinner.swift in Sources */,
+				CD422C9D24C8E27B00D9DF76 /* NotificationCell.swift in Sources */,
 				CD571149244FDF6600FAAC5D /* ViewController.swift in Sources */,
 				CD57116F2451F7C400FAAC5D /* ViewModels.swift in Sources */,
 				CD08ADBB246DED8000AC3A39 /* ImageToServer.swift in Sources */,

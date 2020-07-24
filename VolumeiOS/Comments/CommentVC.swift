@@ -72,6 +72,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     var usernameReply:String?
     var index:IndexPath?
     var replyingCommentCell: CommentCell?
+    var comment_userID:String?
     
     lazy var textView:UITextView = {
         let tv = UITextView()
@@ -90,6 +91,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         tv.font = UIFont(name: "GillSans", size: 18)
         return tv
     }()
+    
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor.white
@@ -213,6 +215,8 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             textView.textColor = UIColor.lightGray
         }
         print("dismissKeyBoard")
+        comment.updateIsSelected(newBool: false)
+        comment.updatesubReplyIsSelected(newBool: false)
     }
     
     @objc func handleKeyBoardNotification(notification:NSNotification) {
@@ -345,33 +349,17 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         let username = self.username,
         let user_picture = profile?.picture,
         let user_id = profile?.sub,
-        let parent_id = parent_id {
-            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: parent_id)
+            let index = self.index,
+            let parent_id = parent_id, let comment_userID = self.comment_userID {
+            print("comment_userID \(self.comment_userID)")
+            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: parent_id, comment_userID: comment_userID, tableView_index: "\(index)")
 
             let postRequest = CommentPostRequest(endpoint: "sub_comment")
             postRequest.save(comment) { (result) in
                 switch result {
                 case .success(let comment):
-                    let viewModel = CommentViewModel()
-//                    viewModel.loadSubCommentsAfterReply(comment_id: parent_id)
-                    self.delegate?.didSendSubComment(parent_id: parent_id)
-//                    self.delegate2?.didSendSubComment()
-                    print("self.delegate2 \(self.delegate2)")
-                    print("delegate tableview \(self.delegate)")
-                    DispatchQueue.main.async {
-//                        if let index = self.index {
-//                        let cell = self.myTableView.cellForRow(at: index) as! CommentCell
-                            self.replyingCommentCell?.addedSubComment()
-//                        }
-                   
-                    self.delegate2?.didSendSubComment()
-                        print("self.delegate2 \(self.delegate2) main async")
-                    self.myTableView.reloadData()
-                    UIView.performWithoutAnimation {
-                       self.myTableView.beginUpdates()
-                       self.myTableView.endUpdates()
-                    }
-                }
+                 self.replyingCommentCell?.addedSubComment()
+             
                 case .failure(let error):
                     print("An error occurred: \(error)")
                 }
@@ -386,46 +374,6 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         textView.text = ""
     }
     
-//    var comment2:[Comments]?
-//    func sendSubComment() {
-//           if let text = textView.text,
-//           let username = self.username,
-//           let user_picture = profile?.picture,
-//           let user_id = profile?.sub,
-//           let parent_id = parent_id {
-//            let comment = Comments(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", text: text, username: username, user_picture: user_picture.absoluteString, user_id: user_id, parent_id: parent_id, isliked: nil, numberOfLikes: nil)
-//
-//
-//
-//               let postRequest = CommentsPostRequest(endpoint: "sub_comment")
-//               postRequest.save(comment) { (result) in
-//                   switch result {
-//                   case .success(let comment):
-//                    self.delegate2?.didSendSubComment()
-////                       self.comment2 = comment
-//                       self.delegate?.didSendSubComment(parent_id: parent_id)
-//                       print("delegate tableview \(self.delegate)")
-//                       DispatchQueue.main.async {
-//
-//                       self.myTableView.reloadData()
-//                       UIView.performWithoutAnimation {
-//                          self.myTableView.beginUpdates()
-//                          self.myTableView.endUpdates()
-//                       }
-//                   }
-//                   case .failure(let error):
-//                       print("An error occurred: \(error)")
-//                   }
-//               }
-//           } else {
-//               print("text \(textView.text)")
-//               print("username \(username)")
-//               print("user_picture \(profile?.picture)")
-//               print("user_id \(profile?.sub)")
-//               print("parent_id \(parent_id)")
-//           }
-//           textView.text = ""
-//       }
     
     func sendSubCommentReply() {
         if let text = textView.text,
@@ -433,29 +381,16 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         let user_picture = profile?.picture,
         let user_id = profile?.sub,
         let parent_id = parent_id,
+        let index = self.index,
         let usernameReply = usernameReply {
             let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text:
-                "Reply To @\(usernameReply): \(text)", parent_id: parent_id)
+                "Reply To @\(usernameReply): \(text)", parent_id: parent_id, comment_userID: nil, tableView_index: "\(index)")
             
             let postRequest = CommentPostRequest(endpoint: "sub_comment")
             postRequest.save(comment) { (result) in
                 switch result {
                 case .success(let comment):
-                    var viewModel = CommentViewModel()
-                    self.delegate?.didSendSubComment(parent_id: parent_id)
-                    print("delegate tableview \(self.delegate)")
-                    DispatchQueue.main.async {
-//                    if let index = self.index {
-//                    let cell = self.myTableView.cellForRow(at: index) as! CommentCell
-//                    cell.addedSubComment()
-                    self.replyingCommentCell?.addedSubComment()
-//                    }
-                    self.myTableView.reloadData()
-                    UIView.performWithoutAnimation {
-                       self.myTableView.beginUpdates()
-                       self.myTableView.endUpdates()
-                    }
-                }
+                  self.replyingCommentCell?.addedSubComment()
                 case .failure(let error):
                     print("An error occurred: \(error)")
                 }
@@ -474,8 +409,9 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         if let text = textView.text,
         let username = username,
         let user_picture = profile?.picture,
+        let index = self.index,
         let user_id = profile?.sub {
-            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: nil)
+            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: nil, comment_userID: nil, tableView_index: "\(index)")
             
             let postRequest = CommentPostRequest(endpoint: "comment")
             postRequest.save(comment) { (result) in
@@ -497,13 +433,6 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         textView.text = ""
     }
     
-
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//
-//        tableView.isUserInteractionEnabled = false
-//
-//        print("tapped")
-//    }
     
     
     
@@ -517,16 +446,11 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         cell.delegate = self
         cell.delegate2 = self
         cell.selectionStyle = .none
-        cell.index = indexPath
         cell.commentDelegate = self
         let item = comments[indexPath.item]
         cell.viewModel = item
-//        if let comment = comment2 {
-//            cell.viewModel?.subComments += comment
-//        print("comment2 other \(comment)")
-//        } else  {
-//            print("comment2 nil \(comment2)")
-//        }
+        cell.index = indexPath
+
         return cell
     }
     
@@ -535,12 +459,46 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
 
 
 extension CommentVC: CommentCellDelegate {
-    func didTapReplyBtn(parent_id: String, cell: CommentCell) {
+    
+    func didTapProfile(user_id: String) {
+        
+    }
+    
+    func alertToDeleteSubComment(cell: CommentCell) {
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this comment?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Delete", style: .default, handler: { action in
+            cell.deleteSubCommentAfterAlert()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            alert.dismiss(animated: true, completion: nil)
+        }))
+            self.present(alert, animated: true, completion: nil)
+    }
+    
+    func alertToDeleteComment(cell: CommentCell) {
+        let alert = UIAlertController(title: "Alert", message: "Are you sure you want to delete this comment?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Delete", style: .default, handler: { action in
+            cell.dltComment()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            alert.dismiss(animated: true, completion: nil)
+        }))
+            self.present(alert, animated: true, completion: nil)
+    }
+    
+    func didTapDeleteComment(index: IndexPath) {
+        comments.remove(at: index.row)
+        myTableView.deleteRows(at: [index], with: UITableView.RowAnimation.automatic)
+    }
+    
+    func didTapReplyBtn(parent_id: String, cell: CommentCell, user_id:String) {
         if !textView.isFirstResponder {
                    textView.becomeFirstResponder()
                    comment.updateIsSelected(newBool: true)
                    self.replyingCommentCell = cell
-//                   self.index = index
+                   self.comment_userID = user_id
+                   print("cell self this \(cell)")
+                   self.index = cell.index
                    reply = true
                    self.parent_id = parent_id
         //           tap?.isEnabled = true

@@ -8,8 +8,8 @@ class CommentViewModel {
     static var parent_id:String?
     var mainComment: Comments?
     var mainCommentImage: UIImage?
-    var commentLikes: [CommentLikes] = []
-    var commentLikesDidInserts: (([CommentLikes]) -> ())?
+    var commentLikes:Int?
+    var commentLikesDidInserts: ((Int) -> ())?
     var subComments: [Comments] = []
     var subCommentDidInserts: (([Comments]) -> ())?
     var imageDownloader: DownloadImage?
@@ -34,14 +34,29 @@ class CommentViewModel {
     var repliesBtnState: Bool? = true { didSet { repliesBtnStateDidSet?(repliesBtnState) } }
     var repliesBtnStateDidSet: ((Bool?)->())?
     var notCheckedExists:Bool? = true
+    var offset2:Int = 0
+    var dltBtnIsHidden:Bool?
+    var dltBtnIsHiddenDidSet: ((Bool?)->())?
+    var dltBtnIsEnabled:Bool?
+    var dltBtnIsEnabledDidSet: ((Bool?)->())?
+    var commentLikesLoaded:Bool = false
+    var notCheckedCommentBelongs:Bool? = true
 
     
 
 
     
-    func viewMore() {
-        offset += 3
+    func viewMore(id:String) {
         loadSubComments()
+        let offset2 = offset + 3
+        commentsExist(comment_id: id, offset: "\(offset2)", completion: { comment in
+            if comment.count <= 0 {
+                self.viewMoreBtnState = true
+            } else {
+                self.viewMoreBtnState = false
+            }
+        })
+        offset += 3
     }
    
     func reply(id:String) {
@@ -55,6 +70,7 @@ class CommentViewModel {
                 self.viewMoreBtnState = false
             }
         })
+        offset += 3
     }
     
     func viewRepliesExists(comment_id:String) {
@@ -71,16 +87,15 @@ class CommentViewModel {
    
     func loadSubComments() {
         print("loadSubComments")
-        let getSubComments = GETSubComments(id: CommentViewModel.parent_id, path: "subComments", offset: "\(offset)")
+        let getSubComments = GETSubComments(id: CommentViewModel.parent_id, path: "subComments", offset: "\(offset)", jumpedToReply: nil)
             getSubComments.getAllById {
                    self.subComments += $0
                    self.subCommentDidInserts?($0)
-                   print("self.subComments did insert lsc \(self.subCommentDidInserts)")
         }
     }
     
     func commentsExist(comment_id: String, offset: String, completion: @escaping ([Comments]) -> ()) {
-        let getSubComments = GETSubComments(id: comment_id, path: "subComments", offset: "\(offset)")
+        let getSubComments = GETSubComments(id: comment_id, path: "subComments", offset: "\(offset)", jumpedToReply: nil)
             getSubComments.getAllById {
             completion($0)
         }
@@ -89,29 +104,37 @@ class CommentViewModel {
     func loadSubCommentsAfterReply(comment_id:String?, user_id:String?) {
         print("loadSubCommentsAfterReply")
         if let id = comment_id {
-        let getSubComments = GETSubCommentAfterReply(id: id, user_id: user_id)
-
+            let getSubComments = GETSubCommentAfterReply(id: id, user_id: user_id)
+            
             getSubComments.getSubComment {
-                   self.subComments += $0
-                   self.subCommentDidInserts?($0)
-//                   self.commentsExist(comment_id: id, offset: "\(offset2)", completion: { comment in
-//                       if comment.count <= 0 {
-//                        self.viewMoreBtnState = true
-//                       } else {
-//                        self.viewMoreBtnState = false
-//                       }
-//                   })
+                self.subComments += $0
+                self.subCommentDidInserts?($0)
+                let offset2 = self.offset + 1
+                print("offset this \(self.offset)")
+                if let id = comment_id {
+                    self.commentsExist(comment_id: id, offset: "\(offset2)", completion: { comment in
+                        print("comment this loadSubCommentsAfterReply \(comment)")
+                        if comment.count <= 0 {
+                            self.viewMoreBtnState = true
+                        } else {
+                            self.viewMoreBtnState = false
+                        }
+                    })
+                }
                 
+                self.offset += 1
+                
+            }
         }
-      }
     }
     
     func loadCommentLikes(id:String) {
         print("loadCommentLikes")
         let getCommentLikes = GETCommentLikes(id: id)
         getCommentLikes.getAllById {
-            self.commentLikes = $0
-            self.commentLikesDidInserts?($0)
+            self.commentLikes = $0.count
+            self.commentLikesDidInserts?($0.count)
+            self.commentLikesLoaded = true
         }
     }
     
@@ -131,8 +154,8 @@ class CommentViewModel {
        }
     }
     
-    func likeComment(user_id: String, comment_id: String) {
-         let commentLike = CommentLike(user_id: user_id, comment_id: comment_id)
+    func likeComment(user_id: String, comment_id: String, post_id: String, comment_userID:String, index:String) {
+         let commentLike = CommentLike(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, tableView_index: index)
                
                
                let postRequest = CommentLikePostRequest(endpoint: "addCommentLike")
@@ -180,8 +203,8 @@ class CommentViewModel {
        }
     }
     
-    func likeSubComment(user_id: String, comment_id: String, completion: @escaping () -> ()) {
-        let commentLike = CommentLike(user_id: user_id, comment_id: comment_id)
+    func likeSubComment(user_id: String, comment_id: String, post_id:String, comment_userID: String, index: String,  completion: @escaping () -> ()) {
+        let commentLike = CommentLike(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, tableView_index: index)
         
         let postRequest = CommentLikePostRequest(endpoint: "addCommentLike")
         postRequest.save(commentLike) { (result) in
@@ -215,6 +238,24 @@ class CommentViewModel {
         let getCommentLikes = GETCommentLikes(id: id)
         getCommentLikes.getAllById {
              completion($0)
+        }
+    }
+    
+    func doesCommentBelongToUser(comment_id:String, user_id:String) {
+        let getCommentByUser = GETCommentByUser(id: comment_id, user_id: user_id)
+        getCommentByUser.getComments {
+            self.notCheckedCommentBelongs = false
+            if $0.count > 0 {
+                self.dltBtnIsHidden = false
+                self.dltBtnIsHiddenDidSet?(false)
+                self.dltBtnIsEnabled = true
+                self.dltBtnIsEnabledDidSet?(true)
+              } else {
+                self.dltBtnIsHidden = true
+                self.dltBtnIsHiddenDidSet?(true)
+                self.dltBtnIsEnabled = false
+                self.dltBtnIsEnabledDidSet?(false)
+            }
         }
     }
     

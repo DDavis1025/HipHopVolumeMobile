@@ -74,10 +74,9 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
 
         
 //        addSpinner()
-        
         authorID = self.post?.author!
-        self.userModel = GetUserByIDVM(id: (authorID!))
         if let id = authorID {
+        self.userModel = GetUserByIDVM(id: id)
         addUserAndFollowView(id: id)
         }
         imageView.image = UIImage(named: "music-placeholder")
@@ -101,12 +100,14 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
     
     func addSpinner() {
         self.child = SpinnerViewController()
-        addChild(self.child!)
-        self.child!.view.frame = view.frame
-        view.addSubview(self.child!.view)
-        self.child!.didMove(toParent: self)
-        self.child!.view.backgroundColor = UIColor.white
-        self.view.bringSubviewToFront(self.child!.view)
+        if let child = self.child {
+        addChild(child)
+        child.view.frame = view.frame
+        view.addSubview(child.view)
+        child.didMove(toParent: self)
+        child.view.backgroundColor = UIColor.white
+        self.view.bringSubviewToFront(child.view)
+        }
     }
     
     func addUserAndFollowView(id: String) {
@@ -222,10 +223,12 @@ class AlbumVC: Toolbar, FollowDelegateProtocol {
         }
     
     func addViewController() {
-        addChild(viewController!)
-        view.addSubview(viewController!.view)
-        viewController!.didMove(toParent: self)
+        if let viewController = viewController {
+        addChild(viewController)
+        view.addSubview(viewController.view)
+        viewController.didMove(toParent: self)
         setVCConstraints()
+        }
 
     }
     
