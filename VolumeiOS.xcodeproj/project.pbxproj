@@ -38,6 +38,9 @@
 		CD422C9B24C8E0FE00D9DF76 /* NotificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9A24C8E0FD00D9DF76 /* NotificationVC.swift */; };
 		CD422C9D24C8E27B00D9DF76 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9C24C8E27B00D9DF76 /* NotificationCell.swift */; };
 		CD422C9F24C8E77E00D9DF76 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422C9E24C8E77E00D9DF76 /* NotificationViewModel.swift */; };
+		CD422CA324D089DD00D9DF76 /* NotificationAlbumsTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422CA224D089DD00D9DF76 /* NotificationAlbumsTrack.swift */; };
+		CD422CA524D8788900D9DF76 /* FollowButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422CA424D8788900D9DF76 /* FollowButton.swift */; };
+		CD422CA724D9D44B00D9DF76 /* NotificationTrackPlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD422CA624D9D44A00D9DF76 /* NotificationTrackPlay.swift */; };
 		CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17A245C9AED00A2FD12 /* PostRequests.swift */; };
 		CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */; };
 		CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */; };
@@ -102,6 +105,9 @@
 		CD422C9A24C8E0FD00D9DF76 /* NotificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVC.swift; sourceTree = "<group>"; };
 		CD422C9C24C8E27B00D9DF76 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		CD422C9E24C8E77E00D9DF76 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
+		CD422CA224D089DD00D9DF76 /* NotificationAlbumsTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationAlbumsTrack.swift; sourceTree = "<group>"; };
+		CD422CA424D8788900D9DF76 /* FollowButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowButton.swift; sourceTree = "<group>"; };
+		CD422CA624D9D44A00D9DF76 /* NotificationTrackPlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTrackPlay.swift; sourceTree = "<group>"; };
 		CD48B17A245C9AED00A2FD12 /* PostRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRequests.swift; sourceTree = "<group>"; };
 		CD48B17C245CA9AA00A2FD12 /* FollowerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerButton.swift; sourceTree = "<group>"; };
 		CD48B17E245E23EE00A2FD12 /* DLTRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DLTRequests.swift; sourceTree = "<group>"; };
@@ -178,6 +184,8 @@
 				CD422C9A24C8E0FD00D9DF76 /* NotificationVC.swift */,
 				CD422C9C24C8E27B00D9DF76 /* NotificationCell.swift */,
 				CD422C9E24C8E77E00D9DF76 /* NotificationViewModel.swift */,
+				CD422CA224D089DD00D9DF76 /* NotificationAlbumsTrack.swift */,
+				CD422CA624D9D44A00D9DF76 /* NotificationTrackPlay.swift */,
 			);
 			path = Notifications;
 			sourceTree = "<group>";
@@ -237,6 +245,7 @@
 				CD08ADD2248EDD8600AC3A39 /* VideoTableViewCell.swift */,
 				CD08ADD424900C5500AC3A39 /* TracksCell.swift */,
 				CD08ADE12491889600AC3A39 /* UserPfAndFollow.swift */,
+				CD422CA424D8788900D9DF76 /* FollowButton.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -428,7 +437,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD422CA324D089DD00D9DF76 /* NotificationAlbumsTrack.swift in Sources */,
 				CD571169245115A200FAAC5D /* Toolbar.swift in Sources */,
+				CD422CA524D8788900D9DF76 /* FollowButton.swift in Sources */,
 				CD422C9B24C8E0FE00D9DF76 /* NotificationVC.swift in Sources */,
 				CD08ADC52486F07800AC3A39 /* VideoPlayerView.swift in Sources */,
 				CD48B17D245CA9AA00A2FD12 /* FollowerButton.swift in Sources */,
@@ -472,6 +483,7 @@
 				CD571153244FDF6600FAAC5D /* ProfileViewController.swift in Sources */,
 				CD57117124522E3100FAAC5D /* DownloadImage.swift in Sources */,
 				CD08ADE72497FBD500AC3A39 /* CommentCell.swift in Sources */,
+				CD422CA724D9D44B00D9DF76 /* NotificationTrackPlay.swift in Sources */,
 				CD48B17F245E23EE00A2FD12 /* DLTRequests.swift in Sources */,
 				CD5711632450AB6700FAAC5D /* SceneDelegate.swift in Sources */,
 				CD08ADCB248AD65100AC3A39 /* MenuBar.swift in Sources */,

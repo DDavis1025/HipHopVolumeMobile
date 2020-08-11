@@ -137,3 +137,46 @@ class DLTComment {
             dataTask.resume()
     }
 }
+
+
+class DLTLike {
+    
+    var post_id:String?
+    var supporter_id:String?
+    init(post_id:String, supporter_id:String) {
+      self.post_id = post_id
+      self.supporter_id = supporter_id
+    }
+    
+    func delete(completion: @escaping(Error?) -> ()) {
+        var components = URLComponents()
+        components.scheme = "http"
+        components.host = "localhost"
+        components.port = 8000
+        if let post_id = post_id, let supporter_id = supporter_id {
+        components.path = "/deletePostLike/\(post_id)/\(supporter_id)"
+        }
+        
+        guard let url = URL(string: components.url!.absoluteString) else {
+            fatalError("URL is not correct!")
+            
+        }
+
+        print("URL \(url)")
+            var urlRequest = URLRequest(url: url)
+            urlRequest.httpMethod = "DELETE"
+            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, err) in
+                
+                if let err = err {
+                    completion(err)
+                    return
+                }
+        
+                completion(nil)
+           
+            }
+            dataTask.resume()
+    }
+}

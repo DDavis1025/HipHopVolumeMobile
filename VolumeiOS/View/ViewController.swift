@@ -12,9 +12,14 @@ import UIKit
 import SwiftUI
 import AVFoundation
 
+protocol AlbumVCDelegate {
+    func updateTrackID(track_id:String)
+}
+
 class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     private var myTableView: UITableView!
+    var delegate:AlbumVCDelegate?
     var listArray:[PostById] = []
     var songArray:Array<Any> = []
     var songPath:Array<Any> = []
@@ -30,15 +35,17 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
            component.port = 8000
            return component
        }()
-    
+    let modelClass = ModelClass()
     var albumData = [PostById]() {
         didSet {
             DispatchQueue.main.async {
-            print("album data \(self.albumData)")
+                print("album data \(self.albumData[0].id)")
                 self.trackPaths()
                 let imagePath = self.albumData.filter { i in i.id == self.post.id
                 }
-                
+                if let author_id = self.albumData[0].author {
+                    self.modelClass.updateUserID(newString: author_id)
+                }
 
                 self.listArray = self.albumData.filter { i in i.album_id == self.post.id && i.id != self.post.id
                 }
@@ -63,7 +70,7 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     
     let trackVC = AlbumTrackVC()
-    let modelClass = ModelClass()
+
 
     
     init(post: Post){
@@ -219,11 +226,21 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        trackVC.trackNameLabel?.text = "\(listArray[indexPath.row].name!)"
+        if let trackName = listArray[indexPath.row].name {
+        trackVC.trackNameLabel?.text = "\(trackName)"
+        }
+        if let track_id = listArray[indexPath.row].id {
+        trackVC.track_id = "\(track_id)"
+           modelClass.updatePostID(newString: track_id)
+         print("didSelectRow \(track_id)")
+        }
+        
         modelClass.updateTrackNameLabel(newText: "\(listArray[indexPath.row].name!)")
 
         print("listArray \(listArray)")
-        modelClass.updateTrackPath(newText: (trackPath?[indexPath.row])!)
+        if let path = trackPath?[indexPath.row] {
+        modelClass.updateTrackPath(newText: path)
+        }
 
         if !albumTrackBtnClicked! {
           modelClass.updateClickedFromAT(newBool: false)
@@ -239,9 +256,12 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
         } else {
           trackVC.play(url: (NSURL(string: (ModelClass.track!))!))
           modelClass.updateClickedFromAT(newBool: true)
+          if let track_id = listArray[indexPath.row].id {
+            delegate?.updateTrackID(track_id: track_id)
+          }
         }
         
-         modelClass.updateListArray(newList: listArray)
+        modelClass.updateListArray(newList: listArray)
         let index = indexPath.row
         modelClass.updateIndex(newInt: index)
         modelClass.updatePlaying(newBool: true)

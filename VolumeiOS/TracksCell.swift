@@ -15,7 +15,6 @@ class TracksCell: AlbumCell {
            refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
            
            addTableView()
-                  
            myTableView.addSubview(refresher!)
        }
     
@@ -41,6 +40,7 @@ class TracksCell: AlbumCell {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             tableView.deselectRow(at: indexPath, animated: true)
+            print("didSelect TrackCell row")
             if let id = posts[indexPath.row].id {
              if let path = posts[indexPath.row].title {
                 if let author_id = posts[indexPath.row].author {
@@ -50,6 +50,8 @@ class TracksCell: AlbumCell {
               trackVC.trackName = path
 //              trackVC.author_id = author_id
               trackVC.justClicked = true
+              let trackPlay = TrackPlay()
+              trackPlay.updateAuthorID(newString: author_id)
               author.updateAuthorID(newString: author_id)
               let modalVC = UINavigationController(rootViewController: trackVC)
               modalVC.modalPresentationStyle = .fullScreen

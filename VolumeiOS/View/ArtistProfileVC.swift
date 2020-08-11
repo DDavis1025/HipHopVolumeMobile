@@ -20,6 +20,7 @@ class ArtistProfileVC: Toolbar {
     var delegate: FollowDelegateProtocol? = nil
 
     var profile: UserInfo!
+    var username:String?
     var isLoaded:Bool? = false
     var imageView:UIImageView!
     var author:[PostById]!
@@ -155,6 +156,7 @@ class ArtistProfileVC: Toolbar {
             }
             
             addActionToFlwBtn()
+            getUser()
             
             
             print("navigation artistPF \(navigationController)")
@@ -193,6 +195,17 @@ class ArtistProfileVC: Toolbar {
             }
         }
         print("setupButton")
+    }
+    
+    func getUser() {
+        if let id = profile?.sub {
+            print("profile?.sub id \(profile?.sub)")
+            GetUsersById(id: id).getAllPosts {
+                self.username = $0[0].username
+            }
+        } else {
+            print("profile?.sub \(profile?.sub)")
+        }
     }
     
     
@@ -379,8 +392,8 @@ class ArtistProfileVC: Toolbar {
     
     @objc func setButtonAction() {
         if followButton.buttonState == .add {
-            let follower_id = (profile?.sub)!
-              let follower = Follower(user_id: artistID!, follower_id: follower_id)
+             if let user_id = artistID, let follower_id = profile?.sub, let follower_username = self.username, let follower_picture = profile?.picture?.absoluteString {
+              let follower = Follower(user_id: user_id, follower_id: follower_id, follower_username: follower_username, follower_picture: follower_picture )
               let postRequest = FollowerPostRequest(endpoint: "follower")
               
               postRequest.save(follower) { (result) in
@@ -398,6 +411,7 @@ class ArtistProfileVC: Toolbar {
                       print("An error occurred \(error)")
                   }
               }
+            }
               followButton.buttonState = .delete
         } else if followButton.buttonState == .delete {
           

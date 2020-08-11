@@ -39,6 +39,10 @@ class VideoPlayerView: UIView {
         let config = UIImage.SymbolConfiguration(pointSize: 35, weight: .black, scale: .medium)
         let image = UIImage(systemName: "pause.fill", withConfiguration: config) as UIImage?
         let whiteImage = image?.withTintColor(.white, renderingMode: .alwaysOriginal)
+        button.layer.cornerRadius = 8.0
+        button.layer.borderWidth = 1.0
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        button.layer.borderColor = UIColor.black.cgColor
         button.setImage(whiteImage, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true
@@ -67,6 +71,11 @@ class VideoPlayerView: UIView {
             self.player?.play()
         }
         
+        secondToFadeOut = 5
+        timer.invalidate()
+        runTimer()
+
+        
         isPlaying = !isPlaying
     }
     
@@ -77,7 +86,10 @@ class VideoPlayerView: UIView {
         label.textColor = UIColor.white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textAlignment = .right
+        label.textAlignment = .center
+        label.layer.borderWidth = 0.5
+        label.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        label.layer.borderColor = UIColor.black.cgColor
         return label
     }()
     
@@ -87,7 +99,10 @@ class VideoPlayerView: UIView {
         label.textColor = UIColor.white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textAlignment = .right
+        label.textAlignment = .center
+        label.layer.borderWidth = 0.5
+        label.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        label.layer.borderColor = UIColor.black.cgColor
         return label
     }()
     
@@ -169,14 +184,16 @@ class VideoPlayerView: UIView {
         
         
         addSubview(controlsContainerView)
+        controlsContainerView.addSubview(videoLengthLabel)
+        controlsContainerView.addSubview(currentTimeLabel)
         
         
         
         NSLayoutConstraint.activate([
           controlsContainerView.topAnchor.constraint(equalTo: topAnchor),
           controlsContainerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-          controlsContainerView.leftAnchor.constraint(equalTo: leftAnchor),
-          controlsContainerView.rightAnchor.constraint(equalTo: rightAnchor)
+          controlsContainerView.trailingAnchor.constraint(equalTo: videoLengthLabel.leadingAnchor),
+          controlsContainerView.leadingAnchor.constraint(equalTo: currentTimeLabel.trailingAnchor)
         ])
         
         controlsContainerView.addSubview(activityIndicatorView)
@@ -191,14 +208,14 @@ class VideoPlayerView: UIView {
         pausePlayButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         pausePlayButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        controlsContainerView.addSubview(videoLengthLabel)
-        videoLengthLabel.rightAnchor.constraint(equalTo: controlsContainerView.rightAnchor, constant: -8).isActive = true
+//        controlsContainerView.addSubview(videoLengthLabel)
+        videoLengthLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -2).isActive = true
         videoLengthLabel.bottomAnchor.constraint(equalTo: controlsContainerView.bottomAnchor).isActive = true
         videoLengthLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
         videoLengthLabel.heightAnchor.constraint(equalToConstant: 24).isActive = true
     
-        controlsContainerView.addSubview(currentTimeLabel)
-        currentTimeLabel.leftAnchor.constraint(equalTo: controlsContainerView.leftAnchor, constant: -8).isActive = true
+//        controlsContainerView.addSubview(currentTimeLabel)
+        currentTimeLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2).isActive = true
         currentTimeLabel.centerYAnchor.constraint(equalTo: videoLengthLabel.centerYAnchor).isActive = true
         currentTimeLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
         currentTimeLabel.heightAnchor.constraint(equalToConstant: 24).isActive = true
@@ -256,9 +273,7 @@ class VideoPlayerView: UIView {
         secondToFadeOut = 5
         fadeInButton()
         timer.invalidate()
-        if isTimerRunning == false {
-            runTimer()
-        }
+        runTimer()
     }
 
     
@@ -340,12 +355,31 @@ class VideoVC: UIViewController {
     static let shared = VideoVC()
     var id:String = ""
     var path:String?
+    var username:String?
     var author:String?
     var video_title:String?
     var video_description:String?
     var userAndFollow:UserPfAndFollow?
     let title_label = UILabel()
     let description_label = UILabel()
+    var commentsBtn:UIButton?
+    var post_id:String?
+    var comment_id:String?
+    var parent_commentID:String?
+    var parentsubcommentid: String?
+    var notificationType:String?
+    var isLiked:Bool?
+    var likeBtn:UIButton?
+    var profile = SessionManager.shared.profile
+    
+    
+    lazy var numberOfLikes:UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.text = "0"
+        label.sizeToFit()
+        return label
+    }()
 
     
     func passId(id:String) {
@@ -365,10 +399,10 @@ class VideoVC: UIViewController {
         super.viewDidLoad()
 
         print("VIDEO VIEW DID LOAD")
-        let back = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(goBack))
-                  back.tintColor = UIColor.black
-                  
-        self.navigationItem.leftBarButtonItem = back
+//        let back = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(goBack))
+//                  back.tintColor = UIColor.black
+//
+//        self.navigationItem.leftBarButtonItem = back
         
         player?.pause()
         
@@ -398,14 +432,29 @@ class VideoVC: UIViewController {
             }
         }
         view.addSubview(playerView)
+        getUser()
+        addCommentsButton()
+        addCommentsBtnConstraints()
+        addLikeButton()
+        addLikeBtnConstraints()
+        postLikeCount()
+        
         
         addTitle()
         addDescription()
         if let author = author {
             addUserAndFollowView(id: author)
         }
+        getComments()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+        self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+        self.likeBtn?.tintColor = UIColor.black
+        isLiked = false
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         if Video.didGoBack == true {
              let config = UIImage.SymbolConfiguration(pointSize: 35, weight: .bold, scale: .medium)
@@ -417,6 +466,24 @@ class VideoVC: UIViewController {
         let videoStruct = Video()
         print("video struct \(Video.didGoBack)")
         videoStruct.updateDidGoBack(newBool: false)
+       if let supporter_id = profile?.sub {
+        GETLikeRequest(path: "postLikeByUserID", post_id: self.id, supporter_id: supporter_id).getLike {
+              if $0.count > 0 {
+                  let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                  self.likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
+                  self.likeBtn?.tintColor = UIColor.red
+                self.isLiked = true
+              } else {
+                  let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                  self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+                  self.likeBtn?.tintColor = UIColor.black
+                self.isLiked = false
+              }
+            }
+        }
+            GETLikeRequest(path: "getLikesByPostID", post_id: self.id, supporter_id: nil).getLike {
+                self.numberOfLikes.text = "\($0.count)"
+            }
     }
     
     override func viewDidLayoutSubviews() {
@@ -425,19 +492,86 @@ class VideoVC: UIViewController {
         playerView.frame = CGRect(x: view.safeAreaLayoutGuide.layoutFrame.origin.x, y: view.safeAreaLayoutGuide.layoutFrame.origin.y, width: view.safeAreaLayoutGuide.layoutFrame.size.width, height: height)
     }
     
-    
-    @objc func goBack(sender: UIBarButtonItem) {
-        if let player = playerView.player {
-           player.pause()
-        }
-        self.navigationController?.popViewController(animated: true)
-    }
+//    
+//    @objc func goBack(sender: UIBarButtonItem) {
+//        if let player = playerView.player {
+//           player.pause()
+//        }
+//        print("goBack")
+////        self.dismiss(animated: true, completion: nil)
+//        self.navigationController?.popViewController(animated: true)
+//    }
     
     override func viewDidDisappear(_ animated: Bool) {
         if let player = playerView.player {
            playerView.isPlaying = false
            player.pause()
         }
+    }
+    
+    func getUser() {
+           if let id = profile?.sub {
+               print("profile?.sub id \(profile?.sub)")
+               GetUsersById(id: id).getAllPosts {
+                   self.username = $0[0].username
+                   print("self.username \(self.username)")
+               }
+           } else {
+               print("profile?.sub \(profile?.sub)")
+           }
+       }
+    
+    func getComments() {
+       if let comment_id = comment_id, let parentsubcommentid = parentsubcommentid, notificationType == "reply" {
+           ParentSubCommentAndReply(parentsubcommentid: parentsubcommentid, reply_id: comment_id).getComments { comments in
+           DispatchQueue.main.async {
+           let commentVC = CommentVC()
+           commentVC.post_id = self.id
+           commentVC.notificationSubComments = [comments[0]]
+           commentVC.notificationParentSubComment = [comments[1]]
+           if let parent_id = comments[1].parent_id {
+           commentVC.notificationParentId = parent_id
+           }
+           let commentVC2 = UINavigationController(rootViewController: commentVC)
+           commentVC2.modalPresentationStyle = .popover
+           self.present(commentVC2, animated: true, completion: nil)
+               
+          }
+         }
+           
+       } else if let _ = comment_id, let _ = parent_commentID, notificationType == "reply" || notificationType == "likedComment" {
+           NotificationSubComment(id: comment_id).getComments { comments in
+           DispatchQueue.main.async {
+           let commentVC = CommentVC()
+           
+           commentVC.post_id = self.id
+           let subComment: [Comments] = [comments[0]]
+           commentVC.notificationSubComments = subComment
+           if let parent_id = comments[0].parent_id {
+           commentVC.notificationParentId = parent_id
+           }
+           let commentVC2 = UINavigationController(rootViewController: commentVC)
+           commentVC2.modalPresentationStyle = .popover
+           self.present(commentVC2, animated: true, completion: nil)
+       }
+      }
+     } else if let _ = comment_id, notificationType == "likedComment" || notificationType == "commentedPost" {
+         let commentVC = CommentVC()
+         print("goToPostView notifType 2 \(notificationType)")
+         if let post_id = self.post_id {
+         commentVC.post_id = post_id
+         }
+         if let notificationType = self.notificationType {
+             commentVC.notificationType = notificationType
+         }
+         if let comment_id = self.comment_id {
+             print("this is a comment_id \(comment_id)")
+             commentVC.post_comment_id = comment_id
+         }
+         let commentVC2 = UINavigationController(rootViewController: commentVC)
+         commentVC2.modalPresentationStyle = .popover
+         self.present(commentVC2, animated: true, completion: nil)
+     }
     }
     
     func addTitle() {
@@ -496,3 +630,118 @@ class VideoVC: UIViewController {
          
     }
 }
+
+
+extension VideoVC {
+    
+    func addCommentsButton() {
+        let commentsBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+        commentsBtn = UIButton()
+        commentsBtn?.setImage(UIImage(systemName: "message", withConfiguration: commentsBtnConfig), for: .normal)
+        commentsBtn?.addTarget(self, action: #selector(commentsBtnClicked(_:)), for: .touchUpInside)
+        commentsBtn?.tintColor = UIColor.black
+        if let commentsBtn = commentsBtn {
+        view.addSubview(commentsBtn)
+        }
+    }
+    
+    func addCommentsBtnConstraints() {
+        commentsBtn?.translatesAutoresizingMaskIntoConstraints = false
+        commentsBtn?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        
+        commentsBtn?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40).isActive = true
+    }
+    
+    @objc func commentsBtnClicked(_ sender: UIButton) {
+        let commentVC = CommentVC()
+        commentVC.post_id = id
+        let commentVC2 = UINavigationController(rootViewController: commentVC)
+        commentVC2.modalPresentationStyle = .popover
+        self.present(commentVC2, animated: true, completion: nil)
+    }
+    
+}
+
+extension VideoVC {
+    
+    func addLikeButton() {
+        let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+        likeBtn = UIButton()
+        likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+        likeBtn?.addTarget(self, action: #selector(likeBtnClicked(_:)), for: .touchUpInside)
+        likeBtn?.tintColor = UIColor.black
+        if let likeBtn = likeBtn {
+        view.addSubview(likeBtn)
+        }
+    }
+    
+    func addLikeBtnConstraints() {
+        likeBtn?.translatesAutoresizingMaskIntoConstraints = false
+        guard let commentsBtn = commentsBtn else {
+            return
+        }
+        likeBtn?.centerYAnchor.constraint(equalTo: commentsBtn.centerYAnchor).isActive = true
+        
+        likeBtn?.centerXAnchor.constraint(equalTo: commentsBtn.centerXAnchor, constant: -80).isActive = true
+    }
+    
+    func postLikeCount() {
+        guard let likeBtn = likeBtn else {
+            return
+        }
+        view.addSubview(numberOfLikes)
+        numberOfLikes.translatesAutoresizingMaskIntoConstraints = false
+        numberOfLikes.centerXAnchor.constraint(equalTo: likeBtn.centerXAnchor).isActive = true
+        numberOfLikes.bottomAnchor.constraint(equalTo: likeBtn.topAnchor, constant: -5).isActive = true
+    }
+    
+    @objc func likeBtnClicked(_ sender: UIButton) {
+          if self.isLiked == true {
+            let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+            likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+            likeBtn?.tintColor = UIColor.black
+                if let supporter_id = profile?.sub {
+                    let deleteRequest = DLTLike(post_id: self.id, supporter_id: supporter_id)
+                
+                deleteRequest.delete {(err) in
+                    if let err = err {
+                        print("Failed to delete", err)
+                        return
+                    }
+                    
+                        GETLikeRequest(path: "getLikesByPostID", post_id: self.id, supporter_id: nil).getLike {
+                            self.numberOfLikes.text = "\($0.count)"
+                        }
+                    
+                    print("Successfully deleted post like from server")
+                }
+            }
+            isLiked = false
+        } else {
+            print("liked post")
+            let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .bold, scale: .medium)
+            likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
+            likeBtn?.tintColor = UIColor.red
+            if let supporter_id = profile?.sub, let supporter_username = self.username, let supporter_picture = profile?.picture?.absoluteString, let user_id = self.author {
+                let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture, post_id: self.id)
+            
+            
+            let postRequest = LikeRequest(endpoint: "postLike")
+            postRequest.save(postLike) { (result) in
+                switch result {
+                case .success(let comment):
+                    print("success: you liked a post")
+                        GETLikeRequest(path: "getLikesByPostID", post_id: self.id, supporter_id: nil).getLike {
+                            self.numberOfLikes.text = "\($0.count)"
+                        }
+                case .failure(let error):
+                    print("An error occurred while liking post: \(error)")
+                }
+            }
+          }
+           isLiked = true
+      }
+    }
+    
+}
+

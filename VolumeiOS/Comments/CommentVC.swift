@@ -70,9 +70,21 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     var delegate:TableViewSubCommentDelegate?
     weak var delegate2:TableViewDelegate?
     var usernameReply:String?
-    var index:IndexPath?
+    var index:Int?
+    var notificationIndex:Int?
     var replyingCommentCell: CommentCell?
     var comment_userID:String?
+    var post_id:String?
+    var notificationParentId:String?
+    var notificationSubComments:[Comments] = []
+    var notificationParentSubComment:[Comments]?
+    var indexPath:IndexPath?
+    var subCommentParentId:String?
+    var parentSubCommentId:String?
+    var subReplyUserId:String?
+    var post_user_id:String?
+    var notificationType:String?
+    var post_comment_id:String?
     
     lazy var textView:UITextView = {
         let tv = UITextView()
@@ -110,7 +122,34 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
 //        setupCountLabel()
         addTableView()
 //        view.bringSubviewToFront(countLabel)
-        loadComments()
+        if let notificationParentId = notificationParentId, let notificationParentSubComment = self.notificationParentSubComment {
+            getCommentByParentId(parent_id: notificationParentId, completion: {
+                self.loadComments(completion: {
+                    let indexPath = NSIndexPath(item: 0, section: 0)
+                    let cell = self.myTableView.cellForRow(at: indexPath as IndexPath) as! CommentCell
+                    cell.notificationParentId = notificationParentId
+                    cell.addNotificationParentSubAndReply(subComment: self.notificationSubComments, parentSubComment: notificationParentSubComment)
+                    //                    self.myTableView.reloadData()
+                })
+            })
+        } else if let notificationParentId = notificationParentId {
+            print("notification parent id")
+            getCommentByParentId(parent_id: notificationParentId, completion: {
+                self.loadComments(completion: {
+                    let indexPath = NSIndexPath(item: 0, section: 0)
+                    let cell = self.myTableView.cellForRow(at: indexPath as IndexPath) as! CommentCell
+                    cell.notificationParentId = notificationParentId
+                    cell.addNotificationSubComment(subComment: self.notificationSubComments)
+//                    self.myTableView.reloadData()
+                })
+            })
+        } else if notificationType == "commentedPost" || notificationType == "likedComment"  {
+            getCommentByParentId(parent_id: self.post_comment_id, completion: {
+                self.loadComments(completion: {})
+            })
+        } else {
+            loadComments(completion: {})
+        }
         
         
         view.isUserInteractionEnabled = true
@@ -123,7 +162,41 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardNotification), name: UIResponder.keyboardWillShowNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardNotification), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        if let post_id = self.post_id {
+            getAuthorByPostID(post_id: post_id)
+        }
+        
+        
     }
+    
+    
+    func getCommentByParentId(parent_id:String?, completion: @escaping(() -> ())) {
+        guard let parent_id = parent_id else {
+            return
+        }
+        print("parent_id get comment \(parent_id)")
+        GETCommentById(id: parent_id).getComment { comments in
+            self.comments = comments.map { comment in
+                    let ret = CommentViewModel()
+                    ret.mainComment = comment
+            
+                    print("this comment \(comment)")
+                    return ret
+                }
+            print("self.comments get parent id \(self.comments[0])")
+//            self.myTableView.reloadData()
+            completion()
+        }
+            
+    }
+    
+    func getAuthorByPostID(post_id: String) {
+        GETByID(id: post_id, path: "getAuthorByPostID").getById {
+            self.post_user_id = $0[0].author
+        }
+    }
+    
     
     func getUser() {
         if let id = profile?.sub {
@@ -233,19 +306,46 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         }
     }
     
-    func loadComments() {
-        let getComments = GETComments(id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", path: "comments")
+    func loadComments(completion:@escaping(()->())) {
+        guard let post_id = post_id else {
+            return
+        }
+        let getComments = GETComments(id: post_id, path: "comments")
         getComments.getAllById { comments in
-            self.comments = comments.map { comment in
+            if let notificationParentId = self.notificationParentId {
+                let commentsFiltered = comments.filter {
+                    return $0.id != notificationParentId
+                }
+                self.comments += commentsFiltered.map { comment in
+                    let ret = CommentViewModel()
+                    ret.mainComment = comment
+                    
+                    return ret
+                }
+                self.myTableView.reloadData()
+                completion()
+            }  else if let comment_id = self.post_comment_id {
+                  let commentsFiltered = comments.filter {
+                    return $0.id != comment_id
+                }
+                self.comments += commentsFiltered.map { comment in
+                    let ret = CommentViewModel()
+                    ret.mainComment = comment
+                    
+                    return ret
+                }
+                self.myTableView.reloadData()
+                completion()
+                
+            } else {
+              self.comments = comments.map { comment in
                 let ret = CommentViewModel()
                 ret.mainComment = comment
         
                 return ret
             }
             self.myTableView.reloadData()
-//            if self.myTableView.numberOfRows(inSection: 0) != 0 {
-//                self.myTableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-//            }
+            }
         }
     }
     
@@ -345,19 +445,22 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
 
     func sendSubComment() {
+        print("sendSubComment")
         if let text = textView.text,
+        let post_id = self.post_id,
         let username = self.username,
         let user_picture = profile?.picture,
         let user_id = profile?.sub,
             let index = self.index,
             let parent_id = parent_id, let comment_userID = self.comment_userID {
             print("comment_userID \(self.comment_userID)")
-            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: parent_id, comment_userID: comment_userID, tableView_index: "\(index)")
+            let comment = Comment(post_id: post_id, username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: parent_id, comment_userID: comment_userID, tableview_index: index, parentsubcommentid: nil, post_user_id: nil)
 
             let postRequest = CommentPostRequest(endpoint: "sub_comment")
             postRequest.save(comment) { (result) in
                 switch result {
                 case .success(let comment):
+                print("success saving comment")
                  self.replyingCommentCell?.addedSubComment()
              
                 case .failure(let error):
@@ -365,6 +468,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 }
             }
         } else {
+            
             print("text \(textView.text)")
             print("username \(self.username)")
             print("user_picture \(profile?.picture)")
@@ -377,19 +481,24 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     func sendSubCommentReply() {
         if let text = textView.text,
+        let post_id = self.post_id,
         let username = self.username,
         let user_picture = profile?.picture,
         let user_id = profile?.sub,
         let parent_id = parent_id,
         let index = self.index,
+        let subReplyUserId = self.subReplyUserId,
+        let parentSubCommentId = self.parentSubCommentId,
         let usernameReply = usernameReply {
-            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text:
-                "Reply To @\(usernameReply): \(text)", parent_id: parent_id, comment_userID: nil, tableView_index: "\(index)")
+            print("sendSubCommentReply + \(parentSubCommentId)")
+            let comment = Comment(post_id: post_id, username: username, user_picture: user_picture.absoluteString, user_id: user_id, text:
+                "Reply To @\(usernameReply): \(text)", parent_id: parent_id, comment_userID: subReplyUserId, tableview_index: index, parentsubcommentid: parentSubCommentId, post_user_id: nil)
             
             let postRequest = CommentPostRequest(endpoint: "sub_comment")
             postRequest.save(comment) { (result) in
                 switch result {
                 case .success(let comment):
+                  print("you have successfully saved a sub comment reply")
                   self.replyingCommentCell?.addedSubComment()
                 case .failure(let error):
                     print("An error occurred: \(error)")
@@ -401,17 +510,18 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             print("user_picture \(profile?.picture)")
             print("user_id \(profile?.sub)")
             print("parent_id \(parent_id)")
+            print("parentSubCommentId \(parentSubCommentId)")
         }
         textView.text = ""
     }
     
     func performActionSend() {
         if let text = textView.text,
+        let post_id = self.post_id,
         let username = username,
         let user_picture = profile?.picture,
-        let index = self.index,
-        let user_id = profile?.sub {
-            let comment = Comment(post_id: "2d44a588-e47a-43c5-bd16-94e7073e4e14", username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: nil, comment_userID: nil, tableView_index: "\(index)")
+            let user_id = profile?.sub, let post_user_id = self.post_user_id {
+            let comment = Comment(post_id: post_id, username: username, user_picture: user_picture.absoluteString, user_id: user_id, text: text, parent_id: nil, comment_userID: nil, tableview_index: nil, parentsubcommentid: nil, post_user_id: post_user_id)
             
             let postRequest = CommentPostRequest(endpoint: "comment")
             postRequest.save(comment) { (result) in
@@ -419,7 +529,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 case .success(let comment):
                     print("the following comment has been sent: \(comment)")
                     
-                    self.loadComments()
+                    self.loadComments(completion: {})
                 case .failure(let error):
                     print("An error occurred: \(error)")
                 }
@@ -445,6 +555,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath) as! CommentCell
         cell.delegate = self
         cell.delegate2 = self
+        cell.profile_username = self.username
         cell.selectionStyle = .none
         cell.commentDelegate = self
         let item = comments[indexPath.item]
@@ -498,7 +609,7 @@ extension CommentVC: CommentCellDelegate {
                    self.replyingCommentCell = cell
                    self.comment_userID = user_id
                    print("cell self this \(cell)")
-                   self.index = cell.index
+                   self.index = cell.index?[1]
                    reply = true
                    self.parent_id = parent_id
         //           tap?.isEnabled = true
@@ -530,8 +641,7 @@ extension CommentVC: CommentCellDelegate {
 
 extension CommentVC: CommentCellDelegate2 {
     
-    
-    func didTapSubReplyBtn(username: String, parent_id:String, cell: CommentCell) {
+    func didTapSubReplyBtn(username: String, parent_id:String, cell: CommentCell, parentSubCommentId: String, user_id:String) {
         if !textView.isFirstResponder {
                       textView.becomeFirstResponder()
                       comment.updateIsSelected(newBool: false)
@@ -540,6 +650,9 @@ extension CommentVC: CommentCellDelegate2 {
                       self.parent_id = parent_id
                       self.usernameReply = username
                       self.replyingCommentCell = cell
+                      self.index = cell.index?[1]
+                      self.parentSubCommentId = parentSubCommentId
+                      self.subReplyUserId = user_id
 //                      self.index = index
            //           tap?.isEnabled = true
 

@@ -28,12 +28,21 @@ struct PostById: Codable, Hashable, Identifiable {
     
     
     let id:String?
+    let user_id:String?
     let title:String?
     let album_id:String?
     let name: String?
     let path: String?
     let author:String?
+    let description:String?
+    let type:String?
     
+}
+
+struct User: Codable, Hashable, Identifiable {
+    let id:String?
+    let username:String?
+    let picture:String?
 }
 
 struct UsersModel: Codable {
@@ -47,10 +56,14 @@ struct UsersModel: Codable {
 final class Follower: Codable {
     var user_id:String?
     var follower_id:String?
+    var follower_username:String?
+    var follower_picture:String?
     
-    init(user_id:String, follower_id:String) {
+    init(user_id:String, follower_id:String, follower_username:String, follower_picture:String) {
         self.user_id = user_id
         self.follower_id = follower_id
+        self.follower_username = follower_username
+        self.follower_picture = follower_picture
     }
 }
 
@@ -74,7 +87,9 @@ struct ImageModel: Codable {
 class ModelClass : NSObject
 {
     static var trackNameLabel:String?
-    static var track:String? 
+    static var track:String?
+    static var post_id:String?
+    static var isLiked:Bool? = false
     static var listArray:[PostById]? = []
     static var index:Int?
     static var imgPath:String?
@@ -83,6 +98,7 @@ class ModelClass : NSObject
     static var theViewLoaded:Bool? = false
     static var justClicked:Bool? = false
     static var clickedFromAT:Bool? = false
+    static var user_id:String?
     static var viewAppeared:Bool? = false
     
     func updatePlaying(newBool: Bool) {
@@ -93,8 +109,20 @@ class ModelClass : NSObject
         ModelClass.self.trackNameLabel = newText
     }
     
+    func updatePostID(newString: String) {
+        ModelClass.self.post_id = newString
+    }
+    
     func updateTrackPath(newText: String) {
         ModelClass.self.track = newText
+    }
+    
+    func updateUserID(newString: String) {
+        ModelClass.self.user_id = newString
+    }
+    
+    func updateIsLiked(newBool: Bool) {
+        ModelClass.self.isLiked = newBool
     }
     
     func updateListArray(newList: [PostById]?) {
@@ -169,12 +197,14 @@ final class Comment: Codable {
     var username:String?
     var user_picture:String?
     var user_id:String?
+    var post_user_id:String?
     var text:String?
     var parent_id:String?
     var comment_userID:String?
-    var tableView_index:String?
+    var tableview_index:Int?
+    var parentsubcommentid:String?
     
-    init(post_id:String, username:String, user_picture:String, user_id:String, text:String, parent_id: String?, comment_userID:String?, tableView_index:String?) {
+    init(post_id:String, username:String, user_picture:String, user_id:String, text:String, parent_id: String?, comment_userID:String?, tableview_index:Int?, parentsubcommentid:String?, post_user_id:String?) {
         self.post_id = post_id
         self.username = username
         self.user_picture = user_picture
@@ -182,7 +212,9 @@ final class Comment: Codable {
         self.text = text
         self.parent_id = parent_id
         self.comment_userID = comment_userID
-        self.tableView_index = tableView_index
+        self.tableview_index = tableview_index
+        self.parentsubcommentid = parentsubcommentid
+        self.post_user_id = post_user_id
     }
 }
 
@@ -196,21 +228,31 @@ struct Comments: Codable {
     var parent_id:String?
     var isliked:Bool?
     var numberOfLikes:Int?
+    var tableview_index:Int?
+    var parentsubcommentid:String?
 }
 
 final class CommentLike: Codable {
     var user_id:String?
+    var username:String?
+    var user_picture:String?
     var comment_id:String?
     var post_id:String?
     var comment_userID:String?
-    var tableView_index:String?
+    var tableview_index:String?
+    var parent_id:String?
     
-    init(user_id:String, comment_id:String, post_id:String, comment_userID:String, tableView_index:String) {
+    init(user_id:String, username:String, user_picture:String, comment_id:String, post_id:String, comment_userID:String, tableview_index:String, parent_id:String?) {
         self.user_id = user_id
         self.comment_id = comment_id
         self.post_id = post_id
         self.comment_userID = comment_userID
-        self.tableView_index = tableView_index
+        self.tableview_index = tableview_index
+        if let parent_id = parent_id {
+        self.parent_id = parent_id
+        }
+        self.username = username
+        self.user_picture = user_picture
     }
 }
 
@@ -235,15 +277,53 @@ final class SubCommentLike: Codable {
 struct Notifications: Codable {
     var user_id:String?
     var supporter_id:String?
+    var supporter_username:String?
+    var supporter_picture:String?
     var message:String?
     var post_id:String?
     var parent_commentid:String?
     var comment_id:String?
+    var parentsubcommentid:String?
 }
 
-struct PostPhoto: Codable {
+struct PostImage:Codable {
+    var path:String?
+    var type:String?
+}
+
+struct Song:Codable {
+    var album_id:String?
+    var name:String?
+    var index:Int?
+    var id:String?
+    var title:String?
+    var author:String?
     var path:String?
 }
+
+final class LikeModel: Codable {
+    var user_id:String?
+    var supporter_id:String?
+    var supporter_username:String?
+    var supporter_picture:String?
+    var post_id:String?
+    
+    init(user_id:String, supporter_id:String, supporter_username:String?, supporter_picture:String?, post_id:String) {
+        self.user_id = user_id
+        self.supporter_id = supporter_id
+        if let supporter_username = supporter_username {
+         self.supporter_username = supporter_username
+        }
+        if let supporter_picture = supporter_picture {
+         self.supporter_picture = supporter_picture
+        }
+        self.post_id = post_id
+        
+    }
+}
+
+
+
 
 
 

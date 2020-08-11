@@ -14,11 +14,11 @@ class VideoCell: AlbumCell {
            super.init(frame: frame)
    //        addSpinner()
             spinner.startAnimating()
-            addTableView()
             GetAllOfMediaType(path:"videos").getAllPosts {
                        self.posts = $0
                    }
 
+           addTableView()
            refresher = UIRefreshControl()
            refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
            refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
@@ -51,11 +51,12 @@ class VideoCell: AlbumCell {
             tableView.deselectRow(at: indexPath, animated: true)
             let videoStruct = VideoStruct()
             if let id = posts[indexPath.row].id {
+                print("posts[indexPath.row].id \(posts[indexPath.row].id)")
             videoStruct.updateVideoId(newString: id)
             if let video_id = VideoStruct.id {
             let videoVC = VideoVC()
             if let id = VideoStruct.id {
-            videoVC.passId(id: id)
+            videoVC.passId (id: id)
             }
             if let author = posts[indexPath.row].author {
               videoVC.author = author

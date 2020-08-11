@@ -9,7 +9,7 @@
 import Foundation
 
 struct AccessToken {
- var accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik5FRTVPRGt4TWpaR05UQXhNRGN6UkRsQ09UaEVSa0UzTTBVeE16Z3hNa1JETmpZd016UXpNQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1vd2loamFlcC5hdXRoMC5jb20vIiwic3ViIjoiTUdkbmIzOUZVYjY3WThMMVB2YmhUaGtLa3hTNWd2UmlAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZGV2LW93aWhqYWVwLmF1dGgwLmNvbS9hcGkvdjIvIiwiaWF0IjoxNTk1NTI1ODgyLCJleHAiOjE1OTU2MTIyODIsImF6cCI6Ik1HZG5iMzlGVWI2N1k4TDFQdmJoVGhrS2t4UzVndlJpIiwic2NvcGUiOiJyZWFkOmNsaWVudF9ncmFudHMgY3JlYXRlOmNsaWVudF9ncmFudHMgZGVsZXRlOmNsaWVudF9ncmFudHMgdXBkYXRlOmNsaWVudF9ncmFudHMgcmVhZDp1c2VycyB1cGRhdGU6dXNlcnMgZGVsZXRlOnVzZXJzIGNyZWF0ZTp1c2VycyByZWFkOnVzZXJzX2FwcF9tZXRhZGF0YSB1cGRhdGU6dXNlcnNfYXBwX21ldGFkYXRhIGRlbGV0ZTp1c2Vyc19hcHBfbWV0YWRhdGEgY3JlYXRlOnVzZXJzX2FwcF9tZXRhZGF0YSByZWFkOnVzZXJfY3VzdG9tX2Jsb2NrcyBjcmVhdGU6dXNlcl9jdXN0b21fYmxvY2tzIGRlbGV0ZTp1c2VyX2N1c3RvbV9ibG9ja3MgY3JlYXRlOnVzZXJfdGlja2V0cyByZWFkOmNsaWVudHMgdXBkYXRlOmNsaWVudHMgZGVsZXRlOmNsaWVudHMgY3JlYXRlOmNsaWVudHMgcmVhZDpjbGllbnRfa2V5cyB1cGRhdGU6Y2xpZW50X2tleXMgZGVsZXRlOmNsaWVudF9rZXlzIGNyZWF0ZTpjbGllbnRfa2V5cyByZWFkOmNvbm5lY3Rpb25zIHVwZGF0ZTpjb25uZWN0aW9ucyBkZWxldGU6Y29ubmVjdGlvbnMgY3JlYXRlOmNvbm5lY3Rpb25zIHJlYWQ6cmVzb3VyY2Vfc2VydmVycyB1cGRhdGU6cmVzb3VyY2Vfc2VydmVycyBkZWxldGU6cmVzb3VyY2Vfc2VydmVycyBjcmVhdGU6cmVzb3VyY2Vfc2VydmVycyByZWFkOmRldmljZV9jcmVkZW50aWFscyB1cGRhdGU6ZGV2aWNlX2NyZWRlbnRpYWxzIGRlbGV0ZTpkZXZpY2VfY3JlZGVudGlhbHMgY3JlYXRlOmRldmljZV9jcmVkZW50aWFscyByZWFkOnJ1bGVzIHVwZGF0ZTpydWxlcyBkZWxldGU6cnVsZXMgY3JlYXRlOnJ1bGVzIHJlYWQ6cnVsZXNfY29uZmlncyB1cGRhdGU6cnVsZXNfY29uZmlncyBkZWxldGU6cnVsZXNfY29uZmlncyByZWFkOmhvb2tzIHVwZGF0ZTpob29rcyBkZWxldGU6aG9va3MgY3JlYXRlOmhvb2tzIHJlYWQ6ZW1haWxfcHJvdmlkZXIgdXBkYXRlOmVtYWlsX3Byb3ZpZGVyIGRlbGV0ZTplbWFpbF9wcm92aWRlciBjcmVhdGU6ZW1haWxfcHJvdmlkZXIgYmxhY2tsaXN0OnRva2VucyByZWFkOnN0YXRzIHJlYWQ6dGVuYW50X3NldHRpbmdzIHVwZGF0ZTp0ZW5hbnRfc2V0dGluZ3MgcmVhZDpsb2dzIHJlYWQ6c2hpZWxkcyBjcmVhdGU6c2hpZWxkcyBkZWxldGU6c2hpZWxkcyByZWFkOmFub21hbHlfYmxvY2tzIGRlbGV0ZTphbm9tYWx5X2Jsb2NrcyB1cGRhdGU6dHJpZ2dlcnMgcmVhZDp0cmlnZ2VycyByZWFkOmdyYW50cyBkZWxldGU6Z3JhbnRzIHJlYWQ6Z3VhcmRpYW5fZmFjdG9ycyB1cGRhdGU6Z3VhcmRpYW5fZmFjdG9ycyByZWFkOmd1YXJkaWFuX2Vucm9sbG1lbnRzIGRlbGV0ZTpndWFyZGlhbl9lbnJvbGxtZW50cyBjcmVhdGU6Z3VhcmRpYW5fZW5yb2xsbWVudF90aWNrZXRzIHJlYWQ6dXNlcl9pZHBfdG9rZW5zIGNyZWF0ZTpwYXNzd29yZHNfY2hlY2tpbmdfam9iIGRlbGV0ZTpwYXNzd29yZHNfY2hlY2tpbmdfam9iIHJlYWQ6Y3VzdG9tX2RvbWFpbnMgZGVsZXRlOmN1c3RvbV9kb21haW5zIGNyZWF0ZTpjdXN0b21fZG9tYWlucyB1cGRhdGU6Y3VzdG9tX2RvbWFpbnMgcmVhZDplbWFpbF90ZW1wbGF0ZXMgY3JlYXRlOmVtYWlsX3RlbXBsYXRlcyB1cGRhdGU6ZW1haWxfdGVtcGxhdGVzIHJlYWQ6bWZhX3BvbGljaWVzIHVwZGF0ZTptZmFfcG9saWNpZXMgcmVhZDpyb2xlcyBjcmVhdGU6cm9sZXMgZGVsZXRlOnJvbGVzIHVwZGF0ZTpyb2xlcyByZWFkOnByb21wdHMgdXBkYXRlOnByb21wdHMgcmVhZDpicmFuZGluZyB1cGRhdGU6YnJhbmRpbmcgcmVhZDpsb2dfc3RyZWFtcyBjcmVhdGU6bG9nX3N0cmVhbXMgZGVsZXRlOmxvZ19zdHJlYW1zIHVwZGF0ZTpsb2dfc3RyZWFtcyBjcmVhdGU6c2lnbmluZ19rZXlzIHJlYWQ6c2lnbmluZ19rZXlzIHVwZGF0ZTpzaWduaW5nX2tleXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.N6EJ3YlI6nhoMzZCVpFrB5fYKDT3iADUK6Hp0yn0__nkjKbITGAF_QN0yeCecThFtFrgZvbkjCN5TPMgDzWwrNibgArHB1FSjpTrP1zLmuUKNYbFl7-8BW3tPuBztBWNehtb938IBfIIJQmeRmKYn_WihW0i8ZEGDgOCWS_-2qZUesi7I5SrBwa_WgpcFO9jHFbirxtxdx64KrN1EVn48QL4LEBK8HUC14BTW8qhgHiL3pU6NrcKN4f9MjF0n9HbewzDI-eSJLGpTHFZmXHtLAXhB5meZy8pkr2HxQK_Bit3e8OjWqRJ-Xzlgfdz7qcu--lzUV2F_DNPMugMaF2r9Q"
+ var accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik5FRTVPRGt4TWpaR05UQXhNRGN6UkRsQ09UaEVSa0UzTTBVeE16Z3hNa1JETmpZd016UXpNQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1vd2loamFlcC5hdXRoMC5jb20vIiwic3ViIjoiTUdkbmIzOUZVYjY3WThMMVB2YmhUaGtLa3hTNWd2UmlAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZGV2LW93aWhqYWVwLmF1dGgwLmNvbS9hcGkvdjIvIiwiaWF0IjoxNTk3MTYyODg2LCJleHAiOjE1OTcyNDkyODYsImF6cCI6Ik1HZG5iMzlGVWI2N1k4TDFQdmJoVGhrS2t4UzVndlJpIiwic2NvcGUiOiJyZWFkOmNsaWVudF9ncmFudHMgY3JlYXRlOmNsaWVudF9ncmFudHMgZGVsZXRlOmNsaWVudF9ncmFudHMgdXBkYXRlOmNsaWVudF9ncmFudHMgcmVhZDp1c2VycyB1cGRhdGU6dXNlcnMgZGVsZXRlOnVzZXJzIGNyZWF0ZTp1c2VycyByZWFkOnVzZXJzX2FwcF9tZXRhZGF0YSB1cGRhdGU6dXNlcnNfYXBwX21ldGFkYXRhIGRlbGV0ZTp1c2Vyc19hcHBfbWV0YWRhdGEgY3JlYXRlOnVzZXJzX2FwcF9tZXRhZGF0YSByZWFkOnVzZXJfY3VzdG9tX2Jsb2NrcyBjcmVhdGU6dXNlcl9jdXN0b21fYmxvY2tzIGRlbGV0ZTp1c2VyX2N1c3RvbV9ibG9ja3MgY3JlYXRlOnVzZXJfdGlja2V0cyByZWFkOmNsaWVudHMgdXBkYXRlOmNsaWVudHMgZGVsZXRlOmNsaWVudHMgY3JlYXRlOmNsaWVudHMgcmVhZDpjbGllbnRfa2V5cyB1cGRhdGU6Y2xpZW50X2tleXMgZGVsZXRlOmNsaWVudF9rZXlzIGNyZWF0ZTpjbGllbnRfa2V5cyByZWFkOmNvbm5lY3Rpb25zIHVwZGF0ZTpjb25uZWN0aW9ucyBkZWxldGU6Y29ubmVjdGlvbnMgY3JlYXRlOmNvbm5lY3Rpb25zIHJlYWQ6cmVzb3VyY2Vfc2VydmVycyB1cGRhdGU6cmVzb3VyY2Vfc2VydmVycyBkZWxldGU6cmVzb3VyY2Vfc2VydmVycyBjcmVhdGU6cmVzb3VyY2Vfc2VydmVycyByZWFkOmRldmljZV9jcmVkZW50aWFscyB1cGRhdGU6ZGV2aWNlX2NyZWRlbnRpYWxzIGRlbGV0ZTpkZXZpY2VfY3JlZGVudGlhbHMgY3JlYXRlOmRldmljZV9jcmVkZW50aWFscyByZWFkOnJ1bGVzIHVwZGF0ZTpydWxlcyBkZWxldGU6cnVsZXMgY3JlYXRlOnJ1bGVzIHJlYWQ6cnVsZXNfY29uZmlncyB1cGRhdGU6cnVsZXNfY29uZmlncyBkZWxldGU6cnVsZXNfY29uZmlncyByZWFkOmhvb2tzIHVwZGF0ZTpob29rcyBkZWxldGU6aG9va3MgY3JlYXRlOmhvb2tzIHJlYWQ6ZW1haWxfcHJvdmlkZXIgdXBkYXRlOmVtYWlsX3Byb3ZpZGVyIGRlbGV0ZTplbWFpbF9wcm92aWRlciBjcmVhdGU6ZW1haWxfcHJvdmlkZXIgYmxhY2tsaXN0OnRva2VucyByZWFkOnN0YXRzIHJlYWQ6dGVuYW50X3NldHRpbmdzIHVwZGF0ZTp0ZW5hbnRfc2V0dGluZ3MgcmVhZDpsb2dzIHJlYWQ6c2hpZWxkcyBjcmVhdGU6c2hpZWxkcyBkZWxldGU6c2hpZWxkcyByZWFkOmFub21hbHlfYmxvY2tzIGRlbGV0ZTphbm9tYWx5X2Jsb2NrcyB1cGRhdGU6dHJpZ2dlcnMgcmVhZDp0cmlnZ2VycyByZWFkOmdyYW50cyBkZWxldGU6Z3JhbnRzIHJlYWQ6Z3VhcmRpYW5fZmFjdG9ycyB1cGRhdGU6Z3VhcmRpYW5fZmFjdG9ycyByZWFkOmd1YXJkaWFuX2Vucm9sbG1lbnRzIGRlbGV0ZTpndWFyZGlhbl9lbnJvbGxtZW50cyBjcmVhdGU6Z3VhcmRpYW5fZW5yb2xsbWVudF90aWNrZXRzIHJlYWQ6dXNlcl9pZHBfdG9rZW5zIGNyZWF0ZTpwYXNzd29yZHNfY2hlY2tpbmdfam9iIGRlbGV0ZTpwYXNzd29yZHNfY2hlY2tpbmdfam9iIHJlYWQ6Y3VzdG9tX2RvbWFpbnMgZGVsZXRlOmN1c3RvbV9kb21haW5zIGNyZWF0ZTpjdXN0b21fZG9tYWlucyB1cGRhdGU6Y3VzdG9tX2RvbWFpbnMgcmVhZDplbWFpbF90ZW1wbGF0ZXMgY3JlYXRlOmVtYWlsX3RlbXBsYXRlcyB1cGRhdGU6ZW1haWxfdGVtcGxhdGVzIHJlYWQ6bWZhX3BvbGljaWVzIHVwZGF0ZTptZmFfcG9saWNpZXMgcmVhZDpyb2xlcyBjcmVhdGU6cm9sZXMgZGVsZXRlOnJvbGVzIHVwZGF0ZTpyb2xlcyByZWFkOnByb21wdHMgdXBkYXRlOnByb21wdHMgcmVhZDpicmFuZGluZyB1cGRhdGU6YnJhbmRpbmcgcmVhZDpsb2dfc3RyZWFtcyBjcmVhdGU6bG9nX3N0cmVhbXMgZGVsZXRlOmxvZ19zdHJlYW1zIHVwZGF0ZTpsb2dfc3RyZWFtcyBjcmVhdGU6c2lnbmluZ19rZXlzIHJlYWQ6c2lnbmluZ19rZXlzIHVwZGF0ZTpzaWduaW5nX2tleXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.SCDGvMz1kNFzrxiFm1VdrT-ZnIpWfJ2dSVyU3C0phwpVYb7Qo14TP0kIN8IbuaSDjrJ5PqgMiYdo4J87mB20Vt_S3Gq3u2L03YG-ygI3eyxG3WI1IsrT6EJAsq23OPg96_zUrXTGkUPYBGSRiKsLwqqq7I4Bi8zaSkw_ik-FIXXVxV0_n8UygFZ61ne_omZS3L-LbAvS9AbguQ3NRFcNt41GLdPhujcniOGS_JUTiUZ26wfZvR0Do1OcGX5ZSv69i_4gf1CRGSmtJBPLBt1ADwm3vFkFXKaaYoIdCxaDstovzCzQw9lt3xZxRVAaNNsvaMcQznmQ6dG9uRa1uXEvJQ"
 }
 
 class Webservice {
@@ -562,11 +562,16 @@ class GetMedia{
         
         URLSession.shared.dataTask(with: url) { data, _, _ in
             
-            let path = try!
-    
-                JSONDecoder().decode([MediaPath].self, from: data!); DispatchQueue.main.async {
-                    completion(path)
+
+            guard let path = try? JSONDecoder().decode([MediaPath].self, from: data!) else {
+             print("Unable to decode path")
+             return
             }
+            
+            DispatchQueue.main.async {
+                completion(path)
+            }
+
         }.resume()
      }
   }
@@ -604,7 +609,7 @@ class GETComments: Identifiable {
         URLSession.shared.dataTask(with: request) { data, _, _ in
             
              guard let comments = try? JSONDecoder().decode([Comments].self, from: data!) else {
-               print("Unable to decode usernames")
+               print("Unable to decode comments")
                return
               }
                 
@@ -621,18 +626,15 @@ class GETSubComments: Identifiable {
     var id:String = ""
     var path:String = ""
     var offset:String = ""
-    var jumpedToReply:[String] = []
     
-    init(id: String?, path: String?, offset:String?, jumpedToReply:[String]?) {
-        if let id = id, let path = path, let offset = offset,
-            let jumpedToReply = jumpedToReply {
+    init(id: String?, path: String?, offset:String?) {
+        if let id = id, let path = path, let offset = offset{
          self.id = id
          print("sub id \(id)")
          self.path = path
          print("sub path \(path)")
          self.offset = offset
          print("sub offset \(offset)")
-         self.jumpedToReply = jumpedToReply
         }
         
     }
@@ -659,8 +661,10 @@ class GETSubComments: Identifiable {
         
         
         URLSession.shared.dataTask(with: request) { data, _, _ in
-            
-             guard let comments = try? JSONDecoder().decode([Comments].self, from: data!) else {
+            guard let data = data else {
+                return
+            }
+             guard let comments = try? JSONDecoder().decode([Comments].self, from: data) else {
                print("Unable to decode sub comments")
                return
               }
@@ -799,9 +803,11 @@ class GETSubCommentAfterReply: Identifiable {
         
         
         URLSession.shared.dataTask(with: request) { data, _, _ in
-            
-             guard let comments = try? JSONDecoder().decode([Comments].self, from: data!) else {
-               print("Unable to decode sub comments")
+            guard let data = data else {
+                return
+            }
+             guard let comments = try? JSONDecoder().decode([Comments].self, from: data) else {
+               print("Unable to decode sub comments after reply")
                return
               }
                 
@@ -849,7 +855,7 @@ class GETCommentByUser: Identifiable {
         URLSession.shared.dataTask(with: request) { data, _, _ in
             
              guard let comments = try? JSONDecoder().decode([UserAndComment].self, from: data!) else {
-               print("Unable to decode sub comments")
+               print("Unable to decode comment by user")
                return
               }
                 
@@ -895,7 +901,7 @@ class GETNotificationsByUserID: Identifiable {
         URLSession.shared.dataTask(with: request) { data, _, _ in
             
              guard let notifications = try? JSONDecoder().decode([Notifications].self, from: data!) else {
-               print("Unable to decode sub comments")
+               print("Unable to decode notifications")
                return
               }
                 
@@ -922,7 +928,7 @@ class GETPostImageById: Identifiable {
     }
     
         
-    func getPost(completion: @escaping ([PostById]) -> ()) {
+    func getPost(completion: @escaping ([PostImage]) -> ()) {
         
         var components = URLComponents()
                   components.scheme = "http"
@@ -941,8 +947,12 @@ class GETPostImageById: Identifiable {
         
         URLSession.shared.dataTask(with: request) { data, _, _ in
             
-             guard let post = try? JSONDecoder().decode([PostById].self, from: data!) else {
+            guard let data = data else {
+                return
+            }
+             guard let post = try? JSONDecoder().decode([PostImage].self, from: data) else {
                print("Unable to decode post photo comments")
+                completion([])
                return
               }
                 
@@ -956,4 +966,412 @@ class GETPostImageById: Identifiable {
 }
 
 
+class GETSongData: Identifiable {
+    var id:String = ""
+    
+    
+    init(id:String?) {
+        if let id = id {
+         self.id = id
+        }
+        
+    }
+    
+        
+    func getSong(completion: @escaping ([Song]) -> ()) {
+        
+        var components = URLComponents()
+                  components.scheme = "http"
+                  components.host = "localhost"
+                  components.port = 8000
+                  components.path = "/getSongData/\(id)"
+                  
+                 let url = components.url
+        
+                print("post photo by id url \(url)")
+                
+                guard let requestUrl = url else { fatalError() }
+                var request = URLRequest(url: requestUrl)
+                request.httpMethod = "GET"
+        
+        
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            
+            guard let data = data else {
+                return
+            }
+             guard let song = try? JSONDecoder().decode([Song].self, from: data) else {
+               print("Unable to decode post photo comments")
+                completion([])
+               return
+              }
+                
+                DispatchQueue.main.async {
+                    completion(song)
+                }
+            
+        }.resume()
+    }
+}
 
+
+class NotificationSubComment: Identifiable {
+    var id:String = ""
+    
+    init(id:String?) {
+        if let id = id {
+         self.id = id
+        }
+        
+    }
+    
+        
+    func getComments(completion: @escaping ([Comments]) -> ()) {
+        
+        var components = URLComponents()
+                  components.scheme = "http"
+                  components.host = "localhost"
+                  components.port = 8000
+                  components.path = "/getSubCommentsNoticationsById/\(id)"
+                  
+                 let url = components.url
+        
+                print("get sub comments notification url \(url)")
+                
+                guard let requestUrl = url else { fatalError() }
+                var request = URLRequest(url: requestUrl)
+                request.httpMethod = "GET"
+        
+        
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            
+            guard let data = data else {
+                return
+            }
+             guard let subComments = try? JSONDecoder().decode([Comments].self, from: data) else {
+               print("Unable to decode sub comments notification")
+                completion([])
+               return
+              }
+                
+                DispatchQueue.main.async {
+                    completion(subComments)
+                }
+            
+        }.resume()
+    }
+}
+
+
+class ParentSubCommentAndReply: Identifiable {
+    var parentsubcommentid:String = ""
+    var reply_id:String = ""
+    
+    init(parentsubcommentid:String?, reply_id:String?) {
+        if let parentsubcommentid = parentsubcommentid, let reply_id = reply_id {
+         self.parentsubcommentid = parentsubcommentid
+         self.reply_id = reply_id
+        }
+        
+    }
+    
+        
+    func getComments(completion: @escaping ([Comments]) -> ()) {
+        
+        var components = URLComponents()
+                  components.scheme = "http"
+                  components.host = "localhost"
+                  components.port = 8000
+                  components.path = "/getParentSubCommentAndReply/\(reply_id)/\(parentsubcommentid)"
+                  
+                 let url = components.url
+        
+                print("get sub comments notification url \(url)")
+                
+                guard let requestUrl = url else { fatalError() }
+                var request = URLRequest(url: requestUrl)
+                request.httpMethod = "GET"
+        
+        
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            
+            guard let data = data else {
+                return
+            }
+             guard let subComments = try? JSONDecoder().decode([Comments].self, from: data) else {
+               print("Unable to decode sub comments notification")
+                completion([])
+               return
+              }
+                
+                DispatchQueue.main.async {
+                    completion(subComments)
+                }
+            
+        }.resume()
+    }
+}
+
+
+class GETCommentById: Identifiable {
+    var id:String = ""
+    
+    init(id:String?) {
+        if let id = id {
+         self.id = id
+        }
+        
+    }
+    
+        
+    func getComment(completion: @escaping ([Comments]) -> ()) {
+        
+        var components = URLComponents()
+                  components.scheme = "http"
+                  components.host = "localhost"
+                  components.port = 8000
+                  components.path = "/getComment/\(id)"
+                  
+                 let url = components.url
+        
+                print("get comment by id \(url)")
+                
+                guard let requestUrl = url else { fatalError() }
+                var request = URLRequest(url: requestUrl)
+                request.httpMethod = "GET"
+        
+        
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            
+            guard let data = data else {
+                return
+            }
+             guard let comments = try? JSONDecoder().decode([Comments].self, from: data) else {
+               print("Unable to decode comment by id")
+                completion([])
+               return
+              }
+                
+                DispatchQueue.main.async {
+                    completion(comments)
+                }
+            
+        }.resume()
+    }
+}
+
+
+class GETMediaById: Identifiable {
+    var id:String = ""
+    var path:String = ""
+    
+    init(id:String?, path:String?) {
+        if let id = id, let path = path {
+         self.id = id
+         self.path = path
+        }
+        
+    }
+    
+        
+    func getMedia(completion: @escaping ([PostById]) -> ()) {
+        
+        var components = URLComponents()
+                  components.scheme = "http"
+                  components.host = "localhost"
+                  components.port = 8000
+                  components.path = "/\(path)/\(id)"
+                  
+                 let url = components.url
+        
+                print("get media by id \(url)")
+                
+                guard let requestUrl = url else { fatalError() }
+                var request = URLRequest(url: requestUrl)
+                request.httpMethod = "GET"
+        
+        
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            
+            guard let data = data else {
+                return
+            }
+             guard let video = try? JSONDecoder().decode([PostById].self, from: data) else {
+               print("Unable to decode media by id")
+               completion([])
+               return
+              }
+                
+                DispatchQueue.main.async {
+                    completion(video)
+                }
+            
+        }.resume()
+    }
+}
+
+
+
+class GETLikeRequest: Identifiable {
+    var path:String?
+    var post_id:String?
+    var supporter_id:String?
+    
+    init(path: String?, post_id: String?, supporter_id: String?) {
+        if let path = path, let post_id = post_id, let supporter_id = supporter_id {
+            self.path = path
+            self.post_id = post_id
+            self.supporter_id = supporter_id
+        } else if let path = path, let post_id = post_id {
+            self.path = path
+            self.post_id = post_id
+        }
+        
+    }
+    
+        
+    func getLike(completion: @escaping ([LikeModel]) -> ()) {
+        
+        var components = URLComponents()
+                  components.scheme = "http"
+                  components.host = "localhost"
+                  components.port = 8000
+              if let path = path, let post_id = post_id, let supporter_id = supporter_id {
+                  components.path = "/\(path)/\(post_id)/\(supporter_id)"
+              } else if let path = path, let post_id = post_id {
+                  components.path = "/\(path)/\(post_id)/"
+              }
+                  
+                 let url = components.url
+        
+                print("get like url \(url)")
+                
+                guard let requestUrl = url else { fatalError() }
+                var request = URLRequest(url: requestUrl)
+                request.httpMethod = "GET"
+        
+        
+        URLSession.shared.dataTask(with: request) { data, _, _ in
+            
+            guard let data = data else {
+                return
+            }
+             guard let likes = try? JSONDecoder().decode([LikeModel].self, from: data) else {
+               print("Unable to decode likes")
+               completion([])
+               return
+              }
+                
+                DispatchQueue.main.async {
+                    completion(likes)
+                }
+            
+        }.resume()
+    }
+}
+
+class GETByID: Identifiable {
+    var id:String = ""
+    var path:String = ""
+        
+    init(id: String?, path:String?) {
+        if let id = id, let path = path {
+            self.id = id
+            self.path = path
+        }
+    }
+    
+        
+    func getById(completion: @escaping ([PostById]) -> ()) {
+        var components = URLComponents()
+           components.scheme = "http"
+           components.host = "localhost"
+           components.port = 8000
+           components.path = "/\(path)/\(id)"
+        
+        print("get by id url \(components.url?.absoluteString)")
+        
+        guard let url = URL(string: components.url!.absoluteString)
+          else {
+          fatalError("URL is not correct!")
+       }
+
+        URLSession.shared.dataTask(with: url) { data, _, error in
+    
+            if let error = error {
+                print("Error \(error)")
+                return
+            }
+            guard let data = data else {
+                return
+            }
+            guard let responseData = try? JSONDecoder().decode([PostById].self, from: data) else {
+                print("Unable to decode responseData")
+                completion([])
+                return
+            }
+            DispatchQueue.main.async {
+                completion(responseData)
+                print("responseData \(responseData)")
+            }
+        }.resume()
+    }
+}
+
+
+class GetUsersById2: Identifiable {
+
+    var id:String = ""
+    
+    init(id:String?) {
+        if let id = id {
+        self.id = id
+        }
+    }
+    
+    
+    func getUser(completion: @escaping (User) -> ()) {
+        
+        
+        var components = URLComponents()
+           components.scheme = "https"
+           components.host = "dev-owihjaep.auth0.com"
+           components.path = "/api/v2/users/\(id)"
+
+
+        let url = components.url
+        
+        print("Components users by id url 2: \(components.url!)")
+        
+
+         guard let requestUrl = url else { fatalError() }
+         var request = URLRequest(url: requestUrl)
+         request.httpMethod = "GET"
+//         accessToken = ""
+        let accessToken = AccessToken().accessToken
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        print("access 2 \(accessToken)")
+
+        print("REquesturl \(requestUrl)")
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            
+            if let error = error {
+                print("Error Getusersbyid \(error)")
+                return
+            }
+            
+            guard let data = data else {
+                return
+            }
+            guard let user = try? JSONDecoder().decode(User.self, from: data) else {
+                print("Unable to decode responseData")
+                return
+            }
+            DispatchQueue.main.async {
+                completion(user)
+                print("GetUsersById2 user \(user)")
+            }
+            
+        }.resume()
+    }
+}

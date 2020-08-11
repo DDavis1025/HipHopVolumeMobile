@@ -11,6 +11,7 @@ import UIKit
 import SwiftUI
 import AVFoundation
 
+
 var player:AVPlayer?
 class AlbumTrackVC: UIViewController {
 
@@ -30,6 +31,14 @@ class AlbumTrackVC: UIViewController {
     let modelClass = ModelClass()
     let trackPlay = TrackPlay()
     var userAndFollow:UserPfAndFollow?
+    var commentsBtn:UIButton?
+    var likeBtn:UIButton?
+    var isLiked:Bool = false
+    var username:String?
+    var profile = SessionManager.shared.profile
+    
+    var track_id:String?
+    var fromNotificationCell:Bool?
     
     let timeRemainingLabel: UILabel = {
          let timeRemaining = UILabel()
@@ -52,6 +61,14 @@ class AlbumTrackVC: UIViewController {
         component.port = 8000
         return component
     }()
+    
+    lazy var numberOfLikes:UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.text = "0"
+        label.sizeToFit()
+        return label
+    }()
 
     
     override func viewDidLoad() {
@@ -63,15 +80,16 @@ class AlbumTrackVC: UIViewController {
         navigationItem.leftBarButtonItem = dismiss
         
         print("Author \(Author.author_id)")
-        if let author_id = Author.author_id {
-         addUserAndFollowView(id: author_id)
-         print("it worked author_id \(author_id)")
-        }
         imageView.image = UIImage(named: "music-placeholder")
         view.addSubview(imageView)
-        setImageViewConstraints()
+        if let author_id = Author.author_id {
+            addUserAndFollowView(id: author_id, completion: {
+                self.setImageViewConstraints()
+                self.addAlbumImage()
+            })
+         print("it worked author_id \(author_id)")
+        }
         
-         addAlbumImage()
          addSlider()
          addLabels()
          print("MCp \(ModelClass.post)")
@@ -89,12 +107,43 @@ class AlbumTrackVC: UIViewController {
            view.addSubview(imageView.view)
            }
          setupConstraints()
+         addCommentsButton()
+         addCommentsBtnConstraints()
+         addLikeButton()
+         addLikeBtnConstraints()
+         postLikeCount()
+         getUser()
+//         if let supporter_id = profile?.sub, let post_id = track_id {
+//            GETLikeRequest(path: "postLikeByUserID", post_id: post_id, supporter_id: supporter_id).getLike {
+//                if $0.count > 0 {
+//                    print("$0.count > 0")
+//                    let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+//                    self.likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
+//                    self.likeBtn?.tintColor = UIColor.red
+//                    self.modelClass.updateIsLiked(newBool: true)
+//                } else {
+//                    print("$0.count < 0")
+//                    let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+//                    self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+//                    self.likeBtn?.tintColor = UIColor.black
+//                    self.modelClass.updateIsLiked(newBool: false)
+//                }
+//                print("$0.count after")
+//          }
+//        } else {
+//            print("track_id \(track_id) + supporter_id \(profile?.sub)")
+//        }
+        
+         
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
          print("it worked")
-         if ModelClass.playing! {
+        guard let playing = ModelClass.playing else {
+            return
+        }
+           if playing {
                button?.setImage(UIImage(named: "pause"), for: .normal)
            } else {
                button?.setImage(UIImage(named: "play"), for: .normal)
@@ -110,11 +159,40 @@ class AlbumTrackVC: UIViewController {
         mySlider?.value = 0.0
         mySlider?.maximumValue = Float(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
         timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+        
+        let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+        self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+        self.likeBtn?.tintColor = UIColor.black
+        self.modelClass.updateIsLiked(newBool: false)
        }
     
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        print("viewDidAppear track_id \(track_id)")
+        print("post_id album track \(ModelClass.post_id)")
+        print("supporter id \(profile?.sub) + post_id \(track_id)")
+        if let supporter_id = profile?.sub, let post_id = ModelClass.post_id {
+          GETLikeRequest(path: "postLikeByUserID", post_id: post_id, supporter_id: supporter_id).getLike {
+              if $0.count > 0 {
+                  let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                  self.likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
+                  self.likeBtn?.tintColor = UIColor.red
+                  self.modelClass.updateIsLiked(newBool: true)
+              } else {
+                  let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                  self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+                  self.likeBtn?.tintColor = UIColor.black
+                  self.modelClass.updateIsLiked(newBool: false)
+              }
+            }
+        } 
+        if let post_id = ModelClass.post_id {
+            GETLikeRequest(path: "getLikesByPostID", post_id: post_id, supporter_id: nil).getLike {
+                self.numberOfLikes.text = "\($0.count)"
+            }
+        }
+              print("$0.count after")
         trackPlay.updateViewAppeared(newBool: false)
         modelClass.updateViewAppeared(newBool: true)
 
@@ -124,7 +202,20 @@ class AlbumTrackVC: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func addUserAndFollowView(id: String) {
+    func getUser() {
+        if let id = profile?.sub {
+            print("profile?.sub id \(profile?.sub)")
+            GetUsersById(id: id).getAllPosts {
+                self.username = $0[0].username
+                print("self.username \(self.username)")
+            }
+        } else {
+            print("profile?.sub \(profile?.sub)")
+        }
+    }
+    
+    
+    func addUserAndFollowView(id: String, completion: @escaping () -> ()) {
         userAndFollow = UserPfAndFollow(id: id)
         if let userAndFollow = userAndFollow {
           addChild(userAndFollow)
@@ -140,6 +231,7 @@ class AlbumTrackVC: UIViewController {
           userAndFollow.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
           userAndFollow.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
           userAndFollow.view.heightAnchor.constraint(equalToConstant: 80).isActive = true
+          completion()
         }
          
     }
@@ -175,14 +267,23 @@ class AlbumTrackVC: UIViewController {
     }
     
     func addAlbumImage() {
-        components.path = "/\(ModelClass.post!.path)"
+        if let path = ModelClass.post?.path {
+        components.path = "/\(path)"
+        print("imageView image 3")
+        }
         imageLoader = DownloadImage()
         imageLoader?.imageDidSet = { [weak self ] image in
+            print("imageView image 1 \(image)")
             self?.imageView.image = image
-            self?.setImageViewConstraints()
-            self?.view.addSubview(self!.imageView)
+            if let self = self {
+                self.view.addSubview(self.imageView)
+            }
+            
         }
-        imageLoader?.downloadImage(urlString: components.url!.absoluteString)
+        if let url = components.url?.absoluteString {
+        print("imageView image 2")
+        imageLoader?.downloadImage(urlString: url)
+        }
         
         
     }
@@ -270,7 +371,38 @@ class AlbumTrackVC: UIViewController {
         index! -= 1
         modelClass.updateIndex(newInt: index!)
         trackNameLabel?.text = ModelClass.listArray![index!].name
-        components.path =  "/\(ModelClass.listArray![index!].path)"
+        if let index = index {
+        if let path = ModelClass.listArray?[index].path {
+        components.path =  "/\(path)"
+         }
+        }
+        if let index = index {
+        if let post_id = ModelClass.listArray?[index].id {
+          modelClass.updatePostID(newString: post_id)
+         }
+        }
+            if let supporter_id = profile?.sub, let post_id = ModelClass.post_id {
+                GETLikeRequest(path: "postLikeByUserID", post_id: post_id, supporter_id: supporter_id).getLike {
+                    if $0.count > 0 {
+                        let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                        self.likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
+                        self.likeBtn?.tintColor = UIColor.red
+                        self.modelClass.updateIsLiked(newBool: true)
+                    } else {
+                        let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                        self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+                        self.likeBtn?.tintColor = UIColor.black
+                        self.modelClass.updateIsLiked(newBool: false)
+                    }
+                }
+            } else {
+                print("track_id \(track_id) + supporter_id \(profile?.sub)")
+            }
+            if let post_id = ModelClass.post_id {
+                GETLikeRequest(path: "getLikesByPostID", post_id: post_id, supporter_id: nil).getLike {
+                    self.numberOfLikes.text = "\($0.count)"
+                }
+            }
         play(url: components.url! as NSURL)
         print("url gb \(components.url! as NSURL)")
         }
@@ -284,7 +416,38 @@ class AlbumTrackVC: UIViewController {
         modelClass.updateIndex(newInt: index!)
         print("index \(index)")
         trackNameLabel?.text = ModelClass.listArray![index!].name
-        components.path =  "/\(ModelClass.listArray![index!].path)"
+        if let index = index {
+        if let path = ModelClass.listArray?[index].path {
+        components.path =  "/\(path)"
+         }
+        }
+        if let index = index {
+         if let post_id = ModelClass.listArray?[index].id {
+           modelClass.updatePostID(newString: post_id)
+          }
+         }
+        if let supporter_id = profile?.sub, let post_id = ModelClass.post_id {
+            GETLikeRequest(path: "postLikeByUserID", post_id: post_id, supporter_id: supporter_id).getLike {
+                if $0.count > 0 {
+                    let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                    self.likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
+                    self.likeBtn?.tintColor = UIColor.red
+                    self.modelClass.updateIsLiked(newBool: true)
+                } else {
+                    let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+                    self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+                    self.likeBtn?.tintColor = UIColor.black
+                    self.modelClass.updateIsLiked(newBool: false)
+                }
+            }
+        } else {
+            print("track_id \(track_id) + supporter_id \(profile?.sub)")
+            }
+            if let post_id = ModelClass.post_id {
+                GETLikeRequest(path: "getLikesByPostID", post_id: post_id, supporter_id: nil).getLike {
+                    self.numberOfLikes.text = "\($0.count)"
+                }
+            }
         play(url: components.url! as NSURL)
         print("url gf \(components.url! as NSURL)")
         }
@@ -300,6 +463,7 @@ class AlbumTrackVC: UIViewController {
         transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
         view.window!.layer.add(transition, forKey: kCATransition)
         vc.modalPresentationStyle = .fullScreen
+        vc.delegate = self
         self.present(vc, animated: false, completion: nil)
 }
 
@@ -319,6 +483,7 @@ class AlbumTrackVC: UIViewController {
     
     @objc func updateSlider() {
         guard let player = player else { return }
+        print("player.currentTime() + ")
         mySlider?.value = Float(CMTimeGetSeconds(player.currentTime()))
         let remainingTimeInSeconds = CMTimeGetSeconds((player.currentItem?.asset.duration)!) - CMTimeGetSeconds(player.currentTime())
                  
@@ -350,6 +515,12 @@ class AlbumTrackVC: UIViewController {
                 
                 player?.play()
                 modelClass.updatePlaying(newBool: true)
+                
+                mySlider?.value = 0.0
+                if let duration = player?.currentItem?.asset.duration {
+                    mySlider?.maximumValue = Float(CMTimeGetSeconds(duration))
+                }
+                timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
 
                 button?.setImage(UIImage(named: "pause"), for: .normal)
                } catch let error {
@@ -406,4 +577,139 @@ class AlbumTrackVC: UIViewController {
     
     }
         
+}
+
+
+extension AlbumTrackVC {
+    
+    func addCommentsButton() {
+        let commentsBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+        commentsBtn = UIButton()
+        commentsBtn?.setImage(UIImage(systemName: "message", withConfiguration: commentsBtnConfig), for: .normal)
+        commentsBtn?.addTarget(self, action: #selector(commentsBtnClicked(_:)), for: .touchUpInside)
+        commentsBtn?.tintColor = UIColor.black
+        if let commentsBtn = commentsBtn {
+        view.addSubview(commentsBtn)
+        }
+    }
+    
+    func addCommentsBtnConstraints() {
+        commentsBtn?.translatesAutoresizingMaskIntoConstraints = false
+        guard let albumTracksBtn = albumTracksBtn else {
+            return
+        }
+        commentsBtn?.centerYAnchor.constraint(equalTo: albumTracksBtn.centerYAnchor).isActive = true
+        
+        commentsBtn?.centerXAnchor.constraint(equalTo: albumTracksBtn.centerXAnchor, constant: 80).isActive = true
+    }
+    
+    func postLikeCount() {
+        guard let likeBtn = likeBtn else {
+            return
+        }
+        view.addSubview(numberOfLikes)
+        numberOfLikes.translatesAutoresizingMaskIntoConstraints = false
+        numberOfLikes.centerXAnchor.constraint(equalTo: likeBtn.centerXAnchor).isActive = true
+        numberOfLikes.bottomAnchor.constraint(equalTo: likeBtn.topAnchor, constant: -5).isActive = true
+    }
+    
+    @objc func commentsBtnClicked(_ sender: UIButton) {
+        let commentVC = CommentVC()
+        if let post_id = ModelClass.post_id {
+        commentVC.post_id = post_id
+        }
+        let commentVC2 = UINavigationController(rootViewController: commentVC)
+        commentVC2.modalPresentationStyle = .popover
+        self.present(commentVC2, animated: true, completion: nil)
+    }
+    
+}
+
+
+extension AlbumTrackVC {
+    
+    func addLikeButton() {
+        let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+        likeBtn = UIButton()
+        likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+        likeBtn?.addTarget(self, action: #selector(likeBtnClicked(_:)), for: .touchUpInside)
+        likeBtn?.tintColor = UIColor.black
+        if let likeBtn = likeBtn {
+        view.addSubview(likeBtn)
+        }
+    }
+    
+    func addLikeBtnConstraints() {
+        likeBtn?.translatesAutoresizingMaskIntoConstraints = false
+        guard let albumTracksBtn = albumTracksBtn else {
+            return
+        }
+        likeBtn?.centerYAnchor.constraint(equalTo: albumTracksBtn.centerYAnchor).isActive = true
+        
+        likeBtn?.centerXAnchor.constraint(equalTo: albumTracksBtn.centerXAnchor, constant: -80).isActive = true
+    }
+    
+
+    
+    @objc func likeBtnClicked(_ sender: UIButton) {
+        print("model class is liked \(ModelClass.isLiked)")
+            if ModelClass.isLiked == true {
+            let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
+            likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
+            likeBtn?.tintColor = UIColor.black
+            if let supporter_id = profile?.sub, let post_id = ModelClass.post_id {
+                let deleteRequest = DLTLike(post_id: post_id, supporter_id: supporter_id)
+                
+                deleteRequest.delete {(err) in
+                    if let err = err {
+                        print("Failed to delete", err)
+                        return
+                    }
+                    
+                    if let post_id = ModelClass.post_id {
+                        GETLikeRequest(path: "getLikesByPostID", post_id: post_id, supporter_id: nil).getLike {
+                            self.numberOfLikes.text = "\($0.count)"
+                        }
+                    }
+                    
+                    print("Successfully deleted post like from server")
+                }
+            }
+            modelClass.updateIsLiked(newBool: false)
+        } else {
+            print("liked post")
+            let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .bold, scale: .medium)
+            likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
+            likeBtn?.tintColor = UIColor.red
+                if let supporter_id = profile?.sub, let supporter_username = username, let supporter_picture = profile?.picture, let post_id = ModelClass.post_id, let user_id = ModelClass.user_id {
+                    let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture.absoluteString, post_id: post_id)
+            
+            
+            let postRequest = LikeRequest(endpoint: "postLike")
+            postRequest.save(postLike) { (result) in
+                switch result {
+                case .success(let comment):
+                    print("success: you liked a post")
+                    if let post_id = ModelClass.post_id {
+                        GETLikeRequest(path: "getLikesByPostID", post_id: post_id, supporter_id: nil).getLike {
+                            self.numberOfLikes.text = "\($0.count)"
+                        }
+                    }
+                case .failure(let error):
+                    print("An error occurred while liking post: \(error)")
+                }
+            }
+          }
+            modelClass.updateIsLiked(newBool: true)
+      }
+    }
+    
+}
+
+extension AlbumTrackVC: AlbumVCDelegate {
+    func updateTrackID(track_id: String) {
+        modelClass.updatePostID(newString: track_id)
+    }
+    
+    
 }

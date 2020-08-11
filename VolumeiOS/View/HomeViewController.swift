@@ -33,6 +33,7 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         super.viewDidLoad()
         setupMenuBar()
         setupCollectionView()
+       self.navigationController?.isNavigationBarHidden = false
         
         let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
                
@@ -48,17 +49,19 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
 //        navigationItem.leftBarButtonItem = profile
         navigationItem.leftBarButtonItem = notification
 //        navigationItem.rightBarButtonItem = whoToFollow
-//        navigationItem.rightBarButtonItem = logout
-        navigationItem.rightBarButtonItem = comment
+        navigationItem.rightBarButtonItem = logout
+//        navigationItem.rightBarButtonItem = comment
          
-         self.navigationController?.isNavigationBarHidden = false
+//         self.navigationController?.isNavigationBarHidden = false
 
 //        auth0()
+        navigationController?.isToolbarHidden = false
 
     }
     
     override func viewDidAppear(_ animated: Bool) {
         print("view appeared")
+//        self.navigationController?.isNavigationBarHidden = false
         addGesture()
     }
     
@@ -100,6 +103,9 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
              self.navigationController?.popToRootViewController(animated: true)
              self.navigationController?.isToolbarHidden = true
              self.navigationController?.isNavigationBarHidden = true
+             if let player = player {
+                player.pause()
+             }
          }
 
     

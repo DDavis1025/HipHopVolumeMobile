@@ -24,6 +24,8 @@ class CommentViewModel {
     var commentsExistDidInserts: ((Bool) -> ())?
     var repliesExist:Bool?
     var repliesExistDidInserts: ((Bool) -> ())?
+    var notification_commentID:String?
+    var notification_parentSubId:String?
 //    var checkedReplies:Bool? = Bool(".isHidden")
 //    var repliesBtn: UIButton? = UIButton()  { didSet { repliesBtnDidSet?(repliesBtn) } }
 //    var repliesBtnDidSet: ((UIButton?)->())?
@@ -41,6 +43,9 @@ class CommentViewModel {
     var dltBtnIsEnabledDidSet: ((Bool?)->())?
     var commentLikesLoaded:Bool = false
     var notCheckedCommentBelongs:Bool? = true
+    var subCommentDeleteIsHidden:Bool?
+    var subCommentDeleteIsHiddenDidSet: ((Bool?)->())?
+    var notCheckedSubDeleteExists:Bool? = true
 
     
 
@@ -73,29 +78,64 @@ class CommentViewModel {
         offset += 3
     }
     
-    func viewRepliesExists(comment_id:String) {
+    func viewRepliesExists(comment_id:String, notificationParentId:String?) {
         commentsExist(comment_id: comment_id, offset: "0", completion: { comment in
+            self.notCheckedExists = false
+            if let notiParentId = notificationParentId {
+                print("notiParentId \(notiParentId)")
+                let subCommentsFiltered:[Comments] = comment.filter {
+                    return $0.parent_id != notiParentId
+                }
+                if subCommentsFiltered.count > 0 {
+                    print("subCommentsFiltered.count > 0")
+                    self.repliesBtnState = false
+                } else {
+                    self.repliesBtnState = true
+                }
+            } else {
+            print("self.repliesBtn.isHidden sub notchecked \(self.notCheckedExists)")
             self.notCheckedExists = false
             if comment.count > 0 {
                 self.repliesBtnState = false
             } else {
                 self.repliesBtnState = true
             }
+            print("self.repliesBtn.isHidden sub viewReplies")
+          }
         })
     }
     
    
     func loadSubComments() {
         print("loadSubComments")
-        let getSubComments = GETSubComments(id: CommentViewModel.parent_id, path: "subComments", offset: "\(offset)", jumpedToReply: nil)
+        let getSubComments = GETSubComments(id: CommentViewModel.parent_id, path: "subComments", offset: "\(offset)")
             getSubComments.getAllById {
+                if let comment_id = self.notification_commentID, let parentSubId = self.notification_parentSubId {
+                    let subCommentAfterFilter:[Comments] = $0.filter {
+                        $0.id != comment_id && $0.id != parentSubId
+                    }
+                    self.subComments += subCommentAfterFilter
+                    self.subCommentDidInserts?(subCommentAfterFilter)
+//                    self.notification_commentID = nil
+//                    self.notification_parentSubId = nil
+                    
+                } else if let comment_id = self.notification_commentID {
+                    let subCommentAfterFilter:[Comments] = $0.filter {
+                        $0.id != comment_id
+                    }
+                    self.subComments += subCommentAfterFilter
+                    self.subCommentDidInserts?(subCommentAfterFilter)
+//                    self.notification_commentID = nil
+                    
+                } else {
                    self.subComments += $0
                    self.subCommentDidInserts?($0)
+                }
         }
     }
     
     func commentsExist(comment_id: String, offset: String, completion: @escaping ([Comments]) -> ()) {
-        let getSubComments = GETSubComments(id: comment_id, path: "subComments", offset: "\(offset)", jumpedToReply: nil)
+        let getSubComments = GETSubComments(id: comment_id, path: "subComments", offset: "\(offset)")
             getSubComments.getAllById {
             completion($0)
         }
@@ -154,8 +194,8 @@ class CommentViewModel {
        }
     }
     
-    func likeComment(user_id: String, comment_id: String, post_id: String, comment_userID:String, index:String) {
-         let commentLike = CommentLike(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, tableView_index: index)
+    func likeComment(user_id: String, username: String, user_picture:String, comment_id: String, post_id: String, comment_userID:String, index:String) {
+        let commentLike = CommentLike(user_id: user_id, username: username, user_picture: user_picture, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, tableview_index: index, parent_id: nil)
                
                
                let postRequest = CommentLikePostRequest(endpoint: "addCommentLike")
@@ -203,8 +243,8 @@ class CommentViewModel {
        }
     }
     
-    func likeSubComment(user_id: String, comment_id: String, post_id:String, comment_userID: String, index: String,  completion: @escaping () -> ()) {
-        let commentLike = CommentLike(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, tableView_index: index)
+    func likeSubComment(user_id: String, username: String, user_picture:String, comment_id: String, post_id:String, comment_userID: String, index: String, parent_id:String,  completion: @escaping () -> ()) {
+        let commentLike = CommentLike(user_id: user_id, username: username, user_picture: user_picture, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, tableview_index: index, parent_id: parent_id)
         
         let postRequest = CommentLikePostRequest(endpoint: "addCommentLike")
         postRequest.save(commentLike) { (result) in
@@ -218,6 +258,7 @@ class CommentViewModel {
             }
         }
     }
+    
     
     func unlikeSubComment(comment_id: String, user_id: String, completion: @escaping () -> ()) {
        let deleteRequest = DLTCommentLike(comment_id: comment_id, user_id: user_id)
@@ -241,6 +282,58 @@ class CommentViewModel {
         }
     }
     
+    func addNotificationSubComment(subComment: [Comments], parent_id:String) {
+        subComments += subComment
+        self.subCommentDidInserts?(subComment)
+        notification_commentID = subComment[0].id
+        if let id = subComment[0].id {
+            self.commentsExist(comment_id: parent_id, offset: "0", completion: { comment in
+                let commentsAfterFilter:[Comments] = comment.filter {
+                    return $0.id != id
+                }
+                if commentsAfterFilter.count <= 0 {
+                    print("commentsAfterFilter.count <= 0")
+                    self.viewMoreBtnState = true
+                } else {
+                    print("commentsAfterFilter.count >= 0")
+                    self.viewMoreBtnState = false
+                }
+            })
+        } else {
+            print("subComment[0].id \(subComment[0].id) + parent_id \(CommentViewModel.parent_id)")
+        }
+        
+        print("addNotificationSubComment")
+    }
+    
+    func addNotificationParentSubAndReply(subComment: [Comments], parentSubComment:[Comments], parent_id:String) {
+        subComments += parentSubComment
+        self.subCommentDidInserts?(parentSubComment)
+        subComments += subComment
+        self.subCommentDidInserts?(subComment)
+        print("addNotificationParentSubAndReply sub comment \(subComment)")
+        notification_commentID = subComment[0].id
+        notification_parentSubId = parentSubComment[0].id
+        if let id = subComment[0].id, let parentSubId = parentSubComment[0].id {
+            self.commentsExist(comment_id: parent_id, offset: "0", completion: { comment in
+                let commentsAfterFilter:[Comments] = comment.filter {
+                    return $0.id != id && $0.id != parentSubId
+                }
+                if commentsAfterFilter.count <= 0 {
+                    print("commentsAfterFilter.count <= 0")
+                    self.viewMoreBtnState = true
+                } else {
+                    print("commentsAfterFilter.count >= 0")
+                    self.viewMoreBtnState = false
+                }
+            })
+        } else {
+            print("subComment[0].id \(subComment[0].id) + parent_id \(CommentViewModel.parent_id)")
+        }
+        
+        print("addNotificationSubComment")
+    }
+    
     func doesCommentBelongToUser(comment_id:String, user_id:String) {
         let getCommentByUser = GETCommentByUser(id: comment_id, user_id: user_id)
         getCommentByUser.getComments {
@@ -256,6 +349,19 @@ class CommentViewModel {
                 self.dltBtnIsEnabled = false
                 self.dltBtnIsEnabledDidSet?(false)
             }
+        }
+    }
+    
+    func isSubDeleteHidden(comment_user_id:String, profile_id:String) {
+        notCheckedSubDeleteExists = false
+        if comment_user_id == profile_id {
+            print("false isSubDelete \(comment_user_id) + \(profile_id)")
+            self.subCommentDeleteIsHidden = false
+            self.subCommentDeleteIsHiddenDidSet?(false)
+        } else {
+            print("true isSubDelete \(comment_user_id) + \(profile_id)")
+            self.subCommentDeleteIsHidden = true
+            self.subCommentDeleteIsHiddenDidSet?(true)
         }
     }
     

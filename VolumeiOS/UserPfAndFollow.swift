@@ -15,6 +15,7 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
     
     
     var post:Post?
+    var username:String?
     var components = URLComponents()
     var imageView = UIImageView()
     var user:UILabel?
@@ -69,8 +70,11 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
                 if let user_id = self?.user_id {
                     if let profile_sub = self?.profile?.sub {
                         if user_id != profile_sub {
-                            self!.view.addSubview(self!.followButton)
-                            self?.setFollowButtonConstraints()
+                            if let self = self {
+                            self.view.addSubview(self.followButton)
+                            self.setFollowButtonConstraints()
+                            self.view.bringSubviewToFront(self.followButton)
+                           }
                         }
                     }
                 }
@@ -79,12 +83,15 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
                 
         }
         addImage()
+        getUser()
         
         getFollowing(id: profile!.sub)
         
         addActionToFlwBtn()
     
         view.backgroundColor = UIColor.yellow
+        
+        view.bringSubviewToFront(followButton)
 
 
         print("navigation userandfollow \(navigationController)")
@@ -97,6 +104,17 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
     func getFollowing(id: String) {
         GETUsersByFollowerId(id: id).getAllById {
             self.following = Set($0.map{String($0.user_id!)})
+        }
+    }
+    
+    func getUser() {
+        if let id = profile?.sub {
+            print("profile?.sub id \(profile?.sub)")
+            GetUsersById(id: id).getAllPosts {
+                self.username = $0[0].username
+            }
+        } else {
+            print("profile?.sub \(profile?.sub)")
         }
     }
     
@@ -117,8 +135,9 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
     @objc func setButtonAction() {
         
         if followButton.buttonState == .add {
-            let follower_id = (profile?.sub)!
-              let follower = Follower(user_id: user_id!, follower_id: follower_id)
+           if let follower_id = profile?.sub, let follower_username = self.username, let follower_picture = profile?.picture?.absoluteString {
+            let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: follower_username, follower_picture: follower_picture )
+              
               let postRequest = FollowerPostRequest(endpoint: "follower")
               
               postRequest.save(follower) { (result) in
@@ -129,6 +148,7 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
                       print("An error occurred \(error)")
                   }
               }
+            }
               followButton.buttonState = .delete
         } else if followButton.buttonState == .delete {
           
@@ -227,6 +247,7 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
     
     func setFollowButtonConstraints() {
         followButton.translatesAutoresizingMaskIntoConstraints = false
+        followButton.bringSubviewToFront(followButton)
         
         followButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
         

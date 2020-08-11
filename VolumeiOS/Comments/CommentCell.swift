@@ -231,7 +231,7 @@ protocol CommentCellDelegate {
 }
 
 protocol CommentCellDelegate2: class {
-    func didTapSubReplyBtn(username:String, parent_id:String, cell: CommentCell)
+    func didTapSubReplyBtn(username:String, parent_id:String, cell: CommentCell, parentSubCommentId: String, user_id:String)
 }
 
 class CommentCell:UITableViewCell {
@@ -240,6 +240,7 @@ class CommentCell:UITableViewCell {
     var imageLoader:DownloadImage?
     var user_image = UIImageView()
     var username = UILabel()
+    var profile_username:String?
     var stackView = UIStackView()
     var sub_comments:[Comments] = []
     var bottomConstraint:NSLayoutConstraint?
@@ -259,10 +260,12 @@ class CommentCell:UITableViewCell {
     var commentsExist:Bool?
     var deleteButtonSender:UIButton?
     var post_id:String?
+    var notificationParentId:String?
     var viewModel: CommentViewModel? {
         didSet {
             if let item = viewModel {
-                print("didSet cell")
+                print("didSet cell 1")
+                print("hello thur 1")
                 comment_userID = item.mainComment?.user_id
                 post_id = item.mainComment?.post_id
                 if let id = item.mainComment?.id, let user_id = profile?.sub {
@@ -287,7 +290,8 @@ class CommentCell:UITableViewCell {
                     }
                     if let commentsExist = item.notCheckedExists {
                         if commentsExist  {
-                            item.viewRepliesExists(comment_id: id)
+                            print("notificationParentId \(notificationParentId)")
+                            item.viewRepliesExists(comment_id: id, notificationParentId: nil)
                         } else {
                             if let btnState = item.repliesBtnState {
                                 self.repliesBtn.isHidden = btnState
@@ -312,9 +316,14 @@ class CommentCell:UITableViewCell {
                     $0.removeFromSuperview()
                 }
                 
+                
+                
+                
+                
                 item.repliesBtnStateDidSet = { [weak self] in
                     if let bool = $0 {
                         self?.repliesBtn.isHidden = bool
+                        print("repliesBtn didSet 1")
                     }
                 }
                 item.dltBtnIsHiddenDidSet = { [weak self] in
@@ -327,9 +336,6 @@ class CommentCell:UITableViewCell {
                         self?.dltCommentBtn.isEnabled = bool
                     }
                 }
-                
-                
-                
                 
                 
                 item.subComments.forEach { subComment in
@@ -347,9 +353,22 @@ class CommentCell:UITableViewCell {
                     subCommentView?.username.text = subComment.username
                     
                     if let firstIndex = item.subComments.firstIndex(where: { $0.id == subComment.id }) {
+                        subCommentView?.replyBtn.tag = firstIndex
                         subCommentView?.likeBtn.tag = firstIndex
                         subCommentView?.dltSubCommentBtn.tag = firstIndex
                     }
+                    
+                    if let comment_user_id = subComment.user_id, let profile_id = self.profile?.sub {
+                    print("getSubisDeleted")
+                        if comment_user_id == profile_id {
+                           
+                            subCommentView?.dltSubCommentBtn.isHidden = false
+                            subCommentView?.dltSubCommentBtn.isEnabled = true
+                        } else {
+                            subCommentView?.dltSubCommentBtn.isHidden = true
+                            subCommentView?.dltSubCommentBtn.isEnabled = false
+                            }
+                        }
                     
                     if subComment.isliked == true {
                         let image = UIImage(systemName: "heart.fill")
@@ -400,9 +419,19 @@ class CommentCell:UITableViewCell {
                 item.likeBtnTintColorDidSet = { [weak self] in self?.likeBtn.tintColor = $0 }
                 
                 item.subCommentDidInserts = { [weak self] insertedSubComments in
-                    print("hello thur")
+                    print("hello thur 2")
+//                    item.notCheckedExists = false
+//                    item.repliesBtnState = true
+//                    print("self.repliesBtn.isHidden sub")
+//                    item.repliesBtnStateDidSet = { [weak self] in
+//                        if let bool = $0 {
+//                            self?.repliesBtn.isHidden = bool
+//                            print("self.repliesBtn.isHidden \(self?.repliesBtn.isHidden) + \(self?.index)")
+//                        }
+//                    }
                     guard let `self` = self else { return }
                     insertedSubComments.forEach { subComment in
+                        print("repliesBtn didSet 2")
                         let subCommentView = CommentView()
                         subCommentView.delegate = self
                         print("subComment.text didinsert \(subComment.text)")
@@ -414,8 +443,22 @@ class CommentCell:UITableViewCell {
                             self.imageLoader?.downloadImage(urlString: picture)
                         }
                         
+                        if let comment_user_id = subComment.user_id, let profile_id = self.profile?.sub {
+                        print("getSubisDeleted")
+                            if comment_user_id == profile_id {
+                               
+                                subCommentView.dltSubCommentBtn.isHidden = false
+                                subCommentView.dltSubCommentBtn.isEnabled = true
+                            } else {
+                                subCommentView.dltSubCommentBtn.isHidden = true
+                                subCommentView.dltSubCommentBtn.isEnabled = false
+                                }
+                            }
+                        
+                        
                         subCommentView.username.text = subComment.username
                         if let firstIndex = item.subComments.firstIndex(where: { $0.id == subComment.id }) {
+                            subCommentView.replyBtn.tag = firstIndex
                             subCommentView.likeBtn.tag = firstIndex
                             subCommentView.numberOfLikes.tag = firstIndex
                             subCommentView.dltSubCommentBtn.tag = firstIndex
@@ -618,6 +661,7 @@ class CommentCell:UITableViewCell {
        
     }
     
+    
     func addedSubComment() {
           if let id = self.parent_id, let user_id = profile?.sub {
             self.viewModel?.loadSubCommentsAfterReply(comment_id: id, user_id: user_id)
@@ -638,8 +682,8 @@ class CommentCell:UITableViewCell {
             viewModel.unlikeComment(comment_id: comment_id, user_id: user_id)
             }
         } else {
-            if let user_id = profile?.sub, let comment_id = parent_id, let post_id = self.post_id, let comment_userID = self.comment_userID {
-                viewModel.likeComment(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, index: "\(self.index)")
+            if let user_id = profile?.sub, let username = profile_username, let user_picture = profile?.picture, let comment_id = parent_id, let post_id = self.post_id, let comment_userID = self.comment_userID {
+                viewModel.likeComment(user_id: user_id, username: username, user_picture: user_picture.absoluteString, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, index: "\(self.index)")
             }
         }
     }
@@ -826,6 +870,37 @@ class CommentCell:UITableViewCell {
         
     }
     
+    
+    func addNotificationSubComment(subComment: [Comments]) {
+        print("addNotificationSubComment \(subComment)")
+        if let parent_id = parent_id {
+        viewModel?.addNotificationSubComment(subComment: subComment, parent_id: parent_id)
+        viewModel?.viewRepliesExists(comment_id: parent_id, notificationParentId: notificationParentId)
+        }
+        viewModel?.viewMoreBtnStateDidSet = { [weak self] in
+            if let bool = $0 {
+                print("bool after addNotificationSubComment \(bool)")
+                self?.viewMoreBtn.isHidden = bool
+                self?.viewMoreBtn.isEnabled = !bool
+          }
+        }
+    }
+    
+    func addNotificationParentSubAndReply(subComment: [Comments], parentSubComment: [Comments]) {
+        print("addNotificationSubComment \(subComment)")
+        if let parent_id = parent_id {
+        viewModel?.addNotificationParentSubAndReply(subComment: subComment, parentSubComment: parentSubComment, parent_id: parent_id)
+        viewModel?.viewRepliesExists(comment_id: parent_id, notificationParentId: notificationParentId)
+        }
+        viewModel?.viewMoreBtnStateDidSet = { [weak self] in
+            if let bool = $0 {
+                print("bool after addNotificationSubComment \(bool)")
+                self?.viewMoreBtn.isHidden = bool
+                self?.viewMoreBtn.isEnabled = !bool
+          }
+        }
+    }
+    
   
     
 }
@@ -868,9 +943,11 @@ extension CommentCell: CommentViewDelegate {
 
     func replyToSubComment(sender: UIButton) {
         let subCommentView = sender.superview as! CommentView
+        if let parentSubCommentId = viewModel?.subComments[sender.tag].id, let user_id = viewModel?.subComments[sender.tag].user_id {
         if let username = subCommentView.username.text, let parent_id = parent_id {
-            delegate2?.didTapSubReplyBtn(username: username, parent_id: parent_id, cell: self)
+            delegate2?.didTapSubReplyBtn(username: username, parent_id: parent_id, cell: self, parentSubCommentId: parentSubCommentId, user_id: user_id)
         }
+       }
     }
     
      @objc func subCommentLikePressed(sender:UIButton) {
@@ -916,16 +993,14 @@ extension CommentCell: CommentViewDelegate {
          } else if viewModel.subComments[sender.tag].isliked == false {
             print("order 3")
             let comment_userID = viewModel.subComments[sender.tag].user_id
-            if let user_id = profile?.sub, let comment_id = comment_id, let post_id = self.post_id, let comment_userID = comment_userID {
-                viewModel.likeSubComment(user_id: user_id, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, index: "\(self.index)", completion: {
+            if let user_id = profile?.sub, let username = profile_username, let user_picture = profile?.picture, let comment_id = comment_id, let post_id = self.post_id, let comment_userID = comment_userID, let parent_id = parent_id {
+                viewModel.likeSubComment(user_id: user_id, username: username, user_picture: user_picture.absoluteString, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, index: "\(self.index)", parent_id: parent_id, completion: {
                     DispatchQueue.main.async {
                     if let id = viewModel.subComments[sender.tag].id {
                     viewModel.loadSubCommentLikes(id: "\(id)", completion: { likes in
                         let subCommentView = sender.superview as! CommentView
                         subCommentView.numberOfLikes.text = "\(likes.count)"
                         viewModel.subComments[sender.tag].numberOfLikes = likes.count
-                        print("likes.count like \(likes.count)")
-                        print("order 4")
                         
                     })
                     }

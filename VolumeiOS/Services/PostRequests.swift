@@ -60,6 +60,7 @@ struct CommentPostRequest {
         guard let resourceURL = URL(string: resourceString) else {fatalError()}
         
         self.resourceURL = resourceURL
+        print("comment POST URL \(self.resourceURL)")
     }
     
     func save(_ commentToSave: Comment, completion: @escaping(Result<[Comment], APIError>) -> Void) {
@@ -216,3 +217,48 @@ struct CommentsPostRequest {
         }
     }
 }
+
+
+
+
+struct LikeRequest {
+    let resourceURL:URL
+    
+    init(endpoint:String) {
+        let resourceString = "http://localhost:8000/\(endpoint)"
+        guard let resourceURL = URL(string: resourceString) else {fatalError()}
+        
+        self.resourceURL = resourceURL
+    }
+    
+    func save(_ commentToSave: LikeModel, completion: @escaping(Result<[LikeModel], APIError>) -> Void) {
+        
+        do {
+            var urlRequest = URLRequest(url: resourceURL)
+            urlRequest.httpMethod = "POST"
+            urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            urlRequest.httpBody = try JSONEncoder().encode(commentToSave)
+            
+            let dataTask = URLSession.shared.dataTask(with: urlRequest) { data, response, _ in
+                
+                
+                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let jsonData = data else {
+                    completion(.failure(.responseProblem))
+                    return
+                }
+                
+                do {
+                    let likeData = try JSONDecoder().decode([LikeModel].self, from: jsonData)
+                    completion(.success(likeData))
+                } catch {
+                    completion(.failure(.decodingProblem))
+                }
+            }
+            dataTask.resume()
+        } catch {
+            completion(.failure(.encodingProblem))
+        }
+    }
+}
+
+

@@ -15,11 +15,13 @@ enum ButtonState {
 }
 
 class FollowerButton: UIButton {
+    var notification:Bool?
     var buttonState:ButtonState? {
         didSet {
             updateButtonView(for: buttonState!)
         }
     }
+
     
     
     override init(frame:CGRect) {

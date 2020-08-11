@@ -37,7 +37,10 @@ class ArtistTracksCell: ArtistAlbumsCell {
           trackVC.captureId(id: id)
           trackVC.trackName = title
           trackVC.justClicked = true
-          parent?.navigationController?.present(trackVC, animated: true, completion: nil)
+          let modalVC = UINavigationController(rootViewController: trackVC)
+          modalVC.modalPresentationStyle = .fullScreen
+
+          parent?.navigationController?.present(modalVC, animated: true, completion: nil)
         }
      }
     }
