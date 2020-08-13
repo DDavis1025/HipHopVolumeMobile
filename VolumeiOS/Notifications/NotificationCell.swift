@@ -40,24 +40,30 @@ class NotificationCell: UITableViewCell {
                     
                     
                     self.username.text = item.mainNotification?.supporter_username
-                    self.imageLoader = DownloadImage()
-                    self.imageLoader?.imageDidSet = { [weak self] image in
+                    item.supporterImageDownloader = DownloadImage()
+                    item.supporterImageDownloader?.imageDidSet = { [weak self] image in
                         self?.user_image.image = image
                     }
                     if let picture = item.mainNotification?.supporter_picture {
-                        self.imageLoader?.downloadImage(urlString: picture)
+                        item.supporterImageDownloader?.downloadImage(urlString: picture)
+                    } else {
+                        self.user_image.image = UIImage(named: "profile-placeholder-user")
                     }
+            
                     
-                    let imageLoader = DownloadImage()
-                    imageLoader.imageDidSet = { [weak self] image in
+                    item.postImageDownloader = DownloadImage()
+                    item.postImageDownloader?.imageDidSet = { [weak self] image in
                         self?.post_image.image = image
                     }
                     if let picture = item.mainNotification?.post_image {
                         components.path = "/\(picture)"
                         if let url = components.url {
-                            imageLoader.downloadImage(urlString: url.absoluteString)
+                            item.postImageDownloader?.downloadImage(urlString: url.absoluteString)
                         }
+                    } else {
+                        self.post_image.image = UIImage(named: "music-placeholder")
                     }
+                    
                     
                     if let text = item.mainNotification?.message {
                     self.messageTextView.text = "\(text)"
@@ -79,7 +85,6 @@ class NotificationCell: UITableViewCell {
                         self.commentTextView.text = ""
                     }
                 
-                    
                 
                     
               }
@@ -245,14 +250,10 @@ class NotificationCell: UITableViewCell {
 
 extension NotificationCell {
     @objc func postImageClicked() {
-        guard let comment_id = self.comment_id else {
-            print("comment_id nil")
-            return
-        }
         print("notificationType \(notificationType)")
         print("postImageClicked \(self.parentsubcommentid)")
-        if let post_id = viewModel?.mainNotification.post_id, let post_type = viewModel?.mainNotification.post_type, let notificationType = notificationType {
-            delegate?.goToPostView(post_id: post_id, type: post_type, parent_commentID: self.parent_commentID ?? nil, comment_id: comment_id, parentsubcommentid: self.parentsubcommentid ?? nil, notificationType: notificationType)
+        if let post_id = viewModel?.mainNotification?.post_id, let post_type = viewModel?.mainNotification?.post_type, let notificationType = notificationType, let comment_id = viewModel?.mainNotification?.comment_id {
+            delegate?.goToPostView(post_id: post_id, type: post_type, parent_commentID: self.parent_commentID ?? nil, comment_id: comment_id, parentsubcommentid: viewModel?.mainNotification?.parentsubcommentid ?? nil, notificationType: notificationType)
      } 
    }
 }

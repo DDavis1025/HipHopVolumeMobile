@@ -32,6 +32,8 @@ class NotificationViewModel {
             }
         }
     }
+    var supporterImageDownloader: DownloadImage?
+    var postImageDownloader: DownloadImage?
     var notificationType: String? { didSet { notificationTypeDidSet?(notificationType) } }
     var notificationTypeDidSet: ((String?)->())?
     
