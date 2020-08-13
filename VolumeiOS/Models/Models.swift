@@ -284,6 +284,9 @@ struct Notifications: Codable {
     var parent_commentid:String?
     var comment_id:String?
     var parentsubcommentid:String?
+    var parent_comment:String?
+    var post_image:String?
+    var post_type:String?
 }
 
 struct PostImage:Codable {
@@ -307,8 +310,9 @@ final class LikeModel: Codable {
     var supporter_username:String?
     var supporter_picture:String?
     var post_id:String?
+    var post_type:String?
     
-    init(user_id:String, supporter_id:String, supporter_username:String?, supporter_picture:String?, post_id:String) {
+    init(user_id:String, supporter_id:String, supporter_username:String?, supporter_picture:String?, post_id:String, post_type:String) {
         self.user_id = user_id
         self.supporter_id = supporter_id
         if let supporter_username = supporter_username {
@@ -318,6 +322,7 @@ final class LikeModel: Codable {
          self.supporter_picture = supporter_picture
         }
         self.post_id = post_id
+        self.post_type = post_type
         
     }
 }

@@ -723,7 +723,7 @@ extension VideoVC {
             likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
             likeBtn?.tintColor = UIColor.red
             if let supporter_id = profile?.sub, let supporter_username = self.username, let supporter_picture = profile?.picture?.absoluteString, let user_id = self.author {
-                let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture, post_id: self.id)
+                let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture, post_id: self.id, post_type: "video")
             
             
             let postRequest = LikeRequest(endpoint: "postLike")

@@ -684,6 +684,8 @@ class CommentCell:UITableViewCell {
         } else {
             if let user_id = profile?.sub, let username = profile_username, let user_picture = profile?.picture, let comment_id = parent_id, let post_id = self.post_id, let comment_userID = self.comment_userID {
                 viewModel.likeComment(user_id: user_id, username: username, user_picture: user_picture.absoluteString, comment_id: comment_id, post_id: post_id, comment_userID: comment_userID, index: "\(self.index)")
+            } else {
+                print("profile_username \(profile_username)")
             }
         }
     }

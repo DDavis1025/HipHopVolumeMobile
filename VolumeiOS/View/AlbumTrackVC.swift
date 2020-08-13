@@ -483,7 +483,6 @@ class AlbumTrackVC: UIViewController {
     
     @objc func updateSlider() {
         guard let player = player else { return }
-        print("player.currentTime() + ")
         mySlider?.value = Float(CMTimeGetSeconds(player.currentTime()))
         let remainingTimeInSeconds = CMTimeGetSeconds((player.currentItem?.asset.duration)!) - CMTimeGetSeconds(player.currentTime())
                  
@@ -682,7 +681,7 @@ extension AlbumTrackVC {
             likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
             likeBtn?.tintColor = UIColor.red
                 if let supporter_id = profile?.sub, let supporter_username = username, let supporter_picture = profile?.picture, let post_id = ModelClass.post_id, let user_id = ModelClass.user_id {
-                    let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture.absoluteString, post_id: post_id)
+                    let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture.absoluteString, post_id: post_id, post_type: "album")
             
             
             let postRequest = LikeRequest(endpoint: "postLike")

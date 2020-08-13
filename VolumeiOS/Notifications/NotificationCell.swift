@@ -37,32 +37,47 @@ class NotificationCell: UITableViewCell {
     var viewModel: NotificationViewModel? {
             didSet {
                 if let item = viewModel {
-                    if let notificationMessage = item.mainNotification?.message {
-                       if notificationMessage.contains("replied to your comment") {
-                           notificationType = "reply"
-                       } else if notificationMessage.contains("liked your comment") {
-                           notificationType = "likedComment"
-                       } else if notificationMessage.contains("started following you") {
-                           notificationType = "follow"
-                       } else if notificationMessage.contains("liked your post") {
-                           notificationType = "likedPost"
-                       } else if notificationMessage.contains("commented on your post") {
-                           notificationType = "commentedPost"
-                       }
-                   }
                     
                     
                     self.username.text = item.mainNotification?.supporter_username
-                    imageLoader = DownloadImage()
-                    imageLoader?.imageDidSet = { [weak self] image in
+                    self.imageLoader = DownloadImage()
+                    self.imageLoader?.imageDidSet = { [weak self] image in
                         self?.user_image.image = image
                     }
                     if let picture = item.mainNotification?.supporter_picture {
-                        imageLoader?.downloadImage(urlString: picture)
+                        self.imageLoader?.downloadImage(urlString: picture)
                     }
                     
+                    let imageLoader = DownloadImage()
+                    imageLoader.imageDidSet = { [weak self] image in
+                        self?.post_image.image = image
+                    }
+                    if let picture = item.mainNotification?.post_image {
+                        components.path = "/\(picture)"
+                        if let url = components.url {
+                            imageLoader.downloadImage(urlString: url.absoluteString)
+                        }
+                    }
                     
-                    
+                    if let text = item.mainNotification?.message {
+                    self.messageTextView.text = "\(text)"
+                    }
+//
+                    self.notificationType = item.notificationType
+                    if self.notificationType == "likedComment"  {
+                        print("hello1")
+                        self.commentConstraints()
+                        if let parent_comment = item.mainNotification?.parent_comment {
+                        self.commentTextView.text = "- \(parent_comment)"
+                        }
+                    } else if self.notificationType == "reply" && item.mainNotification?.parent_commentid != nil || item.mainNotification?.parentsubcommentid != nil {
+                        self.commentConstraints()
+                        if let parent_comment = item.mainNotification?.parent_comment {
+                        self.commentTextView.text = "- \(parent_comment)"
+                      }
+                    }  else {
+                        self.commentTextView.text = ""
+                    }
                 
                     
                 
@@ -151,9 +166,11 @@ class NotificationCell: UITableViewCell {
         addSubview(user_image)
         addSubview(messageTextView)
         addSubview(post_image)
+        addSubview(commentTextView)
         user_imageContraints()
         usernameContraints()
         messageConstraints()
+        commentConstraints()
         postImageConstraints()
     }
     
@@ -183,8 +200,8 @@ class NotificationCell: UITableViewCell {
     func messageConstraints() {
         messageTextView.translatesAutoresizingMaskIntoConstraints = false
         messageTextView.topAnchor.constraint(equalTo: username.bottomAnchor).isActive = true
-        messageTextViewBtm = messageTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
-        messageTextViewBtm?.isActive = true
+//        messageTextViewBtm = messageTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+//        messageTextViewBtm?.isActive = true
         
         messageTextView.leadingAnchor.constraint(equalTo: user_image.trailingAnchor, constant: 3).isActive = true
         
@@ -192,16 +209,16 @@ class NotificationCell: UITableViewCell {
     }
     
     func commentConstraints() {
-        addSubview(comment_symbol)
-        messageTextViewBtm?.isActive = false
-        comment_symbol.translatesAutoresizingMaskIntoConstraints = false
-        comment_symbol.centerYAnchor.constraint(equalTo: commentTextView.centerYAnchor).isActive = true
-        comment_symbol.leadingAnchor.constraint(equalTo: messageTextView.leadingAnchor).isActive = true
+//        addSubview(comment_symbol)
+//        messageTextViewBtm?.isActive = false
+//        comment_symbol.translatesAutoresizingMaskIntoConstraints = false
+//        comment_symbol.centerYAnchor.constraint(equalTo: commentTextView.centerYAnchor).isActive = true
+//        comment_symbol.leadingAnchor.constraint(equalTo: messageTextView.leadingAnchor).isActive = true
         
         commentTextView.translatesAutoresizingMaskIntoConstraints = false
         commentTextView.topAnchor.constraint(equalTo: messageTextView.bottomAnchor).isActive = true
         commentTextView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20).isActive = true
-        commentTextView.leadingAnchor.constraint(equalTo:  comment_symbol.trailingAnchor).isActive = true
+        commentTextView.leadingAnchor.constraint(equalTo:  messageTextView.leadingAnchor, constant: 2.5).isActive = true
         commentTextView.trailingAnchor.constraint(equalTo: messageTextView.trailingAnchor).isActive = true
         
                
@@ -234,7 +251,7 @@ extension NotificationCell {
         }
         print("notificationType \(notificationType)")
         print("postImageClicked \(self.parentsubcommentid)")
-        if let post_id = self.post_id, let post_type = self.post_type, let notificationType = notificationType {
+        if let post_id = viewModel?.mainNotification.post_id, let post_type = viewModel?.mainNotification.post_type, let notificationType = notificationType {
             delegate?.goToPostView(post_id: post_id, type: post_type, parent_commentID: self.parent_commentID ?? nil, comment_id: comment_id, parentsubcommentid: self.parentsubcommentid ?? nil, notificationType: notificationType)
      } 
    }

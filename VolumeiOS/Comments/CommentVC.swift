@@ -108,9 +108,9 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     override func viewDidLoad() {
         view.backgroundColor = UIColor.white
         navigationController?.isToolbarHidden = true
-        getUser()
         self.textView.delegate = self
 //        addTextField()
+        
         view.addSubview(self.textViewView)
         view.bringSubviewToFront(self.textViewView)
         textViewView.addSubview(textView)
@@ -122,8 +122,9 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
 //        setupCountLabel()
         addTableView()
 //        view.bringSubviewToFront(countLabel)
-        if let notificationParentId = notificationParentId, let notificationParentSubComment = self.notificationParentSubComment {
-            getCommentByParentId(parent_id: notificationParentId, completion: {
+        getUser {
+            if let notificationParentId = self.notificationParentId, let notificationParentSubComment = self.notificationParentSubComment {
+                self.getCommentByParentId(parent_id: notificationParentId, completion: {
                 self.loadComments(completion: {
                     let indexPath = NSIndexPath(item: 0, section: 0)
                     let cell = self.myTableView.cellForRow(at: indexPath as IndexPath) as! CommentCell
@@ -132,9 +133,9 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                     //                    self.myTableView.reloadData()
                 })
             })
-        } else if let notificationParentId = notificationParentId {
+            } else if let notificationParentId = self.notificationParentId {
             print("notification parent id")
-            getCommentByParentId(parent_id: notificationParentId, completion: {
+                self.getCommentByParentId(parent_id: notificationParentId, completion: {
                 self.loadComments(completion: {
                     let indexPath = NSIndexPath(item: 0, section: 0)
                     let cell = self.myTableView.cellForRow(at: indexPath as IndexPath) as! CommentCell
@@ -143,12 +144,13 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
 //                    self.myTableView.reloadData()
                 })
             })
-        } else if notificationType == "commentedPost" || notificationType == "likedComment"  {
-            getCommentByParentId(parent_id: self.post_comment_id, completion: {
+            } else if self.notificationType == "commentedPost" || self.notificationType == "likedComment"  {
+                self.getCommentByParentId(parent_id: self.post_comment_id, completion: {
                 self.loadComments(completion: {})
             })
         } else {
-            loadComments(completion: {})
+                self.loadComments(completion: {})
+        }
         }
         
         
@@ -198,12 +200,13 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
     
     
-    func getUser() {
+    func getUser(completion: @escaping(()->())) {
         if let id = profile?.sub {
             print("profile?.sub id \(profile?.sub)")
             GetUsersById(id: id).getAllPosts {
                 self.username = $0[0].username
                 print("self.username \(self.username)")
+                completion()
             }
         } else {
             print("profile?.sub \(profile?.sub)")
@@ -347,6 +350,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             self.myTableView.reloadData()
             }
         }
+        print("self.username \(self.username) this username \(self.username)")
     }
     
 
@@ -555,12 +559,12 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath) as! CommentCell
         cell.delegate = self
         cell.delegate2 = self
-        cell.profile_username = self.username
         cell.selectionStyle = .none
         cell.commentDelegate = self
         let item = comments[indexPath.item]
         cell.viewModel = item
         cell.index = indexPath
+        cell.profile_username = self.username
 
         return cell
     }

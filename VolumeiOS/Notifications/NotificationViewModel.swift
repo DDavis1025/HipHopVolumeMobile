@@ -10,38 +10,36 @@ import UIKit
 import Foundation
 
 class NotificationViewModel {
-    var mainNotification: Notifications?
-    var supporter_info:UsersModel?
-    var imageLoader: DownloadImage?
-    var supporterName: String? { didSet { supporterNameDidSet?(supporterName) } }
-    var supporterNameDidSet: ((String?)->())?
-    var supporterImage: UIImage? = UIImage()  { didSet { supporterImageDidSet?(supporterImage) } }
-    var supporterImageDidSet: ((UIImage?)->())?
-    var gotSupporter:Bool = false
-    
-    func getUserBySupporterID(supporter_id:String) {
-        GetUsersById(id: supporter_id).getAllPosts { user in
-            print("GetUsersById \(supporter_id) + \(user)")
-            self.gotSupporter = true
-            
-            self.imageLoader = DownloadImage()
-            self.imageLoader?.imageDidSet = { [weak self] image in
-                self?.supporterImage = image
-                self?.supporterImageDidSet?(image)
+    var mainNotification: Notifications? {
+        didSet {
+            if let notificationMessage = mainNotification?.message {
+                   if notificationMessage.contains("replied to your comment") {
+                       notificationType = "reply"
+                       notificationTypeDidSet?("reply")
+                   } else if notificationMessage.contains("liked your comment") {
+                       notificationType = "likedComment"
+                       notificationTypeDidSet?("likedComment")
+                   } else if notificationMessage.contains("started following you") {
+                       notificationType = "follow"
+                       notificationTypeDidSet?("follow")
+                   } else if notificationMessage.contains("liked your post") {
+                       notificationType = "likedPost"
+                       notificationTypeDidSet?("likedPost")
+                   } else if notificationMessage.contains("commented on your post") {
+                       notificationType = "commentedPost"
+                       notificationTypeDidSet?("commentedPost")
+                   }
             }
-            if let picture = user[0].picture {
-                self.imageLoader?.downloadImage(urlString: picture)
-            }
-            self.supporterName = user[0].username
-            self.supporterNameDidSet?(user[0].username)
-
+        }
     }
+    var notificationType: String? { didSet { notificationTypeDidSet?(notificationType) } }
+    var notificationTypeDidSet: ((String?)->())?
+    
+    
+    
  }
     
     
-    
-    
-}
 
 
 
