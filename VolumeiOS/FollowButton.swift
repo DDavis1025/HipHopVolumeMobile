@@ -134,28 +134,22 @@ class FollowButtonView: UIViewController, FollowDelegateProtocol {
     
     
     func setupButton(id:String?) {
-           if let followingUsers = self.following {
+        if let followingUsers = self.following {
             if let id = id {
-               if (followingUsers.contains(id)) {
-                followButton.buttonState = .delete
-                print("! .add")
-               } else {
-                followButton.buttonState = .add
-                print(".add")
-           }
-            } else {
-                print("00 not id \(id)")
+                if (followingUsers.contains(id)) {
+                    followButton.buttonState = .delete
+                } else {
+                    followButton.buttonState = .add
+                }
             }
-           } else {
-            print("00 not followingUsers")
-        }
-}
+        } 
+    }
     
     @objc func setButtonAction() {
         
         if followButton.buttonState == .add {
-            if let follower_id = profile?.sub, let follower_username = self.username, let follower_picture = profile?.picture?.absoluteString {
-                let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: follower_username, follower_picture: follower_picture )
+            if let follower_id = profile?.sub, let follower_picture = profile?.picture?.absoluteString, let name = profile?.name {
+                let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: self.username ?? name, follower_picture: follower_picture )
               let postRequest = FollowerPostRequest(endpoint: "follower")
               
               postRequest.save(follower) { (result) in

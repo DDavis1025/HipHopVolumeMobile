@@ -22,6 +22,7 @@ class NotificationCell: UITableViewCell {
     
     static var shared = NotificationCell()
     var profile = SessionManager.shared.profile
+    var post_gesture = UITapGestureRecognizer()
     var imageLoader:DownloadImage?
     var delegate:NotificationCellDelegate?
     var post_id:String?
@@ -81,8 +82,65 @@ class NotificationCell: UITableViewCell {
                         if let parent_comment = item.mainNotification?.parent_comment {
                         self.commentTextView.text = "- \(parent_comment)"
                       }
-                    }  else {
+                    }  else if notificationType == "follow" {
+//                        followBtn.setImage(item.flwBtnImage, for: .normal)
+//                        if let postImageIsHidden = item.postImageIsHidden, let postImageEnabled = item.postImageIsEnabled {
+//                        post_image.isHidden = postImageIsHidden
+//                        post_gesture.isEnabled = postImageEnabled
+//                        }
+//                        if let followBtnIsHidden = item.flwBtnIsHidden, let flwBtnEnabled = item.flwBtnIsEnabled {
+//                        followBtn.isHidden = followBtnIsHidden
+//                        followBtn.isEnabled = flwBtnEnabled
+//                        }
                         self.commentTextView.text = ""
+                        print("notificationType == follow")
+                    } else {
+//                        followBtn.isHidden = true
+//                        followBtn.isEnabled = false
+//                        post_image.isHidden = false
+//                        post_gesture.isEnabled = true
+                        self.commentTextView.text = ""
+                    }
+                    
+                    followBtn.setImage(item.flwBtnImage, for: .normal)
+                    followBtn.tintColor = item.flwBtnTintColor
+                    
+//                    item.flwBtnImageDidSet = { [weak self] in self?.followBtn.setImage($0, for: .normal)}
+//                    if item.followLoaded == false {
+//                        print("item.followLoaded false")
+                    if let followBtnIsHidden = item.flwBtnIsHidden, let followBtnIsEnabled = item.flwBtnIsEnabled, let postImageIsHidden = item.postImageIsHidden, let postImageIsEnabled = item.postImageIsEnabled {
+                        self.followBtn.isHidden = followBtnIsHidden
+                        self.followBtn.isEnabled = followBtnIsEnabled
+                        self.post_image.isHidden = postImageIsHidden
+                        self.post_gesture.isEnabled = postImageIsEnabled
+                     }
+//                    }
+                    item.flwBtnImageDidSet = { [weak self] image in
+                        DispatchQueue.main.async {
+                            self?.followBtn.setImage(image, for: .normal)
+                        }
+                     }
+                    
+                    
+                    item.flwBtnIsHiddenDidSet = { [weak self] in
+                        if let bool = $0 {
+                        self?.followBtn.isHidden = bool
+                        }
+                    }
+                    item.flwBtnIsEnabledDidSet = { [weak self] in
+                        if let bool = $0 {
+                        self?.followBtn.isEnabled = bool
+                        }
+                    }
+                    item.postImageIsHiddenDidSet = { [weak self] in
+                        if let bool = $0 {
+                        self?.post_image.isHidden = bool
+                        }
+                    }
+                    item.postImageIsEnabledDidSet = { [weak self] in
+                        if let bool = $0 {
+                        self?.post_gesture.isEnabled = bool
+                        }
                     }
                 
                 
@@ -132,9 +190,9 @@ class NotificationCell: UITableViewCell {
     lazy var post_image: UIImageView = {
         let image = UIImageView()
         image.isUserInteractionEnabled = true
-        let gesture = UITapGestureRecognizer()
-        gesture.addTarget(self, action: #selector(postImageClicked))
-        image.addGestureRecognizer(gesture)
+        post_gesture.addTarget(self, action: #selector(postImageClicked))
+        image.addGestureRecognizer(post_gesture)
+
         return image
     }()
     
@@ -163,6 +221,15 @@ class NotificationCell: UITableViewCell {
         return tv
     }()
     
+    lazy var followBtn:UIButton = {
+            let button = UIButton()
+            button.sizeToFit()
+            button.isHidden = true
+            button.isEnabled = false
+            button.addTarget(self, action: #selector(followButtonPressed), for: .touchUpInside)
+            return button
+        }()
+    
     
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -172,11 +239,13 @@ class NotificationCell: UITableViewCell {
         addSubview(messageTextView)
         addSubview(post_image)
         addSubview(commentTextView)
+        addSubview(followBtn)
         user_imageContraints()
         usernameContraints()
         messageConstraints()
         commentConstraints()
         postImageConstraints()
+        followBtnConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -239,9 +308,23 @@ class NotificationCell: UITableViewCell {
         post_image.widthAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
+    func followBtnConstraints() {
+        followBtn.translatesAutoresizingMaskIntoConstraints = false
+        followBtn.topAnchor.constraint(equalTo: user_image.topAnchor).isActive = true
+        followBtn.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8).isActive = true
+        followBtn.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        followBtn.widthAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    @objc func followButtonPressed() {
+        print("followButtonPressed")
+        viewModel?.addDeleteFollower()
+    }
+    
+    
   
     @objc func userImageClicked() {
-        if let supporter_id = supporter_id {
+        if let supporter_id = viewModel?.mainNotification?.supporter_id {
             delegate?.pushToSupporterProfile(supporter_id: supporter_id)
         }
     }
@@ -253,7 +336,10 @@ extension NotificationCell {
         print("notificationType \(notificationType)")
         print("postImageClicked \(self.parentsubcommentid)")
         if let post_id = viewModel?.mainNotification?.post_id, let post_type = viewModel?.mainNotification?.post_type, let notificationType = notificationType, let comment_id = viewModel?.mainNotification?.comment_id {
-            delegate?.goToPostView(post_id: post_id, type: post_type, parent_commentID: self.parent_commentID ?? nil, comment_id: comment_id, parentsubcommentid: viewModel?.mainNotification?.parentsubcommentid ?? nil, notificationType: notificationType)
+            delegate?.goToPostView(post_id: post_id, type: post_type, parent_commentID: viewModel?.mainNotification?.parent_commentid ?? nil, comment_id: comment_id, parentsubcommentid: viewModel?.mainNotification?.parentsubcommentid ?? nil, notificationType: notificationType)
      } 
    }
 }
+
+
+

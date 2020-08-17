@@ -77,6 +77,12 @@ struct Follows: Codable, Hashable {
     
 }
 
+struct Follow: Codable, Hashable {
+    var user_id:String?
+    var follower_id:String?
+    
+}
+
 
 struct ImageModel: Codable {
     var data:Data?

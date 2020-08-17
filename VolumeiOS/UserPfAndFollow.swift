@@ -111,7 +111,9 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
         if let id = profile?.sub {
             print("profile?.sub id \(profile?.sub)")
             GetUsersById(id: id).getAllPosts {
+                print("getusersbyid \($0)")
                 self.username = $0[0].username
+                print("self.username \(self.username)")
             }
         } else {
             print("profile?.sub \(profile?.sub)")
@@ -134,9 +136,10 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
     
     @objc func setButtonAction() {
         
+        print("profile?.sub user \(profile?.sub)")
         if followButton.buttonState == .add {
-           if let follower_id = profile?.sub, let follower_username = self.username, let follower_picture = profile?.picture?.absoluteString {
-            let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: follower_username, follower_picture: follower_picture )
+           if let follower_id = profile?.sub, let name = profile?.name, let follower_picture = profile?.picture?.absoluteString {
+            let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: self.username ?? name, follower_picture: follower_picture )
               
               let postRequest = FollowerPostRequest(endpoint: "follower")
               
@@ -148,6 +151,8 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
                       print("An error occurred \(error)")
                   }
               }
+           } else {
+            print("username \(self.username) picture  \(profile?.picture?.absoluteString) user_id \(user_id)")
             }
               followButton.buttonState = .delete
         } else if followButton.buttonState == .delete {

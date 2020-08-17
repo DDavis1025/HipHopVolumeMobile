@@ -20,9 +20,6 @@ class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     }
     var profile = SessionManager.shared.profile
     var followView:FollowButtonView?
-   
-
-    
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor.white
@@ -34,20 +31,6 @@ class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     override func viewDidAppear(_ animated: Bool) {
 //        self.navigationController?.isNavigationBarHidden = false
     }
-
-//    func loadNotifications() {
-//        print("loadNotifications")
-//        if let user_id = profile?.sub {
-//            let getNotifications = GETNotificationsByUserID(user_id: user_id)
-//            getNotifications.getNotifications {
-//                print("notifications load \($0)")
-//                self.notifications = $0
-//         }
-//        } else {
-//            print("user_id profile sub \(profile?.sub)")
-//        }
-//            self.myTableView.reloadData()
-//        }
     
     func loadNotifications() {
            print("loadNotifications")

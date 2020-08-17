@@ -169,6 +169,8 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             getAuthorByPostID(post_id: post_id)
         }
         
+        self.view.layoutIfNeeded()
+        
         
     }
     
@@ -533,7 +535,15 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 case .success(let comment):
                     print("the following comment has been sent: \(comment)")
                     
-                    self.loadComments(completion: {})
+                self.loadComments(completion: {
+                    DispatchQueue.main.async {
+                    let indexPath = NSIndexPath(row: 0, section: 0)
+                    self.myTableView.scrollToRow(at: indexPath as IndexPath, at: .top, animated: false)
+//                    self.myTableView.setContentOffset(.zero, animated: false)
+                    self.myTableView.beginUpdates()
+                    self.myTableView.endUpdates()
+                    }
+                })
                 case .failure(let error):
                     print("An error occurred: \(error)")
                 }
