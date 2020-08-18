@@ -146,7 +146,18 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             })
             } else if self.notificationType == "commentedPost" || self.notificationType == "likedComment"  {
                 self.getCommentByParentId(parent_id: self.post_comment_id, completion: {
-                self.loadComments(completion: {})
+                    let indexPath = NSIndexPath(row: 0, section: 0)
+                    self.loadComments(completion: {
+                        DispatchQueue.main.async {
+                        let indexPath = IndexPath(row: 0, section: 0)
+                        self.myTableView.selectRow(at: indexPath, animated: true, scrollPosition: .bottom)
+                        self.myTableView.delegate?.tableView!(self.myTableView, didSelectRowAt: indexPath)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                            self.myTableView.deselectRow(at: indexPath, animated: true)
+                            self.myTableView.delegate?.tableView!(self.myTableView, didDeselectRowAt: indexPath)
+                            }
+                        }
+                    })
             })
         } else {
                 self.loadComments(completion: {})
@@ -350,6 +361,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 return ret
             }
             self.myTableView.reloadData()
+            completion()
             }
         }
         print("self.username \(self.username) this username \(self.username)")
@@ -374,7 +386,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         self.myTableView.delegate = self
         self.myTableView.isScrollEnabled = true
         
-        myTableView.delaysContentTouches = false
+//        myTableView.delaysContentTouches = false
         self.view.addSubview(self.myTableView)
         
     
@@ -540,8 +552,8 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                     let indexPath = NSIndexPath(row: 0, section: 0)
                     self.myTableView.scrollToRow(at: indexPath as IndexPath, at: .top, animated: false)
 //                    self.myTableView.setContentOffset(.zero, animated: false)
-                    self.myTableView.beginUpdates()
-                    self.myTableView.endUpdates()
+//                    self.myTableView.beginUpdates()
+//                    self.myTableView.endUpdates()
                     }
                 })
                 case .failure(let error):
@@ -558,6 +570,13 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
     
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("didSelectRowAt")
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        print("didDeselectRow")
+    }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -569,7 +588,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath) as! CommentCell
         cell.delegate = self
         cell.delegate2 = self
-        cell.selectionStyle = .none
+        cell.selectionStyle = .default
         cell.commentDelegate = self
         let item = comments[indexPath.item]
         cell.viewModel = item

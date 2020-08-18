@@ -47,15 +47,17 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         
 
 //        navigationItem.leftBarButtonItem = profile
-        navigationItem.leftBarButtonItem = notification
+//        navigationItem.leftBarButtonItem = notification
 //        navigationItem.rightBarButtonItem = whoToFollow
-        navigationItem.rightBarButtonItem = logout
+//        navigationItem.rightBarButtonItem = logout
 //        navigationItem.rightBarButtonItem = comment
          
 //         self.navigationController?.isNavigationBarHidden = false
 
 //        auth0()
         navigationController?.isToolbarHidden = false
+        
+        print("navigation toolbar \(self.navigationController?.toolbar.barTintColor)")
 
     }
     
@@ -90,6 +92,7 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         self.navigationController?.pushViewController(toFollowVC, animated: true)
     }
      
+    
      @objc func logoutTapped() {
              let authVC = AuthVC()
              SessionManager.shared.logout { (error) in

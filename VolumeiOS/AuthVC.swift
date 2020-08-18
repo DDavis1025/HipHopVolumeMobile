@@ -121,7 +121,7 @@ class AuthVC: UIViewController {
             } else {
                 SessionManager.shared.retrieveProfile { error in
                     DispatchQueue.main.async {
-                        self.navigationController?.pushViewController(HomeViewController(), animated: true)
+                        self.navigationController?.pushViewController(MainTabBarController(), animated: true)
                         guard error == nil else {
                             print("Failed to retrieve profile: \(String(describing: error))")
                             return

@@ -265,16 +265,16 @@ class CommentCell:UITableViewCell {
         didSet {
             if let item = viewModel {
                 print("didSet cell 1")
-                print("hello thur 1")
+                print("hello thur 1 \(item.isLiked)")
                 comment_userID = item.mainComment?.user_id
                 post_id = item.mainComment?.post_id
                 if let id = item.mainComment?.id, let user_id = profile?.sub {
                     parent_id = id
-                    if !item.commentLikesLoaded {
-                    item.loadCommentLikes(id: id)
-                    } else if let likes = item.commentLikes {
-                    self.numberOfLikes.text = "\(likes)"
-                    }
+//                    if !item.commentLikesLoaded {
+//
+//                    if let likes = item.commentLikes {
+//                      self.numberOfLikes.text = "\(likes)"
+//                    }
                     if !item.isLiked {
                     item.getCommentLikesBuIserId(comment_id: id, user_id: user_id)
                     }
@@ -311,10 +311,24 @@ class CommentCell:UITableViewCell {
                 }
                 username.text = item.mainComment?.username
                 textView.text = item.mainComment?.text
+                if let numberOfLikes = item.commentLikesCount {
+                    self.numberOfLikes.text = "\(numberOfLikes)"
+                } else {
+                     self.numberOfLikes.text = "0"
+                }
+                item.commentLikesCountDidSet = { [weak self] in
+                    if let likes = $0 {
+                        self?.numberOfLikes.text = "\(likes)"
+                    } else {
+                        self?.numberOfLikes.text = "0"
+                    }
+                }
                 stackView.arrangedSubviews.forEach {
                     stackView.removeArrangedSubview($0)
                     $0.removeFromSuperview()
                 }
+                
+                
                 
                 
                 
@@ -370,11 +384,11 @@ class CommentCell:UITableViewCell {
                             }
                         }
                     
-                    if subComment.isliked == true {
-                        let image = UIImage(systemName: "heart.fill")
-                        subCommentView?.likeBtn.setImage(image, for: .normal)
-                        subCommentView?.likeBtn.tintColor = .red
-                    }
+//                    if subComment.isliked == true {
+//                        let image = UIImage(systemName: "heart.fill")
+//                        subCommentView?.likeBtn.setImage(image, for: .normal)
+//                        subCommentView?.likeBtn.tintColor = .red
+//                    }
                     if let numberOfLikes = subComment.numberOfLikes {
                         subCommentView?.numberOfLikes.text = "\(numberOfLikes)"
                     }
@@ -522,10 +536,12 @@ class CommentCell:UITableViewCell {
 //                }
                 print("hello")
                 
-                item.commentLikesDidInserts = { [weak self] likes in
-                    print("commentLikes comment cell \(likes)")
-                    self?.numberOfLikes.text = "\(likes)"
-                }
+                
+//                self.numberOfLikes.text = "\(item.commentLikes)"
+//                item.commentLikesDidInserts = { [weak self] likes in
+//                    print("commentLikes comment cell \(likes)")
+//                    self?.numberOfLikes.text = "\(likes)"
+//                }
                     
             }
             

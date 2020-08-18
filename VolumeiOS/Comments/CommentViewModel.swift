@@ -2,11 +2,18 @@ import UIKit
 import Foundation
 
 class CommentViewModel {
+    var profile = SessionManager.shared.profile
     var offset: Int = 0
     static var offsetForCell: Int = 0
     var buttonTag:[Int] = []
     static var parent_id:String?
-    var mainComment: Comments?
+    var mainComment: Comments? {
+        didSet {
+            if let likes = mainComment?.likes {
+             commentLikesCount = likes
+            }
+     }
+    }
     var mainCommentImage: UIImage?
     var commentLikes:Int?
     var commentLikesDidInserts: ((Int) -> ())?
@@ -46,10 +53,10 @@ class CommentViewModel {
     var subCommentDeleteIsHidden:Bool?
     var subCommentDeleteIsHiddenDidSet: ((Bool?)->())?
     var notCheckedSubDeleteExists:Bool? = true
+    var commentLikesCount: Int? { didSet {  commentLikesCountDidSet?( commentLikesCount) } }
+    var commentLikesCountDidSet: ((Int?)->())?
 
     
-
-
     
     func viewMore(id:String) {
         loadSubComments()
@@ -188,9 +195,12 @@ class CommentViewModel {
                self.likeBtnImage = UIImage(systemName: "heart.fill")
                self.likeBtnTintColor = .red
             
-               self.isLiked = true
-               self.isLikedLoaded = true
-           }
+                self.isLiked = true
+                self.isLikedLoaded = true
+               } else {
+                self.likeBtnImage = UIImage(systemName: "heart")
+                self.likeBtnTintColor = .darkGray
+            }
        }
     }
     
@@ -203,7 +213,16 @@ class CommentViewModel {
                    switch result {
                    case .success(let comment):
                        print("the following comment like has been sent: \(commentLike)")
-                       self.loadCommentLikes(id: comment_id)
+                       GETCommentsRequest(id: comment_id, path: "getCommentLikes").getAllById(completion: {
+                        print("hello $0 \($0)")
+                        if let likes = $0[0].likes {
+                            print("got likes \($0[0].likes)")
+                            self.commentLikesCount = likes
+                        } else {
+                            print("didn't get likes \($0[0].likes)")
+                        }
+                       })
+//                       self.loadCommentLikes(id: comment_id)
                    case .failure(let error):
                        print("An error occurred: \(error)")
                    }
@@ -221,6 +240,11 @@ class CommentViewModel {
                 print("Failed to delete", err)
                 return
             }
+            GETCommentsRequest(id: comment_id, path: "getCommentLikes").getAllById(completion: {
+             if let likes = $0[0].likes {
+                 self.mainComment?.likes = likes
+             }
+            })
             self.loadCommentLikes(id: comment_id)
             print("Successfully deleted comment like from server")
             }

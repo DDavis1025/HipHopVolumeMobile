@@ -234,6 +234,7 @@ struct Comments: Codable {
     var parent_id:String?
     var isliked:Bool?
     var numberOfLikes:Int?
+    var likes:Int?
     var tableview_index:Int?
     var parentsubcommentid:String?
 }
@@ -269,6 +270,7 @@ struct UserAndComment: Codable {
 
 struct CommentLikes: Codable {
     var user_id:String?
+    var likes:String?
 }
 
 final class SubCommentLike: Codable {

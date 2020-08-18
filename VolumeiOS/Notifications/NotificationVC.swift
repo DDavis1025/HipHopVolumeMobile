@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 
 
@@ -16,6 +17,11 @@ class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     var notifications:[NotificationViewModel] = [] {
         didSet {
             myTableView.reloadData()
+            self.navigationController?.isNavigationBarHidden = false
+            self.navigationController?.setToolbarHidden(false, animated: false)
+            self.navigationController?.isToolbarHidden = false
+            
+            print("navigation bar \(self.navigationController)")
         }
     }
     var profile = SessionManager.shared.profile
@@ -23,13 +29,11 @@ class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor.white
-        navigationController?.isToolbarHidden = false
         addTableView()
         loadNotifications()
     }
     
     override func viewDidAppear(_ animated: Bool) {
-//        self.navigationController?.isNavigationBarHidden = false
     }
     
     func loadNotifications() {

@@ -71,6 +71,7 @@
 		CD57117124522E3100FAAC5D /* DownloadImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57117024522E3100FAAC5D /* DownloadImage.swift */; };
 		CD571173245382FA00FAAC5D /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571172245382FA00FAAC5D /* MainView.swift */; };
 		CD57117524550C4900FAAC5D /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57117424550C4900FAAC5D /* FeedCell.swift */; };
+		CD86C63F24EC57730021F4B2 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C63E24EC57730021F4B2 /* MainTabBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -141,6 +142,7 @@
 		CD57117024522E3100FAAC5D /* DownloadImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadImage.swift; sourceTree = "<group>"; };
 		CD571172245382FA00FAAC5D /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		CD57117424550C4900FAAC5D /* FeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
+		CD86C63E24EC57730021F4B2 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		E9359D0B9062EBD16B3ADC07 /* Pods-VolumeiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolumeiOS.debug.xcconfig"; path = "Target Support Files/Pods-VolumeiOS/Pods-VolumeiOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolumeiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -213,6 +215,7 @@
 		CD57111A244FDF3300FAAC5D /* VolumeiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CD86C63D24EC57500021F4B2 /* TabBar */,
 				CD422C9924C8E0D300D9DF76 /* Notifications */,
 				CD08ADE3249591E000AC3A39 /* Comments */,
 				CD08ADD8249142E900AC3A39 /* ArtistPF */,
@@ -301,6 +304,14 @@
 				CD57116E2451F7C400FAAC5D /* ViewModels.swift */,
 			);
 			path = "View Models";
+			sourceTree = "<group>";
+		};
+		CD86C63D24EC57500021F4B2 /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				CD86C63E24EC57730021F4B2 /* MainTabBarController.swift */,
+			);
+			path = TabBar;
 			sourceTree = "<group>";
 		};
 		D988314BAA79AF0D66CCA14F /* Frameworks */ = {
@@ -439,6 +450,7 @@
 			files = (
 				CD422CA324D089DD00D9DF76 /* NotificationAlbumsTrack.swift in Sources */,
 				CD571169245115A200FAAC5D /* Toolbar.swift in Sources */,
+				CD86C63F24EC57730021F4B2 /* MainTabBarController.swift in Sources */,
 				CD422CA524D8788900D9DF76 /* FollowButton.swift in Sources */,
 				CD422C9B24C8E0FE00D9DF76 /* NotificationVC.swift in Sources */,
 				CD08ADC52486F07800AC3A39 /* VideoPlayerView.swift in Sources */,
