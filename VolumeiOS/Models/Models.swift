@@ -295,6 +295,7 @@ struct Notifications: Codable {
     var parent_comment:String?
     var post_image:String?
     var post_type:String?
+    var new:Bool?
 }
 
 struct PostImage:Codable {

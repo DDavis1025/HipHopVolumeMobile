@@ -34,6 +34,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
             navigationController = UINavigationController(rootViewController: authVC)
             
+//            navigationController?.setToolbarHidden(false, animated: false)
+//            navigationController?.isToolbarHidden = false
+            
             window.rootViewController = navigationController
 //            window.addSubview(mainVC.view)
 //            window.addSubview(mainVC.view)

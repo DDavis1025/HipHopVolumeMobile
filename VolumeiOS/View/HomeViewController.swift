@@ -35,7 +35,7 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         setupCollectionView()
        self.navigationController?.isNavigationBarHidden = false
         
-        let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
+//        let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
                
 //        let profile = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: #selector(addTapped))
         
@@ -93,23 +93,23 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
     }
      
     
-     @objc func logoutTapped() {
-             let authVC = AuthVC()
-             SessionManager.shared.logout { (error) in
-                 guard error == nil else {
-                 // Handle error
-                 print("Error: \(error)")
-                 return
-             }
-         }
-             print("Session manager credentials \(SessionManager.shared.credentials)")
-             self.navigationController?.popToRootViewController(animated: true)
-             self.navigationController?.isToolbarHidden = true
-             self.navigationController?.isNavigationBarHidden = true
-             if let player = player {
-                player.pause()
-             }
-         }
+//     @objc func logoutTapped() {
+//             let authVC = AuthVC()
+//             SessionManager.shared.logout { (error) in
+//                 guard error == nil else {
+//                 // Handle error
+//                 print("Error: \(error)")
+//                 return
+//             }
+//         }
+//             print("Session manager credentials \(SessionManager.shared.credentials)")
+//             self.navigationController?.popToRootViewController(animated: true)
+////             self.navigationController?.isToolbarHidden = true
+////             self.navigationController?.isNavigationBarHidden = true
+//             if let player = player {
+//                player.pause()
+//             }
+//         }
 
     
     lazy var collectionView: UICollectionView = {

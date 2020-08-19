@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 import Auth0
 
+protocol ProfileVCDelegate {
+    func logout()
+}
 
 class ProfileVC: ArtistProfileVC, UserInfoDelegateProtocol {
     func sendUsernameToArtistPF(myString: String) {
@@ -24,6 +27,7 @@ class ProfileVC: ArtistProfileVC, UserInfoDelegateProtocol {
     }
     
     var user_profile: UserInfo!
+    var profileDelegate:ProfileVCDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +41,8 @@ class ProfileVC: ArtistProfileVC, UserInfoDelegateProtocol {
         }
         
         let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
+        
+        logout.tintColor = UIColor.black
         
         navigationItem.rightBarButtonItem = logout
         
@@ -78,13 +84,41 @@ class ProfileVC: ArtistProfileVC, UserInfoDelegateProtocol {
     }
     
     @objc func logoutTapped() {
-        let authVC = AuthVC()
+        
+        let keyWindow = UIApplication.shared.connectedScenes
+        .filter({$0.activationState == .foregroundActive})
+        .map({$0 as? UIWindowScene})
+        .compactMap({$0})
+        .first?.windows
+        .filter({$0.isKeyWindow}).first
+        
+        
+        let authVC = UINavigationController(rootViewController: AuthVC())
+        
+        keyWindow?.rootViewController = authVC
+        
+       
         SessionManager.shared.logout { (error) in
             guard error == nil else {
                 // Handle error
                 print("Error: \(error)")
                 return
             }
+        }
+        print("Session manager credentials \(SessionManager.shared.credentials)")
+        //                self.dismiss(animated: false, completion: nil)
+        if self.presentingViewController != nil {
+            self.dismiss(animated: false, completion: {
+                self.navigationController?.popToRootViewController(animated: true)
+            })
+        } else {
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+        
+        self.navigationController?.isToolbarHidden = true
+        self.navigationController?.isNavigationBarHidden = true
+        if let player = player {
+            player.pause()
         }
     }
     

@@ -1,8 +1,8 @@
 //
-//  Toolbar.swift
+//  ToolbarClass.swift
 //  VolumeiOS
 //
-//  Created by Dillon Davis on 4/22/20.
+//  Created by Dillon Davis on 8/18/20.
 //  Copyright © 2020 Dillon Davis. All rights reserved.
 //
 
@@ -11,7 +11,7 @@ import UIKit
 import SwiftUI
 
 
-class Toolbar: UIViewController {
+class ToolbarClass: UIToolbarAppearance {
     
     var playBtn = UIBarButtonItem()
     var pauseBtn = UIBarButtonItem()
@@ -33,7 +33,6 @@ override func viewDidLoad()
         navigationController?.toolbar.barTintColor = UIColor.darkGray
         navigationController?.toolbar.isTranslucent = false
         self.extendedLayoutIncludesOpaqueBars = true
-    
     
         self.playBtn = UIBarButtonItem(barButtonSystemItem: .play , target: self, action: #selector(playBtnAction(sender:)))
         self.pauseBtn = UIBarButtonItem(barButtonSystemItem: .pause , target: self, action: #selector(pauseBtnAction(sender:)))
@@ -94,16 +93,3 @@ override func viewDidLoad()
 }
 
 }
-
-
-//struct ToolbarController: UIViewControllerRepresentable {
-//    func makeUIViewController(context: UIViewControllerRepresentableContext<ToolbarController>) -> Toolbar {
-//        return Toolbar()
-//    }
-//
-//    func updateUIViewController(_ uiViewController: Toolbar, context: UIViewControllerRepresentableContext<ToolbarController>) {
-//
-//    }
-//
-//
-//}

@@ -447,7 +447,6 @@ class ArtistProfileVC: Toolbar {
     
     
     
-    
    
 }
 

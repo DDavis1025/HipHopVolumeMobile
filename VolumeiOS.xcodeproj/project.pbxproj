@@ -72,6 +72,7 @@
 		CD571173245382FA00FAAC5D /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD571172245382FA00FAAC5D /* MainView.swift */; };
 		CD57117524550C4900FAAC5D /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57117424550C4900FAAC5D /* FeedCell.swift */; };
 		CD86C63F24EC57730021F4B2 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C63E24EC57730021F4B2 /* MainTabBarController.swift */; };
+		CD86C64524EC84DC0021F4B2 /* CustomToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C64424EC84DC0021F4B2 /* CustomToolBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -143,6 +144,7 @@
 		CD571172245382FA00FAAC5D /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		CD57117424550C4900FAAC5D /* FeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
 		CD86C63E24EC57730021F4B2 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		CD86C64424EC84DC0021F4B2 /* CustomToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToolBar.swift; sourceTree = "<group>"; };
 		E9359D0B9062EBD16B3ADC07 /* Pods-VolumeiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolumeiOS.debug.xcconfig"; path = "Target Support Files/Pods-VolumeiOS/Pods-VolumeiOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolumeiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -249,6 +251,7 @@
 				CD08ADD424900C5500AC3A39 /* TracksCell.swift */,
 				CD08ADE12491889600AC3A39 /* UserPfAndFollow.swift */,
 				CD422CA424D8788900D9DF76 /* FollowButton.swift */,
+				CD86C64424EC84DC0021F4B2 /* CustomToolBar.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -462,6 +465,7 @@
 				CD08ADD524900C5600AC3A39 /* TracksCell.swift in Sources */,
 				CD57115F245096AE00FAAC5D /* AlbumTrackVC.swift in Sources */,
 				CD08ADE52495982300AC3A39 /* CommentVC.swift in Sources */,
+				CD86C64524EC84DC0021F4B2 /* CustomToolBar.swift in Sources */,
 				CD57117524550C4900FAAC5D /* FeedCell.swift in Sources */,
 				CD571155244FDF6600FAAC5D /* ImageCache.swift in Sources */,
 				CD08ADBF2474575700AC3A39 /* UserInfoCell.swift in Sources */,
