@@ -24,6 +24,7 @@ class ArtistAlbumsCell: UICollectionViewCell, UITableViewDelegate, UITableViewDa
     var parent:ArtistPFContainerView?
     var imageLoader:DownloadImage?
     var imageLoaded:Bool? = false
+    var refresher:UIRefreshControl?
     var artistData = [ArtistModel]() {
         didSet {
             DispatchQueue.main.async {
@@ -61,10 +62,25 @@ class ArtistAlbumsCell: UICollectionViewCell, UITableViewDelegate, UITableViewDa
         self.getArtist(id: artistID)
         }
         
+        refresher = UIRefreshControl()
+        refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
+        
+        myTableView.addSubview(refresher!)
+        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc func refresh() {
+        if let artist_id = ArtistStruct.artistID {
+           let getArtistById =  GETArtistById(id: artist_id)
+           getArtistById.getAllById {
+               self.artistData = $0
+               self.refresher?.endRefreshing()
+           }
+        }
     }
     
     func addSpinner() {
@@ -95,6 +111,7 @@ class ArtistAlbumsCell: UICollectionViewCell, UITableViewDelegate, UITableViewDa
         
         print("tbl view")
 
+        myTableView.delaysContentTouches = false
         self.myTableView?.translatesAutoresizingMaskIntoConstraints = false
         
         self.myTableView?.topAnchor.constraint(equalTo: topAnchor).isActive = true
@@ -133,13 +150,14 @@ class ArtistAlbumsCell: UICollectionViewCell, UITableViewDelegate, UITableViewDa
         }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
             getAlbum(id: artistData[indexPath.row].id!)
         
     }
         
 
          func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-                      tableView.deselectRow(at: indexPath, animated: true)
+                      
                       let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
                        cell.textLabel!.text = "\(artistData[indexPath.row].title!)"
                        components.path = "/\(artistData[indexPath.row].path!)"

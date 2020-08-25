@@ -32,6 +32,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             let commentVC = CommentVC()
             
+//            AdTest()
+            
             navigationController = UINavigationController(rootViewController: authVC)
             
 //            navigationController?.setToolbarHidden(false, animated: false)

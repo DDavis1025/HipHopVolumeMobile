@@ -39,7 +39,9 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
                
                group.notify(queue: .main) {
                 self.usersLoaded = true
+                DispatchQueue.main.async {
                 self.myTableView.reloadData()
+                }
                 self.spinner.stopAnimating()
                 self.view.removeFromSuperview()
                 self.refresher?.endRefreshing()
@@ -54,7 +56,9 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
                self.child?.willMove(toParent: nil)
                self.child?.view.removeFromSuperview()
                self.child?.removeFromParent()
-               myTableView.reloadData()
+              DispatchQueue.main.async {
+                self.myTableView.reloadData()
+              }
                
                print("posts right now \(posts)")
               

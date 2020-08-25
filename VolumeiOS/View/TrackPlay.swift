@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import AVFoundation
+import GoogleMobileAds
 
 struct TrackPlay {
     static var playing:Bool? = false
@@ -59,7 +60,7 @@ struct TrackPlay {
     }
 }
 
-class TrackPlayVC: UIViewController {
+class TrackPlayVC: UIViewController, GADInterstitialDelegate {
     
     var profile = SessionManager.shared.profile
     var post:Post?
@@ -79,6 +80,8 @@ class TrackPlayVC: UIViewController {
     var commentsBtn:UIButton?
     var likeBtn:UIButton?
     var username:String?
+    var interstitial: GADInterstitial!
+    var numberOfNext = NumberOfNext()
     
     
     let timeRemainingLabel: UILabel = {
@@ -127,6 +130,8 @@ class TrackPlayVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        interstitial = createAndLoadInterstitial()
+        
         navigationController?.isToolbarHidden = true
         let dismiss = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(dismissVC))
         dismiss.tintColor = UIColor.black
@@ -134,6 +139,7 @@ class TrackPlayVC: UIViewController {
         navigationItem.leftBarButtonItem = dismiss
         print("track view loaded")
         if let author_id = Author.author_id {
+            print(author_id + "Author_id")
          addUserAndFollowView(id: author_id)
         }
         
@@ -184,11 +190,60 @@ class TrackPlayVC: UIViewController {
         addLikeBtnConstraints()
         postLikeCount()
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        if NumberOfNext.numberOfNext == 12 {
+            player?.pause()
+            if self.interstitial.isReady {
+            self.openAd()
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    if self.interstitial.isReady {
+                    self.openAd()
+                    } else {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.openAd()
+                        }
+                    }
+                 }
+            }
+            self.numberOfNext.updateNumberOfNext(newInt: 0)
+        } else {
+            var number = NumberOfNext.numberOfNext
+            number += 1
+            self.numberOfNext.updateNumberOfNext(newInt: number)
+            print("NumberOfNext.numberOfNext \(NumberOfNext.numberOfNext)")
+        }
+        }
         trackPlay.updateViewAppeared(newBool: true)
         album.updateViewAppeared(newBool: false)
         print("track play view appeared \(TrackPlay.viewAppeared)")
             
         
+    }
+    
+    func createAndLoadInterstitial() -> GADInterstitial {
+      interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/5135589807")
+      interstitial.delegate = self as? GADInterstitialDelegate
+      interstitial.load(GADRequest())
+      return interstitial
+    }
+
+    
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        interstitial = createAndLoadInterstitial()
+        if TrackPlay.playing! {
+         player?.play()
+        }
+        print("did dismiss screen")
+    }
+    
+    func openAd() {
+        print("openAd")
+        if interstitial.isReady {
+          interstitial.present(fromRootViewController: self)
+        } else {
+          print("Ad wasn't ready")
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -167,6 +167,8 @@ class ModelClass : NSObject
 
 struct ArtistModel: Codable {
     var title:String?
+    var author:String?
+    var description:String?
     var id:String?
     var path:String?
 }
@@ -333,6 +335,14 @@ final class LikeModel: Codable {
         self.post_id = post_id
         self.post_type = post_type
         
+    }
+}
+
+struct NumberOfNext {
+    static var numberOfNext:Int = 0
+    
+    func updateNumberOfNext(newInt:Int) {
+        NumberOfNext.self.numberOfNext = newInt
     }
 }
 

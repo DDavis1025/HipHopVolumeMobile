@@ -22,6 +22,16 @@ class ArtistVideoCell: ArtistAlbumsCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc override func refresh() {
+        if let id = ArtistStruct.artistID {
+            let getArtistById =  GETArtistById2(id: id, path:"artist/video")
+            getArtistById.getAllById {
+                self.artistData = $0
+                self.refresher?.endRefreshing()
+           }
+        }
+    }
+    
     override func getArtist(id: String) {
         let getArtistById =  GETArtistById2(id: id, path:"artist/video")
         getArtistById.getAllById {
@@ -65,14 +75,15 @@ class ArtistVideoCell: ArtistAlbumsCell {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             tableView.deselectRow(at: indexPath, animated: true)
             let videoStruct = VideoStruct()
-            if let id = artistData[indexPath.row].id {
-            videoStruct.updateVideoId(newString: id)
-            if let video_id = VideoStruct.id {
-            let videoVC = VideoVC()
-            videoVC.passId(id: id)
+            if let video_id = artistData[indexPath.row].id, let author = artistData[indexPath.row].author, let description = artistData[indexPath.row].description, let title = artistData[indexPath.row].title  {
+              let videoVC = VideoVC()
+              videoStruct.updateVideoId(newString: video_id)
+              videoVC.author = author
+              videoVC.video_description = description
+              videoVC.video_title = title
+              videoVC.passId(id: video_id)
                 
             parent?.navigationController?.pushViewController(videoVC, animated: true)
-            }
         }
         
     }

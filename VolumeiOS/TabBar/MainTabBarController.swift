@@ -49,14 +49,14 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     
     func checkForNew(tabItem: UITabBarItem) {
         if let user_id = profile?.sub {
-        let getNotifications = GETNotificationsByUserID(user_id: user_id)
-           getNotifications.getNotifications { notifications in
-            if notifications[0].new == true {
-                if let tabItems = self.tabBar.items {
-                    tabItem.badgeValue = ""
-                } else {
+        let getNotifications = GETNotifications(id: user_id, path: "getNewNotifications")
+           getNotifications.getAllById { notifications in
+            if notifications.count > 9 {
+                    tabItem.badgeValue = "9+"
+            } else if notifications.count > 0 && notifications.count <= 9 {
+                     tabItem.badgeValue = "\(notifications.count)"
+            } else {
                     tabItem.badgeValue = nil
-                }
             }
          }
       }

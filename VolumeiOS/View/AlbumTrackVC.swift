@@ -10,10 +10,11 @@ import Foundation
 import UIKit
 import SwiftUI
 import AVFoundation
+import GoogleMobileAds
 
 
 var player:AVPlayer?
-class AlbumTrackVC: UIViewController {
+class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
 
     var post:Post?
     var albumNameLabel:UILabel?
@@ -36,6 +37,8 @@ class AlbumTrackVC: UIViewController {
     var isLiked:Bool = false
     var username:String?
     var profile = SessionManager.shared.profile
+    var interstitial: GADInterstitial!
+    var numberOfNext = NumberOfNext()
     
     var track_id:String?
     var fromNotificationCell:Bool?
@@ -73,6 +76,7 @@ class AlbumTrackVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        interstitial = createAndLoadInterstitial()
         print("it loaded")
         navigationController?.isToolbarHidden = true
         let dismiss = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(dismissVC))
@@ -136,6 +140,32 @@ class AlbumTrackVC: UIViewController {
         
          
         
+    }
+    
+    func createAndLoadInterstitial() -> GADInterstitial {
+      interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/5135589807")
+      interstitial.delegate = self as? GADInterstitialDelegate
+      interstitial.load(GADRequest())
+      return interstitial
+    }
+    
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        interstitial = createAndLoadInterstitial()
+        if ModelClass.playing! {
+         player?.play()
+        }
+        
+        print("did dismiss screen")
+    }
+    
+    func openAd() {
+        guard let player = player else { return }
+        if interstitial.isReady {
+//          player.pause()
+          interstitial.present(fromRootViewController: self)
+        } else {
+          print("Ad wasn't ready")
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -368,19 +398,22 @@ class AlbumTrackVC: UIViewController {
         var index = ModelClass.index
         print("index go back \(index)")
         if index! > 0 {
-        index! -= 1
-        modelClass.updateIndex(newInt: index!)
-        trackNameLabel?.text = ModelClass.listArray![index!].name
-        if let index = index {
-        if let path = ModelClass.listArray?[index].path {
-        components.path =  "/\(path)"
-         }
-        }
-        if let index = index {
-        if let post_id = ModelClass.listArray?[index].id {
-          modelClass.updatePostID(newString: post_id)
-         }
-        }
+            index! -= 1
+            modelClass.updateIndex(newInt: index!)
+            trackNameLabel?.text = ModelClass.listArray![index!].name
+            if let trackName = ModelClass.listArray![index!].name {
+            modelClass.updateTrackNameLabel(newText: trackName)
+            }
+            if let index = index {
+                if let path = ModelClass.listArray?[index].path {
+                    components.path =  "/\(path)"
+                }
+            }
+            if let index = index {
+                if let post_id = ModelClass.listArray?[index].id {
+                    modelClass.updatePostID(newString: post_id)
+                }
+            }
             if let supporter_id = profile?.sub, let post_id = ModelClass.post_id {
                 GETLikeRequest(path: "postLikeByUserID", post_id: post_id, supporter_id: supporter_id).getLike {
                     if $0.count > 0 {
@@ -403,11 +436,27 @@ class AlbumTrackVC: UIViewController {
                     self.numberOfLikes.text = "\($0.count)"
                 }
             }
-        play(url: components.url! as NSURL)
-        print("url gb \(components.url! as NSURL)")
+            
+            if NumberOfNext.numberOfNext == 12 {
+                play(url: components.url! as NSURL)
+                player?.pause()
+                openAd()
+                numberOfNext.updateNumberOfNext(newInt: 0)
+            } else {
+                var number = NumberOfNext.numberOfNext
+                number += 1
+                print("number now \(number)")
+                numberOfNext.updateNumberOfNext(newInt: number)
+                play(url: components.url! as NSURL)
+                //                play(url: components.url! as NSURL)
+            }
+            
+//            play(url: components.url! as NSURL)
+
+            print("url gb \(components.url! as NSURL)")
         }
         
-       }
+    }
     
     @objc func goForwardBtnClicked(_: UIButton) {
         var index = ModelClass.index
@@ -416,6 +465,9 @@ class AlbumTrackVC: UIViewController {
         modelClass.updateIndex(newInt: index!)
         print("index \(index)")
         trackNameLabel?.text = ModelClass.listArray![index!].name
+        if let trackName = ModelClass.listArray![index!].name {
+        modelClass.updateTrackNameLabel(newText: trackName)
+        }
         if let index = index {
         if let path = ModelClass.listArray?[index].path {
         components.path =  "/\(path)"
@@ -448,7 +500,19 @@ class AlbumTrackVC: UIViewController {
                     self.numberOfLikes.text = "\($0.count)"
                 }
             }
-        play(url: components.url! as NSURL)
+        if NumberOfNext.numberOfNext == 12 {
+            play(url: components.url! as NSURL)
+            player?.pause()
+            openAd()
+            numberOfNext.updateNumberOfNext(newInt: 0)
+        } else {
+            var number = NumberOfNext.numberOfNext
+            number += 1
+            print("number now \(number)")
+            numberOfNext.updateNumberOfNext(newInt: number)
+            play(url: components.url! as NSURL)
+          }
+//        play(url: components.url! as NSURL)
         print("url gf \(components.url! as NSURL)")
         }
     }

@@ -73,6 +73,9 @@
 		CD57117524550C4900FAAC5D /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD57117424550C4900FAAC5D /* FeedCell.swift */; };
 		CD86C63F24EC57730021F4B2 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C63E24EC57730021F4B2 /* MainTabBarController.swift */; };
 		CD86C64524EC84DC0021F4B2 /* CustomToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C64424EC84DC0021F4B2 /* CustomToolBar.swift */; };
+		CD86C64B24F0389A0021F4B2 /* AdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C64A24F0389A0021F4B2 /* AdTest.swift */; };
+		CD86C65F24F588330021F4B2 /* IntersticialAdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C65E24F588330021F4B2 /* IntersticialAdTest.swift */; };
+		CD86C66324F5BB610021F4B2 /* IntersticialViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C66224F5BB610021F4B2 /* IntersticialViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -135,7 +138,6 @@
 		CD57115E245096AE00FAAC5D /* AlbumTrackVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTrackVC.swift; sourceTree = "<group>"; };
 		CD5711602450AB5B00FAAC5D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CD5711622450AB6700FAAC5D /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		CD5711642450AC0900FAAC5D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../Test/Test/Info.plist; sourceTree = "<group>"; };
 		CD5711662450CF1500FAAC5D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CD571168245115A200FAAC5D /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
 		CD57116C2451D5BA00FAAC5D /* AlbumVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumVC.swift; sourceTree = "<group>"; };
@@ -145,6 +147,10 @@
 		CD57117424550C4900FAAC5D /* FeedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
 		CD86C63E24EC57730021F4B2 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		CD86C64424EC84DC0021F4B2 /* CustomToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomToolBar.swift; sourceTree = "<group>"; };
+		CD86C64A24F0389A0021F4B2 /* AdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdTest.swift; sourceTree = "<group>"; };
+		CD86C65824F445B10021F4B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Info.plist; sourceTree = "<group>"; };
+		CD86C65E24F588330021F4B2 /* IntersticialAdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntersticialAdTest.swift; sourceTree = "<group>"; };
+		CD86C66224F5BB610021F4B2 /* IntersticialViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntersticialViewModel.swift; sourceTree = "<group>"; };
 		E9359D0B9062EBD16B3ADC07 /* Pods-VolumeiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolumeiOS.debug.xcconfig"; path = "Target Support Files/Pods-VolumeiOS/Pods-VolumeiOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolumeiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -217,13 +223,13 @@
 		CD57111A244FDF3300FAAC5D /* VolumeiOS */ = {
 			isa = PBXGroup;
 			children = (
+				CD86C65824F445B10021F4B2 /* Info.plist */,
 				CD86C63D24EC57500021F4B2 /* TabBar */,
 				CD422C9924C8E0D300D9DF76 /* Notifications */,
 				CD08ADE3249591E000AC3A39 /* Comments */,
 				CD08ADD8249142E900AC3A39 /* ArtistPF */,
 				CD08ADC2247486FF00AC3A39 /* EmailTextField.swift */,
 				CD5711662450CF1500FAAC5D /* Assets.xcassets */,
-				CD5711642450AC0900FAAC5D /* Info.plist */,
 				CD5711622450AB6700FAAC5D /* SceneDelegate.swift */,
 				CD5711602450AB5B00FAAC5D /* AppDelegate.swift */,
 				CD57112F244FDF6500FAAC5D /* VolumeiOS-Bridging-Header.h */,
@@ -252,6 +258,9 @@
 				CD08ADE12491889600AC3A39 /* UserPfAndFollow.swift */,
 				CD422CA424D8788900D9DF76 /* FollowButton.swift */,
 				CD86C64424EC84DC0021F4B2 /* CustomToolBar.swift */,
+				CD86C64A24F0389A0021F4B2 /* AdTest.swift */,
+				CD86C65E24F588330021F4B2 /* IntersticialAdTest.swift */,
+				CD86C66224F5BB610021F4B2 /* IntersticialViewModel.swift */,
 			);
 			path = VolumeiOS;
 			sourceTree = "<group>";
@@ -491,9 +500,12 @@
 				CD48B1812460AE9D00A2FD12 /* ProfileVC.swift in Sources */,
 				CD571157244FDF6600FAAC5D /* Webservice.swift in Sources */,
 				CD571159244FDF6700FAAC5D /* PostListViewModel.swift in Sources */,
+				CD86C65F24F588330021F4B2 /* IntersticialAdTest.swift in Sources */,
+				CD86C64B24F0389A0021F4B2 /* AdTest.swift in Sources */,
 				CD08ADC3247486FF00AC3A39 /* EmailTextField.swift in Sources */,
 				CD08ADBD246F4D6D00AC3A39 /* PutPatchRequests.swift in Sources */,
 				CD48B17B245C9AEE00A2FD12 /* PostRequests.swift in Sources */,
+				CD86C66324F5BB610021F4B2 /* IntersticialViewModel.swift in Sources */,
 				CD08ADDE2491676500AC3A39 /* ArtistTracksCell.swift in Sources */,
 				CD08ADD1248ED5B700AC3A39 /* VideoCell.swift in Sources */,
 				CD571153244FDF6600FAAC5D /* ProfileViewController.swift in Sources */,

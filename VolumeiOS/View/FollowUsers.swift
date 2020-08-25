@@ -93,15 +93,18 @@ class FollowUsers: Toolbar, UITableViewDelegate, UITableViewDataSource {
         return users!.count
     }
     
+    func imageWithImage(image: UIImage, scaledToSize newSize: CGSize) -> UIImage {
+        
+        UIGraphicsBeginImageContext(newSize)
+        image.draw(in: CGRect(x: 0 ,y: 0 ,width: newSize.width ,height: newSize.height))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!.withRenderingMode(.alwaysOriginal)
+    }
+    
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell", for: indexPath as IndexPath)
-        cell.textLabel!.text = users?[indexPath.row].username ?? "undefined"
-        self.imageLoader = DownloadImage()
-           imageLoader?.imageDidSet = { [weak self] image in
-            cell.imageView?.image = image
-            }
-        imageLoader?.downloadImage(urlString: users![indexPath.row].picture!)
         let itemSize = CGSize.init(width: 100, height: 100)
         UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale);
         let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
@@ -112,6 +115,12 @@ class FollowUsers: Toolbar, UITableViewDelegate, UITableViewDataSource {
         cell.setNeedsLayout()
         cell.translatesAutoresizingMaskIntoConstraints = false
         cell.layoutMargins = UIEdgeInsets.zero
+        cell.textLabel!.text = users?[indexPath.row].username ?? "undefined"
+        self.imageLoader = DownloadImage()
+           imageLoader?.imageDidSet = { [weak self] image in
+            cell.imageView?.image = image
+            }
+        imageLoader?.downloadImage(urlString: users![indexPath.row].picture!)
         return cell
     }
     

@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import GoogleMobileAds
 
 class VideoPlayerView: UIView {
     private var playerLayer: AVPlayerLayer?
@@ -351,7 +352,7 @@ struct Video {
     }
 }
 
-class VideoVC: UIViewController {
+class VideoVC: UIViewController, GADInterstitialDelegate {
     static let shared = VideoVC()
     var id:String = ""
     var path:String?
@@ -371,6 +372,7 @@ class VideoVC: UIViewController {
     var isLiked:Bool?
     var likeBtn:UIButton?
     var profile = SessionManager.shared.profile
+    var interstitial: GADInterstitial!
     
     
     lazy var numberOfLikes:UILabel = {
@@ -397,6 +399,8 @@ class VideoVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        interstitial = createAndLoadInterstitial()
 
         print("VIDEO VIEW DID LOAD")
 //        let back = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(goBack))
@@ -438,14 +442,15 @@ class VideoVC: UIViewController {
         addLikeButton()
         addLikeBtnConstraints()
         postLikeCount()
-        
-        
+
+
         addTitle()
         addDescription()
         if let author = author {
             addUserAndFollowView(id: author)
         }
         getComments()
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -484,6 +489,18 @@ class VideoVC: UIViewController {
             GETLikeRequest(path: "getLikesByPostID", post_id: self.id, supporter_id: nil).getLike {
                 self.numberOfLikes.text = "\($0.count)"
             }
+    }
+    
+    func createAndLoadInterstitial() -> GADInterstitial {
+      interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/5135589807")
+      interstitial.delegate = self as? GADInterstitialDelegate
+      interstitial.load(GADRequest())
+      return interstitial
+    }
+    
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        interstitial = createAndLoadInterstitial()
+        print("did dismiss screen")
     }
     
     override func viewDidLayoutSubviews() {

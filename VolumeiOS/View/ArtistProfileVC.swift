@@ -58,7 +58,7 @@ class ArtistProfileVC: Toolbar {
                 
 //                self.usersWhoFollowLabels()
                 print("user flwed \(usersFollowed)")
-                followingLabel.text = String(usersFollowed.count)
+//                followingLabel.text = String(usersFollowed.count)
                 
 //                followingTitle.isHidden = false
 //                followingLabel.isHidden = false
@@ -72,7 +72,8 @@ class ArtistProfileVC: Toolbar {
                 self.usersWhoFollowVC = FollowUsers(users: self.usersWhoFollow)
             }
                    
-                    followsLabel.text = String(usersWhoFollow.count)
+//                    followsLabel.text = String(usersWhoFollow.count)
+//            followsLabel.text = "11"
                     print("users who flw \(usersWhoFollow)")
 //                    followsTitle.isHidden = false
 //                    followsLabel.isHidden = false
@@ -87,7 +88,9 @@ class ArtistProfileVC: Toolbar {
               didSet {
                    for followed in self.following {
                     GetUsersById(id: followed.user_id!).getAllPosts {
+//                        self.followingLabel.text = String($0.count)
                         self.usersFollowed.append(contentsOf: $0)
+//                        self.usersFollowed += $0
                         print("usersFollowed \(self.usersFollowed.count)")
                     }
                   }
@@ -98,7 +101,9 @@ class ArtistProfileVC: Toolbar {
         didSet {
             for follow in follows {
                 GetUsersById(id: follow.follower_id!).getAllPosts {
+//                  self.followsLabel.text = String($0.count)
                   self.usersWhoFollow.append(contentsOf: $0)
+//                  self.usersWhoFollow += $0
                   print("usersFollowing \(self.usersWhoFollow.count)")
               }
             }
@@ -371,6 +376,7 @@ class ArtistProfileVC: Toolbar {
         
         GETUsersByFollowerId(id: id).getAllById {
             self.following = $0
+            self.followingLabel.text = String($0.count)
         }
         
     }
@@ -378,6 +384,7 @@ class ArtistProfileVC: Toolbar {
     func getFollowers(id:String) {
         GETFollowersByUserID(id: id).getAllById {
             self.follows = $0
+            self.followsLabel.text = String($0.count)
         }
     }
     

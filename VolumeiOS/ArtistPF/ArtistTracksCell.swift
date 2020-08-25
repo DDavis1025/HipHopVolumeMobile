@@ -29,11 +29,25 @@ class ArtistTracksCell: ArtistAlbumsCell {
         }
     }
     
+    @objc override func refresh() {
+           if let id = ArtistStruct.artistID {
+               let getArtistById =  GETArtistById2(id: id, path:"artist/track")
+                     getArtistById.getAllById {
+                         self.artistData = $0
+                  self.refresher?.endRefreshing()
+              }
+           }
+       }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
       tableView.deselectRow(at: indexPath, animated: true)
         if let id = artistData[indexPath.row].id {
          if let title = artistData[indexPath.row].title {
+            if let author = artistData[indexPath.row].author {
           let trackVC = TrackPlayVC()
+          let authorStruct = Author()
+          print("author_id now \(author)")
+          authorStruct.updateAuthorID(newString: author)
           trackVC.captureId(id: id)
           trackVC.trackName = title
           trackVC.justClicked = true
@@ -42,6 +56,7 @@ class ArtistTracksCell: ArtistAlbumsCell {
 
           parent?.navigationController?.present(modalVC, animated: true, completion: nil)
         }
+       }
      }
     }
     

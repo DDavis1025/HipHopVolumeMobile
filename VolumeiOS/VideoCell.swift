@@ -14,11 +14,12 @@ class VideoCell: AlbumCell {
            super.init(frame: frame)
    //        addSpinner()
             spinner.startAnimating()
+            addTableView()
             GetAllOfMediaType(path:"videos").getAllPosts {
                        self.posts = $0
+                       self.myTableView.reloadData()
                    }
 
-           addTableView()
            refresher = UIRefreshControl()
            refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
            refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)

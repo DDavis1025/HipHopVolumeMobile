@@ -45,12 +45,14 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         
         let comment = UIBarButtonItem(title: "Comment", style: .plain, target: self, action: #selector(toCommentTapped))
         
+//        let adMobTest = UIBarButtonItem(title: "AdMob", style: .plain, target: self, action: #selector(adMobTestTapped))
+        
 
 //        navigationItem.leftBarButtonItem = profile
 //        navigationItem.leftBarButtonItem = notification
 //        navigationItem.rightBarButtonItem = whoToFollow
 //        navigationItem.rightBarButtonItem = logout
-//        navigationItem.rightBarButtonItem = comment
+//          navigationItem.rightBarButtonItem = adMobTest
          
 //         self.navigationController?.isNavigationBarHidden = false
 
@@ -73,6 +75,11 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         albumVC = AlbumVC(post: post)
         navigationController?.pushViewController(self.albumVC!, animated: true)
     }
+    
+//    @objc func adMobTestTapped() {
+//        let adMobVC = AdTest()
+//        self.navigationController?.pushViewController(adMobVC, animated: true)
+//    }
     
     @objc func toCommentTapped() {
         let commentVC = CommentVC()

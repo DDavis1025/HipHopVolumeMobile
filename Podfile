@@ -9,4 +9,5 @@ target 'VolumeiOS' do
 
   pod 'Auth0', '~> 1.19'
   pod 'Lock', '~> 2.0'
+  pod 'Google-Mobile-Ads-SDK'
 end
