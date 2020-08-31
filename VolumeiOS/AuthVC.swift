@@ -29,6 +29,10 @@ class AuthVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Auth0AccessToken().getAccessToken(completion: {
+            let accessToken = AccessToken()
+            accessToken.updateAccessToken(newString: "\($0[0].access_token)")
+        })
         addLoginLabel()
         addButton()
         

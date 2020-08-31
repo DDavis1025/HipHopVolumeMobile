@@ -17,6 +17,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import Auth0
+import GoogleMobileAds
     
 
 class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -26,14 +27,23 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
     let tracksId = "tracksId"
     var albumVC:AlbumVC?
     var userAndFollowVC:UserPfAndFollow?
+    var bannerView: GADBannerView!
     
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
+//        POSTAuth0().post(completion: {})
+        view.backgroundColor = UIColor.white
         setupMenuBar()
+        bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+        addBannerViewToView(bannerView)
         setupCollectionView()
        self.navigationController?.isNavigationBarHidden = false
+        
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
         
 //        let logout = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(logoutTapped))
                
@@ -61,6 +71,15 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         
         print("navigation toolbar \(self.navigationController?.toolbar.barTintColor)")
 
+    }
+    
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+     bannerView.translatesAutoresizingMaskIntoConstraints = false
+     bannerView.backgroundColor = UIColor.lightGray
+     view.addSubview(bannerView)
+     bannerView.topAnchor.constraint(equalTo: self.menuBar.bottomAnchor).isActive = true
+     bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+     bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -143,7 +162,7 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor).isActive = true
         collectionView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor).isActive = true
-        collectionView.topAnchor.constraint(equalTo: menuBar.bottomAnchor).isActive = true
+        collectionView.topAnchor.constraint(equalTo: bannerView.bottomAnchor).isActive = true
         
         
         collectionView.register(AlbumCell.self, forCellWithReuseIdentifier: cellId)
@@ -204,6 +223,7 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         }
          let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! AlbumCell
          cell.parent = self
+        
         
          let colors: [UIColor] = [.yellow, .orange, .red]
          cell.backgroundColor = colors[indexPath.item]

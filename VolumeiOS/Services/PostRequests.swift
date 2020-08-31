@@ -261,4 +261,82 @@ struct LikeRequest {
     }
 }
 
+class Auth0AccessToken {
+    func getAccessToken(completion: @escaping ([ManagementAccessToken]) -> ()) {
+    let headers = ["content-type": "application/x-www-form-urlencoded"]
+
+    let postData = NSMutableData(data: "grant_type=client_credentials".data(using: String.Encoding.utf8)!)
+    postData.append("&client_id=1xSs0Ez95mih823mzKFxHWVDFh7iHX8y".data(using: String.Encoding.utf8)!)
+    postData.append("&client_secret=-v6XTncUAYsx_Pzdlsh8p0sxaZidx8FD2wTh0g4TP-3QVgWkTd0ewqZg4CBauDIN".data(using: String.Encoding.utf8)!)
+    postData.append("&audience=https://dev-owihjaep.auth0.com/api/v2/".data(using: String.Encoding.utf8)!)
+
+    let request = NSMutableURLRequest(url: NSURL(string: "https://dev-owihjaep.auth0.com/oauth/token")! as URL,
+                                            cachePolicy: .useProtocolCachePolicy,
+                                        timeoutInterval: 10.0)
+    request.httpMethod = "POST"
+    request.allHTTPHeaderFields = headers
+    request.httpBody = postData as Data
+
+    let session = URLSession.shared
+    let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+          if let error = error {
+                  print("Error \(error)")
+                  return
+              }
+              guard let data = data else {
+                  return
+              }
+              guard let responseData = try? JSONDecoder().decode(ManagementAccessToken.self, from: data) else {
+                  print("Unable to decode data \(data)")
+                  return
+                }
+                 
+                  DispatchQueue.main.async {
+                      print("responseData \(responseData)")
+                      completion([responseData])
+                  }
+          })
+
+          dataTask.resume()
+}
+
+
+
+struct POSTAuth0 {
+    func post(completion: @escaping(()->())) {
+        let headers = [
+            "Content-Type": "application/x-www-form-urlencoded"
+        ]
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "dev-owihjaep.auth0.com"
+        urlComponents.path = "/oauth/token"
+        urlComponents.queryItems = [
+           URLQueryItem(name: "grant_type", value: "client_credentials"),
+           URLQueryItem(name: "client_id", value: "1xSs0Ez95mih823mzKFxHWVDFh7iHX8y"),
+           URLQueryItem(name: "client_secret", value: "-v6XTncUAYsx_Pzdlsh8p0sxaZidx8FD2wTh0g4TP-3QVgWkTd0ewqZg4CBauDIN"),
+           URLQueryItem(name: "audience", value: "https://dillonsapi.com")
+        ]
+        
+            var urlRequest = URLRequest(url: urlComponents.url!)
+            urlRequest.httpMethod = "POST"
+            urlRequest.allHTTPHeaderFields = headers
+        
+            print("urlRequest \(urlRequest)")
+            
+            URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+                   if (error != nil) {
+                     print(error)
+                   } else {
+                     let httpResponse = response as? HTTPURLResponse
+                     print("httpResponse \(httpResponse)")
+                     if let httpResponse = httpResponse {
+                         
+                     }
+                   }
+
+            }.resume()
+       }
+    }
+}
 

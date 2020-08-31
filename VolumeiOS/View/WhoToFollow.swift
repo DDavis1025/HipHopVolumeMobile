@@ -40,9 +40,9 @@ class WhoToFollowVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
         override func viewDidLoad() {
             super.viewDidLoad()
-            GetUsersWebservice().getAllPosts {
-                self.users = $0
-            }
+//            GetUsersWebservice(accessToken: <#T##String#>).getAllPosts {
+//                self.users = $0
+//            }
             
             view.backgroundColor = UIColor.white
             

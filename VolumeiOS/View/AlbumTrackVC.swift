@@ -16,6 +16,7 @@ import GoogleMobileAds
 var player:AVPlayer?
 class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
 
+    var bannerView: GADBannerView!
     var post:Post?
     var albumNameLabel:UILabel?
     var trackNameLabel:UILabel?
@@ -110,6 +111,15 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
            let imageView = UIHostingController(rootView: ImageView(withURL: image))
            view.addSubview(imageView.view)
            }
+        
+        bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+        addBannerViewToView(bannerView)
+        
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        
+        
          setupConstraints()
          addCommentsButton()
          addCommentsBtnConstraints()
@@ -142,15 +152,28 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         
     }
     
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+     bannerView.translatesAutoresizingMaskIntoConstraints = false
+     view.addSubview(bannerView)
+     bannerView.backgroundColor = UIColor.lightGray
+     bannerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+     bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+     bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+    
     func createAndLoadInterstitial() -> GADInterstitial {
-      interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/5135589807")
+      interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/4411468910")
       interstitial.delegate = self as? GADInterstitialDelegate
       interstitial.load(GADRequest())
       return interstitial
     }
     
+    func interstitialDidReceiveAd(_ ad: GADInterstitial) {
+    }
+    
     func interstitialDidDismissScreen(_ ad: GADInterstitial) {
         interstitial = createAndLoadInterstitial()
+        view.isUserInteractionEnabled = true
         if ModelClass.playing! {
          player?.play()
         }
@@ -327,9 +350,9 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         }
 
         
-        imageView.widthAnchor.constraint(equalToConstant: 320).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 290).isActive = true
         
-        imageView.heightAnchor.constraint(equalToConstant: 320).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 290).isActive = true
         
         imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
@@ -397,10 +420,12 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
     @objc func goBackBtnClicked(_: UIButton) {
         var index = ModelClass.index
         print("index go back \(index)")
+        if NumberOfNext.numberOfNext == 13 {
+            view.isUserInteractionEnabled = false
+        }
         if index! > 0 {
             index! -= 1
             modelClass.updateIndex(newInt: index!)
-            trackNameLabel?.text = ModelClass.listArray![index!].name
             if let trackName = ModelClass.listArray![index!].name {
             modelClass.updateTrackNameLabel(newText: trackName)
             }
@@ -437,19 +462,28 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                 }
             }
             
-            if NumberOfNext.numberOfNext == 12 {
-                play(url: components.url! as NSURL)
-                player?.pause()
-                openAd()
-                numberOfNext.updateNumberOfNext(newInt: 0)
-            } else {
+            if NumberOfNext.numberOfNext <= 12{
                 var number = NumberOfNext.numberOfNext
                 number += 1
                 print("number now \(number)")
                 numberOfNext.updateNumberOfNext(newInt: number)
                 play(url: components.url! as NSURL)
-                //                play(url: components.url! as NSURL)
             }
+            if NumberOfNext.numberOfNext == 13 {
+                openAd()
+                play(url: components.url! as NSURL)
+                player?.pause()
+                numberOfNext.updateNumberOfNext(newInt: 0)
+            } else if NumberOfNext.numberOfNext == 12  {
+                let intersticialAdVM = IntersticialAdVM()
+                intersticialAdVM.interstitial = intersticialAdVM.createAndLoadInterstitial()
+                //            TrackPlayVC.shared.interstitial = intersticialAdVM.interstitial
+                print("intersticial album track \(intersticialAdVM.interstitial)")
+                TrackPlayVC.shared.interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/5135589807")
+                //            TrackPlayVC.shared.interstitial.delegate = TrackPlayVC.self as? GADInterstitialDelegate
+                TrackPlayVC.shared.interstitial?.load(GADRequest())
+            }
+            trackNameLabel?.text = ModelClass.listArray![index!].name
             
 //            play(url: components.url! as NSURL)
 
@@ -459,12 +493,15 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
     }
     
     @objc func goForwardBtnClicked(_: UIButton) {
+        if NumberOfNext.numberOfNext == 13 {
+            view.isUserInteractionEnabled = false
+        }
         var index = ModelClass.index
         if index! < ModelClass.listArray!.count - 1 {
         index! += 1
         modelClass.updateIndex(newInt: index!)
         print("index \(index)")
-        trackNameLabel?.text = ModelClass.listArray![index!].name
+        
         if let trackName = ModelClass.listArray![index!].name {
         modelClass.updateTrackNameLabel(newText: trackName)
         }
@@ -500,18 +537,29 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                     self.numberOfLikes.text = "\($0.count)"
                 }
             }
-        if NumberOfNext.numberOfNext == 12 {
+        if NumberOfNext.numberOfNext <= 12{
+          var number = NumberOfNext.numberOfNext
+          number += 1
+          print("number now \(number)")
+          numberOfNext.updateNumberOfNext(newInt: number)
+          play(url: components.url! as NSURL)
+        }
+        if NumberOfNext.numberOfNext == 13 {
+            openAd()
             play(url: components.url! as NSURL)
             player?.pause()
-            openAd()
             numberOfNext.updateNumberOfNext(newInt: 0)
-        } else {
-            var number = NumberOfNext.numberOfNext
-            number += 1
-            print("number now \(number)")
-            numberOfNext.updateNumberOfNext(newInt: number)
-            play(url: components.url! as NSURL)
-          }
+        } else if NumberOfNext.numberOfNext == 12  {
+            let intersticialAdVM = IntersticialAdVM()
+            intersticialAdVM.interstitial = intersticialAdVM.createAndLoadInterstitial()
+//            TrackPlayVC.shared.interstitial = intersticialAdVM.interstitial
+            print("intersticial album track \(intersticialAdVM.interstitial)")
+            TrackPlayVC.shared.interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/5135589807")
+//            TrackPlayVC.shared.interstitial.delegate = TrackPlayVC.self as? GADInterstitialDelegate
+            TrackPlayVC.shared.interstitial?.load(GADRequest())
+         }
+        
+         trackNameLabel?.text = ModelClass.listArray![index!].name
 //        play(url: components.url! as NSURL)
         print("url gf \(components.url! as NSURL)")
         }
@@ -635,7 +683,7 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         
         albumTracksBtn?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
-        albumTracksBtn?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40).isActive = true
+        albumTracksBtn?.bottomAnchor.constraint(equalTo: bannerView.topAnchor, constant: -15).isActive = true
     
     
     }

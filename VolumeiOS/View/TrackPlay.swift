@@ -62,7 +62,9 @@ struct TrackPlay {
 
 class TrackPlayVC: UIViewController, GADInterstitialDelegate {
     
+    var bannerView: GADBannerView!
     var profile = SessionManager.shared.profile
+    static let shared = TrackPlayVC()
     var post:Post?
     var trackNameLabel:UILabel?
     var playing:Bool?
@@ -80,8 +82,9 @@ class TrackPlayVC: UIViewController, GADInterstitialDelegate {
     var commentsBtn:UIButton?
     var likeBtn:UIButton?
     var username:String?
-    var interstitial: GADInterstitial!
+    var interstitial: GADInterstitial?
     var numberOfNext = NumberOfNext()
+    var intersticialAdVM = IntersticialAdVM()
     
     
     let timeRemainingLabel: UILabel = {
@@ -130,9 +133,55 @@ class TrackPlayVC: UIViewController, GADInterstitialDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        interstitial = createAndLoadInterstitial()
+        view.backgroundColor = UIColor.white
+        interstitial = TrackPlayVC.shared.interstitial
         
-        navigationController?.isToolbarHidden = true
+        print("number of next \(NumberOfNext.numberOfNext)")
+        
+        if NumberOfNext.numberOfNext == 12 {
+            view.isUserInteractionEnabled = false
+            interstitial?.delegate = self as? GADInterstitialDelegate
+            // add the spinner view controller
+        }
+        
+        funcForViewDidLoad()
+        
+        
+        if NumberOfNext.numberOfNext == 12 {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.openAd()
+            self.numberOfNext.updateNumberOfNext(newInt: 0)
+            player?.pause()
+          }
+         } else if NumberOfNext.numberOfNext == 11 {
+            TrackPlayVC.shared.interstitial = createAndLoadInterstitial()
+            var number = NumberOfNext.numberOfNext
+            number += 1
+            self.numberOfNext.updateNumberOfNext(newInt: number)
+            print("NumberOfNext.numberOfNext \(NumberOfNext.numberOfNext)")
+            ifNoAdOrAfterAd()
+         } else if NumberOfNext.numberOfNext <= 11 {
+            var number = NumberOfNext.numberOfNext
+            number += 1
+            self.numberOfNext.updateNumberOfNext(newInt: number)
+            print("NumberOfNext.numberOfNext \(NumberOfNext.numberOfNext)")
+            ifNoAdOrAfterAd()
+        }
+        
+//        if NumberOfNext.numberOfNext <= 11 {
+//            var number = NumberOfNext.numberOfNext
+//            number += 1
+//            self.numberOfNext.updateNumberOfNext(newInt: number)
+//            print("NumberOfNext.numberOfNext \(NumberOfNext.numberOfNext)")
+//            ifNoAdOrAfterAd()
+//        }
+        
+        
+            
+        
+    }
+    
+    func funcForViewDidLoad() {
         let dismiss = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(dismissVC))
         dismiss.tintColor = UIColor.black
         
@@ -140,109 +189,137 @@ class TrackPlayVC: UIViewController, GADInterstitialDelegate {
         print("track view loaded")
         if let author_id = Author.author_id {
             print(author_id + "Author_id")
-         addUserAndFollowView(id: author_id)
+            addUserAndFollowView(id: author_id)
         }
         
-        if let id = TrackPlay.id {
-            GetMedia(id: id, path: "trackAndImage").getMedia {
-                self.trackMedia = $0
-                self.addTrackImage()
-                if let track = self.trackMedia?[0].path {
-                   self.components.path = "/\(track)"
-                    }
-                    if let url = self.components.url?.absoluteString {
-                        if self.justClicked! {
-                        self.play(url: (NSURL(string: url)!))
-                        } else if TrackPlay.playing! {
-                            player?.play()
-                            print("playing")
-                        }
-                        self.mySlider?.maximumValue = Float(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
-                        self.timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
-                }
-               }
-                
-        }
+        //                if let id = TrackPlay.id {
+        //                    GetMedia(id: id, path: "trackAndImage").getMedia {
+        //                        self.trackMedia = $0
+        //                        self.addTrackImage()
+        //                        if let track = self.trackMedia?[0].path {
+        //                           self.components.path = "/\(track)"
+        //                            }
+        //                            if let url = self.components.url?.absoluteString {
+        //                                if self.justClicked! {
+        //                                self.play(url: (NSURL(string: url)!))
+        //                                } else if TrackPlay.playing! {
+        //                                    player?.play()
+        //                                    print("playing")
+        //                                }
+        //                                self.mySlider?.maximumValue = Float(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
+        //                                self.timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+        //                        }
+        //                       }
+        //
+        //                }
+        //
+        //             if TrackPlay.playing! {
+        //             player?.play()
+        //             }
         imageView.image = UIImage(named: "music-placeholder")
         view.addSubview(imageView)
         setImageViewConstraints()
         
-         addSlider()
-         addLabels()
-         view.backgroundColor = UIColor.white
-//         play(url: (NSURL(string: (TrackPlay.track!))!))
-        if TrackPlay.playing! {
-         player?.play()
+        addSlider()
+        addLabels()
+        view.backgroundColor = UIColor.white
+        //         play(url: (NSURL(string: (TrackPlay.track!))!))
+        //                if TrackPlay.playing! {
+        //                 player?.play()
+        //                }
+        addButtons()
+        view.addSubview(timeElapsedLabel)
+        view.addSubview(timeRemainingLabel)
+        if let image = trackMedia?[1].path {
+            let imageView = UIHostingController(rootView: ImageView(withURL: image))
+            view.addSubview(imageView.view)
         }
-         addButtons()
-         view.addSubview(timeElapsedLabel)
-         view.addSubview(timeRemainingLabel)
-           if let image = trackMedia?[1].path {
-           let imageView = UIHostingController(rootView: ImageView(withURL: image))
-           view.addSubview(imageView.view)
-           }
-         setupConstraints()
+        
+        bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+        addBannerViewToView(bannerView)
+        
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        setupConstraints()
         
         getUser()
+        
+        
         addCommentsButton()
         addCommentsBtnConstraints()
         addLikeButton()
         addLikeBtnConstraints()
         postLikeCount()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-        if NumberOfNext.numberOfNext == 12 {
-            player?.pause()
-            if self.interstitial.isReady {
-            self.openAd()
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    if self.interstitial.isReady {
-                    self.openAd()
-                    } else {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                            self.openAd()
-                        }
-                    }
-                 }
-            }
-            self.numberOfNext.updateNumberOfNext(newInt: 0)
-        } else {
-            var number = NumberOfNext.numberOfNext
-            number += 1
-            self.numberOfNext.updateNumberOfNext(newInt: number)
-            print("NumberOfNext.numberOfNext \(NumberOfNext.numberOfNext)")
-        }
-        }
         trackPlay.updateViewAppeared(newBool: true)
         album.updateViewAppeared(newBool: false)
-        print("track play view appeared \(TrackPlay.viewAppeared)")
+    }
+    
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+     bannerView.translatesAutoresizingMaskIntoConstraints = false
+     view.addSubview(bannerView)
+     bannerView.backgroundColor = UIColor.lightGray
+     bannerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+     bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+     bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+
+    
+    func ifNoAdOrAfterAd() {
+        if let id = TrackPlay.id {
+            GetMedia(id: id, path: "trackAndImage").getMedia {
+                self.trackMedia = $0
+                self.addTrackImage()
+                if let track = self.trackMedia?[0].path {
+                    self.components.path = "/\(track)"
+                }
+                if let url = self.components.url?.absoluteString {
+                    if self.justClicked! {
+                        self.play(url: (NSURL(string: url)!))
+                    } else if TrackPlay.playing! {
+                        player?.play()
+                        print("playing")
+                    }
+                    self.mySlider?.maximumValue = Float(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
+                    self.timer = Timer.scheduledTimer(timeInterval: 0.0001, target: self, selector: #selector(self.updateSlider), userInfo: nil, repeats: true)
+                }
+            }
             
+        }
         
+        if TrackPlay.playing! {
+            player?.play()
+        }
     }
     
     func createAndLoadInterstitial() -> GADInterstitial {
-      interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/5135589807")
-      interstitial.delegate = self as? GADInterstitialDelegate
-      interstitial.load(GADRequest())
-      return interstitial
+      interstitial = GADInterstitial(adUnitID: "ca-app-pub-3940256099942544/4411468910")
+        interstitial?.delegate = self as? GADInterstitialDelegate
+        interstitial?.load(GADRequest())
+        return interstitial!
     }
 
     
     func interstitialDidDismissScreen(_ ad: GADInterstitial) {
         interstitial = createAndLoadInterstitial()
-        if TrackPlay.playing! {
-         player?.play()
-        }
+        view.isUserInteractionEnabled = true
+        ifNoAdOrAfterAd()
+//        if TrackPlay.playing! {
+//         player?.play()
+//        }
         print("did dismiss screen")
     }
     
     func openAd() {
-        print("openAd")
+        print("openAd TrackPlay")
+        if let interstitial = interstitial {
         if interstitial.isReady {
+          print("interstitial isReady")
           interstitial.present(fromRootViewController: self)
         } else {
           print("Ad wasn't ready")
+        }
         }
     }
     
@@ -256,8 +333,8 @@ class TrackPlayVC: UIViewController, GADInterstitialDelegate {
            if trackName != "" {
              trackPlay.updateTrackNameLabel(newText: trackName)
            }
-           if let trackName = TrackPlay.trackNameLabel {
-              trackNameLabel!.text = trackName
+           if let trackName = TrackPlay.trackNameLabel, let trackNameLabel = trackNameLabel {
+              trackNameLabel.text = trackName
            }
         
 
@@ -370,9 +447,9 @@ class TrackPlayVC: UIViewController, GADInterstitialDelegate {
         }
 
         
-        imageView.widthAnchor.constraint(equalToConstant: 320).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 290).isActive = true
         
-        imageView.heightAnchor.constraint(equalToConstant: 320).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 290).isActive = true
         
         imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
@@ -537,7 +614,7 @@ extension TrackPlayVC {
         commentsBtn?.translatesAutoresizingMaskIntoConstraints = false
         commentsBtn?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
-        commentsBtn?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40).isActive = true
+        commentsBtn?.bottomAnchor.constraint(equalTo: bannerView.topAnchor, constant: -20).isActive = true
     }
     
     @objc func commentsBtnClicked(_ sender: UIButton) {

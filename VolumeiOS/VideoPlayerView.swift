@@ -353,6 +353,7 @@ struct Video {
 }
 
 class VideoVC: UIViewController, GADInterstitialDelegate {
+    var bannerView: GADBannerView!
     static let shared = VideoVC()
     var id:String = ""
     var path:String?
@@ -437,6 +438,13 @@ class VideoVC: UIViewController, GADInterstitialDelegate {
         }
         view.addSubview(playerView)
         getUser()
+        bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+        addBannerViewToView(bannerView)
+        
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        
         addCommentsButton()
         addCommentsBtnConstraints()
         addLikeButton()
@@ -489,6 +497,15 @@ class VideoVC: UIViewController, GADInterstitialDelegate {
             GETLikeRequest(path: "getLikesByPostID", post_id: self.id, supporter_id: nil).getLike {
                 self.numberOfLikes.text = "\($0.count)"
             }
+    }
+    
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+     bannerView.translatesAutoresizingMaskIntoConstraints = false
+     view.addSubview(bannerView)
+     bannerView.backgroundColor = UIColor.lightGray
+     bannerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+     bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+     bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
     
     func createAndLoadInterstitial() -> GADInterstitial {
@@ -666,7 +683,7 @@ extension VideoVC {
         commentsBtn?.translatesAutoresizingMaskIntoConstraints = false
         commentsBtn?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
-        commentsBtn?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -40).isActive = true
+        commentsBtn?.bottomAnchor.constraint(equalTo: bannerView.topAnchor, constant: -20).isActive = true
     }
     
     @objc func commentsBtnClicked(_ sender: UIButton) {

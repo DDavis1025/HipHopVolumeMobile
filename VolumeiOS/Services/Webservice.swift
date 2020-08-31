@@ -9,7 +9,11 @@
 import Foundation
 
 struct AccessToken {
- var accessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik5FRTVPRGt4TWpaR05UQXhNRGN6UkRsQ09UaEVSa0UzTTBVeE16Z3hNa1JETmpZd016UXpNQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1vd2loamFlcC5hdXRoMC5jb20vIiwic3ViIjoiTUdkbmIzOUZVYjY3WThMMVB2YmhUaGtLa3hTNWd2UmlAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZGV2LW93aWhqYWVwLmF1dGgwLmNvbS9hcGkvdjIvIiwiaWF0IjoxNTk4MzgzNzA3LCJleHAiOjE1OTg0NzAxMDcsImF6cCI6Ik1HZG5iMzlGVWI2N1k4TDFQdmJoVGhrS2t4UzVndlJpIiwic2NvcGUiOiJyZWFkOmNsaWVudF9ncmFudHMgY3JlYXRlOmNsaWVudF9ncmFudHMgZGVsZXRlOmNsaWVudF9ncmFudHMgdXBkYXRlOmNsaWVudF9ncmFudHMgcmVhZDp1c2VycyB1cGRhdGU6dXNlcnMgZGVsZXRlOnVzZXJzIGNyZWF0ZTp1c2VycyByZWFkOnVzZXJzX2FwcF9tZXRhZGF0YSB1cGRhdGU6dXNlcnNfYXBwX21ldGFkYXRhIGRlbGV0ZTp1c2Vyc19hcHBfbWV0YWRhdGEgY3JlYXRlOnVzZXJzX2FwcF9tZXRhZGF0YSByZWFkOnVzZXJfY3VzdG9tX2Jsb2NrcyBjcmVhdGU6dXNlcl9jdXN0b21fYmxvY2tzIGRlbGV0ZTp1c2VyX2N1c3RvbV9ibG9ja3MgY3JlYXRlOnVzZXJfdGlja2V0cyByZWFkOmNsaWVudHMgdXBkYXRlOmNsaWVudHMgZGVsZXRlOmNsaWVudHMgY3JlYXRlOmNsaWVudHMgcmVhZDpjbGllbnRfa2V5cyB1cGRhdGU6Y2xpZW50X2tleXMgZGVsZXRlOmNsaWVudF9rZXlzIGNyZWF0ZTpjbGllbnRfa2V5cyByZWFkOmNvbm5lY3Rpb25zIHVwZGF0ZTpjb25uZWN0aW9ucyBkZWxldGU6Y29ubmVjdGlvbnMgY3JlYXRlOmNvbm5lY3Rpb25zIHJlYWQ6cmVzb3VyY2Vfc2VydmVycyB1cGRhdGU6cmVzb3VyY2Vfc2VydmVycyBkZWxldGU6cmVzb3VyY2Vfc2VydmVycyBjcmVhdGU6cmVzb3VyY2Vfc2VydmVycyByZWFkOmRldmljZV9jcmVkZW50aWFscyB1cGRhdGU6ZGV2aWNlX2NyZWRlbnRpYWxzIGRlbGV0ZTpkZXZpY2VfY3JlZGVudGlhbHMgY3JlYXRlOmRldmljZV9jcmVkZW50aWFscyByZWFkOnJ1bGVzIHVwZGF0ZTpydWxlcyBkZWxldGU6cnVsZXMgY3JlYXRlOnJ1bGVzIHJlYWQ6cnVsZXNfY29uZmlncyB1cGRhdGU6cnVsZXNfY29uZmlncyBkZWxldGU6cnVsZXNfY29uZmlncyByZWFkOmhvb2tzIHVwZGF0ZTpob29rcyBkZWxldGU6aG9va3MgY3JlYXRlOmhvb2tzIHJlYWQ6ZW1haWxfcHJvdmlkZXIgdXBkYXRlOmVtYWlsX3Byb3ZpZGVyIGRlbGV0ZTplbWFpbF9wcm92aWRlciBjcmVhdGU6ZW1haWxfcHJvdmlkZXIgYmxhY2tsaXN0OnRva2VucyByZWFkOnN0YXRzIHJlYWQ6dGVuYW50X3NldHRpbmdzIHVwZGF0ZTp0ZW5hbnRfc2V0dGluZ3MgcmVhZDpsb2dzIHJlYWQ6c2hpZWxkcyBjcmVhdGU6c2hpZWxkcyBkZWxldGU6c2hpZWxkcyByZWFkOmFub21hbHlfYmxvY2tzIGRlbGV0ZTphbm9tYWx5X2Jsb2NrcyB1cGRhdGU6dHJpZ2dlcnMgcmVhZDp0cmlnZ2VycyByZWFkOmdyYW50cyBkZWxldGU6Z3JhbnRzIHJlYWQ6Z3VhcmRpYW5fZmFjdG9ycyB1cGRhdGU6Z3VhcmRpYW5fZmFjdG9ycyByZWFkOmd1YXJkaWFuX2Vucm9sbG1lbnRzIGRlbGV0ZTpndWFyZGlhbl9lbnJvbGxtZW50cyBjcmVhdGU6Z3VhcmRpYW5fZW5yb2xsbWVudF90aWNrZXRzIHJlYWQ6dXNlcl9pZHBfdG9rZW5zIGNyZWF0ZTpwYXNzd29yZHNfY2hlY2tpbmdfam9iIGRlbGV0ZTpwYXNzd29yZHNfY2hlY2tpbmdfam9iIHJlYWQ6Y3VzdG9tX2RvbWFpbnMgZGVsZXRlOmN1c3RvbV9kb21haW5zIGNyZWF0ZTpjdXN0b21fZG9tYWlucyB1cGRhdGU6Y3VzdG9tX2RvbWFpbnMgcmVhZDplbWFpbF90ZW1wbGF0ZXMgY3JlYXRlOmVtYWlsX3RlbXBsYXRlcyB1cGRhdGU6ZW1haWxfdGVtcGxhdGVzIHJlYWQ6bWZhX3BvbGljaWVzIHVwZGF0ZTptZmFfcG9saWNpZXMgcmVhZDpyb2xlcyBjcmVhdGU6cm9sZXMgZGVsZXRlOnJvbGVzIHVwZGF0ZTpyb2xlcyByZWFkOnByb21wdHMgdXBkYXRlOnByb21wdHMgcmVhZDpicmFuZGluZyB1cGRhdGU6YnJhbmRpbmcgcmVhZDpsb2dfc3RyZWFtcyBjcmVhdGU6bG9nX3N0cmVhbXMgZGVsZXRlOmxvZ19zdHJlYW1zIHVwZGF0ZTpsb2dfc3RyZWFtcyBjcmVhdGU6c2lnbmluZ19rZXlzIHJlYWQ6c2lnbmluZ19rZXlzIHVwZGF0ZTpzaWduaW5nX2tleXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.RlloqHymI8V2zJPvzzFRwY8fjDUFYMrvNEdneKKu3zwgj1FX6OjXme2oX08XZjoMyX9Jhc5dycYk-plevXLMtejy3sw3cfpNZniKddPAjswMK1bf2yj93e8UNcUwybYxk_v7KiGfG0I8M-mwFt0wxf567oE0D8jS82ziPztv0zzLOvdtdNkgiPccxvU24pAr6GNydXvUZyCNLHI1AmV8l4ky5aoFwJKhh8DFnDvaJj0ZV5sIUSKByp-CDGkS0HCgUgOrhr9cPDVY8IdPJzCvbLuezqo5pS0FAYrq9brEyqc14i6iyTEUye-OkoquwlEPI8c8m2eWQrElH6wzm7OrpA"
+    static var accessToken:String?
+    
+    func updateAccessToken(newString: String) {
+        AccessToken.self.accessToken = newString
+    }
 }
 
 class Webservice {
@@ -146,6 +150,12 @@ class SecondWebService: Identifiable {
 
 
 class GetUsersWebservice {
+    
+    var accessToken:String = ""
+    
+    init(accessToken: String) {
+        self.accessToken = accessToken
+    }
    
     func getAllPosts(completion: @escaping ([UsersModel]) -> ()) {
         
@@ -168,7 +178,7 @@ class GetUsersWebservice {
          var request = URLRequest(url: requestUrl)
          request.httpMethod = "GET"
 //         accessToken = ""
-        let accessToken = AccessToken().accessToken
+//        accessToken = self.accessToken
         
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         print("access 1 \(accessToken)")
@@ -215,17 +225,20 @@ class GetUsersById {
          var request = URLRequest(url: requestUrl)
          request.httpMethod = "GET"
 //         accessToken = ""
-        let accessToken = AccessToken().accessToken
+        if let accessToken = AccessToken.accessToken {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         print("access 2 \(accessToken)")
+        }
 
         print("REquesturl \(requestUrl)")
-        dataTask = URLSession.shared.dataTask(with: request) { data, _, error in
+        dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             
             if let error = error {
                 print("Error Getusersbyid \(error)")
                 return
             }
+            
+            print("request now \(response)")
             
             let posts = try!
                 
@@ -463,7 +476,7 @@ class EmailValidation {
          var request = URLRequest(url: requestUrl)
          request.httpMethod = "GET"
 //         accessToken = ""
-        let accessToken = AccessToken().accessToken
+        let accessToken = AccessToken.accessToken
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
         dataTask = URLSession.shared.dataTask(with: request) { data, _, error in
@@ -518,7 +531,7 @@ class UsernameValidation {
          var request = URLRequest(url: requestUrl)
          request.httpMethod = "GET"
 //         accessToken = ""
-        let accessToken = AccessToken().accessToken
+        let accessToken = AccessToken.accessToken
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
 
@@ -1363,12 +1376,15 @@ class GetUsersById2: Identifiable {
          var request = URLRequest(url: requestUrl)
          request.httpMethod = "GET"
 //         accessToken = ""
-        let accessToken = AccessToken().accessToken
+        if let accessToken = AccessToken.accessToken {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         print("access 2 \(accessToken)")
+        }
 
         print("REquesturl \(requestUrl)")
-        URLSession.shared.dataTask(with: request) { data, _, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            
+            print("response now \(response)")
             
             if let error = error {
                 print("Error Getusersbyid \(error)")

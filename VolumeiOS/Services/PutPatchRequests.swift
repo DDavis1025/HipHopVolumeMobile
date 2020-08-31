@@ -11,7 +11,9 @@ import Foundation
 class UpdateUserInfo {
     
     func updateUserInfo(parameters:[String:String], user_id: String, completion: @escaping () -> ()) {
-        let accessToken = AccessToken().accessToken
+        guard let accessToken = AccessToken.accessToken else {
+            return
+        }
         let headers = [
             "authorization": "Bearer \(accessToken)",
             "content-type": "application/json"

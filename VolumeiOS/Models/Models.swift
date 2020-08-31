@@ -346,6 +346,10 @@ struct NumberOfNext {
     }
 }
 
+struct ManagementAccessToken: Decodable {
+    var access_token:String
+}
+
 
 
 

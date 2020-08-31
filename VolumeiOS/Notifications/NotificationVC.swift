@@ -9,18 +9,17 @@
 import Foundation
 import UIKit
 import SwiftUI
+import GoogleMobileAds
 
 
 
 
 class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     private var myTableView:UITableView!
+    var bannerView: GADBannerView!
     var notifications:[NotificationViewModel] = [] {
         didSet {
             myTableView.reloadData()
-            self.navigationController?.isNavigationBarHidden = false
-            self.navigationController?.setToolbarHidden(false, animated: false)
-            self.navigationController?.isToolbarHidden = false
 
             print("navigation bar \(self.navigationController)")
         }
@@ -32,6 +31,15 @@ class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
+        self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.setToolbarHidden(false, animated: false)
+        bannerView = GADBannerView(adSize: kGADAdSizeBanner)
+        addBannerViewToView(bannerView)
+        
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        
         addTableView()
         loadNotifications(completion: {})
         
@@ -40,9 +48,19 @@ class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         myTableView.addSubview(refresher)
         
         self.tabBarController?.tabBar.items?[1].badgeValue = nil
+        
     }
 
     override func viewDidAppear(_ animated: Bool) {
+    }
+    
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+     bannerView.translatesAutoresizingMaskIntoConstraints = false
+     view.addSubview(bannerView)
+     bannerView.backgroundColor = UIColor.lightGray
+     bannerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+     bannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+     bannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 
     func loadNotifications(completion: @escaping(()->())) {
@@ -91,13 +109,13 @@ class NotificationVC: Toolbar, UITableViewDelegate, UITableViewDataSource {
         self.view.addSubview(self.myTableView)
 
 
-        self.myTableView?.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        self.myTableView?.topAnchor.constraint(equalTo: bannerView.bottomAnchor).isActive = true
 
         self.myTableView?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
 
         self.myTableView?.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
-        self.myTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        self.myTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         self.myTableView.estimatedRowHeight = 100
         self.myTableView.rowHeight = UITableView.automaticDimension

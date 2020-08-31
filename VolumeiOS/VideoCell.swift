@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import GoogleMobileAds
 
 struct VideoStruct {
     static var id:String?
@@ -13,19 +14,19 @@ class VideoCell: AlbumCell {
          override init(frame: CGRect) {
            super.init(frame: frame)
    //        addSpinner()
-            spinner.startAnimating()
-            addTableView()
-            GetAllOfMediaType(path:"videos").getAllPosts {
-                       self.posts = $0
-                       self.myTableView.reloadData()
-                   }
-
-           refresher = UIRefreshControl()
-           refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
-           refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
-           
-                  
-           myTableView.addSubview(refresher!)
+//            spinner.startAnimating()
+//            addTableView()
+//            GetAllOfMediaType(path:"videos").getAllPosts {
+//             self.posts = $0
+//            }
+//
+//           addSpinner()
+//           refresher = UIRefreshControl()
+//           refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
+//           refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
+//
+//
+//           myTableView.addSubview(refresher!)
        }
     
     required init?(coder: NSCoder) {
@@ -33,9 +34,31 @@ class VideoCell: AlbumCell {
     }
     
     
+    override func addMainMethods() {
+            addTableView()
+            GetAllOfMediaType(path:"videos").getAllPosts {
+             self.posts = $0
+            }
+
+            refresher = UIRefreshControl()
+            refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
+            refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
+
+            addTableView()
+            myTableView.addSubview(refresher!)
+            addSpinner()
+            adSettings()
+        }
+    
     @objc override func refresh() {
         GetAllOfMediaType(path:"videos").getAllPosts {
+            self.refresher?.endRefreshing()
+            self.fromRefresh = true
             self.posts = $0
+            self.addNativeAds()
+            self.myTableView.reloadData()
+            self.myTableView?.beginUpdates()
+            self.myTableView?.endUpdates()
         }
         
     }
@@ -76,16 +99,44 @@ class VideoCell: AlbumCell {
     }
 
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell") as! VideoTableViewCell
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell") as! VideoTableViewCell
+//
+//        let post = posts[indexPath.row]
+//
+//        cell.set(post: post)
+//
+//        cell.setUser(user: userDictionary[posts[indexPath.row].author!])
+//
+//
+//        return cell
+//    }
+    
+    override func tableView(_ tableView: UITableView,
+                            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("video cell")
+        if let post = mainArray[indexPath.row] as? Post {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell") as! VideoTableViewCell
+            let post = post
             
-        let post = posts[indexPath.row]
-        
-        cell.set(post: post)
-       
-        cell.setUser(user: userDictionary[posts[indexPath.row].author!])
-
-
-        return cell
+            cell.set(post: post)
+            
+            if let author = post.author {
+                cell.setUser(user: userDictionary[author])
+            }
+            
+            return cell
+            
+        } else {
+            let nativeAd = mainArray[indexPath.row] as! GADUnifiedNativeAd
+            /// Set the native ad's rootViewController to the current view controller.
+            nativeAd.rootViewController = parent
+            
+            let nativeAdCell =  tableView.dequeueReusableCell(withIdentifier: "AdCell") as! AdCell
+            
+            nativeAdCell.addAdItems(nativeAd: nativeAd)
+            
+            return nativeAdCell
+        }
     }
 }

@@ -16,6 +16,7 @@ class SessionManager {
     let credentialsManager: CredentialsManager!
     var profile: UserInfo?
     var credentials: Credentials?
+    var accessToken: String?
     var patchMode: Bool = false
 
     private init () {
@@ -32,6 +33,8 @@ class SessionManager {
                 switch(result) {
                 case .success(let profile):
                     self.profile = profile
+                    self.accessToken = accessToken
+                    print("credentials?.access \(self.credentials?.accessToken)")
                     callback(nil)
                 case .failure(let error):
                     callback(error)

@@ -8,13 +8,17 @@
 
 import Foundation
 import UIKit
+import GoogleMobileAds
 
 protocol MyCollectionViewCellDelegate: class {
     func didPressTVCell()
 }
 
-class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSource {
+class AlbumCell: UICollectionViewCell, GADUnifiedNativeAdLoaderDelegate, UITableViewDelegate, UITableViewDataSource {
        var myTableView: UITableView!
+       var mainArray:[Any] = [] 
+       var adLoader: GADAdLoader!
+       var nativeAds = [GADUnifiedNativeAd]()
        var parent:HomeViewController?
        var model:PostListViewModel?
        var child:SpinnerViewController?
@@ -23,6 +27,7 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
        var usersLoaded:Bool? = false
        var getUserById:GetUsersById?
        var array = [String]()
+       var fromRefresh:Bool = false
        var userDictionary = [String: UsersModel]()
        var users = [UsersModel]() {
            didSet {
@@ -42,9 +47,9 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
                 DispatchQueue.main.async {
                 self.myTableView.reloadData()
                 }
-                self.spinner.stopAnimating()
-                self.view.removeFromSuperview()
-                self.refresher?.endRefreshing()
+//                self.spinner.stopAnimating()
+//                self.view.removeFromSuperview()
+//                self.refresher?.endRefreshing()
                }
                
                print("user dinctionary \(userDictionary)")
@@ -52,16 +57,20 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
            }
        }
        var posts = [Post]() {
-           didSet {
-               self.child?.willMove(toParent: nil)
-               self.child?.view.removeFromSuperview()
-               self.child?.removeFromParent()
-              DispatchQueue.main.async {
+        didSet {
+//            self.child?.willMove(toParent: nil)
+//            self.child?.view.removeFromSuperview()
+//            self.child?.removeFromParent()
+            DispatchQueue.main.async {
+                if self.fromRefresh == false {
                 self.myTableView.reloadData()
+                self.myTableView?.beginUpdates()
+                self.myTableView?.endUpdates()
               }
-               
-               print("posts right now \(posts)")
-              
+            }
+            
+            print("posts right now \(posts)")
+            
                func uniq<S : Sequence, T : Hashable>(source: S) -> [T] where S.Iterator.Element == T {
                    var buffer = [T]()
                    var added = Set<T>()
@@ -89,9 +98,12 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
                            print("got users for this \($0)")
                  }
                }
+            
+             mainArray = posts
                
          }
        }
+    
        var albumVC:AlbumVC?
        var imageLoader:DownloadImage?
        var refresher:UIRefreshControl?
@@ -108,40 +120,78 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
     let view = UIView()
     override init(frame: CGRect) {
         super.init(frame: frame)
+        addMainMethods()
+//        Webservice().getAllPosts {
+//                    self.posts = $0
+//                }
+//
+//
+//
+//        refresher = UIRefreshControl()
+//        refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
+//        refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
+//
+//        addTableView()
+//        myTableView.addSubview(refresher!)
+//        addSpinner()
+//        adSettings()
+    }
+    
+    func addMainMethods() {
         Webservice().getAllPosts {
                     self.posts = $0
                 }
         
-        
-
         refresher = UIRefreshControl()
         refresher?.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refresher?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
         
         addTableView()
         myTableView.addSubview(refresher!)
-        
         addSpinner()
+        adSettings()
+    }
+    
+    func adSettings() {
+        let multipleAdsOptions = GADMultipleAdsAdLoaderOptions()
+        multipleAdsOptions.numberOfAds = 5
+
+        adLoader = GADAdLoader(adUnitID: "ca-app-pub-3940256099942544/3986624511", rootViewController: parent,
+            adTypes: [GADAdLoaderAdType.unifiedNative],
+            options: [multipleAdsOptions])
+        adLoader.delegate = self
+        adLoader.load(GADRequest())
     }
 
     
     @objc func refresh() {
         Webservice().getAllPosts {
+            self.refresher?.endRefreshing()
+            self.fromRefresh = true
             self.posts = $0
+            self.addNativeAds()
+            self.myTableView.reloadData()
+            self.myTableView?.beginUpdates()
+            self.myTableView?.endUpdates()
         }
         
     }
     
     func addSpinner() {
         view.backgroundColor = UIColor.white
-        
+
         self.addSubview(view)
- 
+        self.bringSubviewToFront(view)
+
         view.translatesAutoresizingMaskIntoConstraints = false
-        
+
         view.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         view.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
-        
+        view.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        view.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        view.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        view.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+
         view.addSubview(spinner)
         spinner.translatesAutoresizingMaskIntoConstraints = false
         spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -149,8 +199,8 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
         spinner.startAnimating()
         spinner.hidesWhenStopped = true
     }
-    
-    
+//
+//
 //    func addSpinner() {
 //             let child = SpinnerViewController()
 //             addChild(child)
@@ -161,7 +211,8 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
 //             self.view.bringSubviewToFront(child.view)
 //       }
     
-
+    
+    
     
     
     func addTableView() {
@@ -177,6 +228,7 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
                     
                             
             self.myTableView.register(FeedCell.self, forCellReuseIdentifier: "MyCell")
+            self.myTableView.register(AdCell.self, forCellReuseIdentifier: "AdCell")
            
                             self.myTableView.dataSource = self
                             self.myTableView.delegate = self
@@ -191,6 +243,9 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
 
             self.myTableView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         
+           self.myTableView.estimatedRowHeight = 100
+           self.myTableView.rowHeight = UITableView.automaticDimension
+        
         
             myTableView.layoutMargins = UIEdgeInsets.zero
             myTableView.separatorInset = UIEdgeInsets.zero
@@ -202,9 +257,52 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
 
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-           return 140
-       }
+    func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADUnifiedNativeAd) {
+         print("did recieve nativeAd \(nativeAd)")
+         nativeAds.append(nativeAd)
+    }
+    
+    func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: GADRequestError) {
+    }
+    
+    
+    func adLoaderDidFinishLoading(_ adLoader: GADAdLoader) {
+        print("self cell \(self)")
+        addNativeAds()
+        myTableView.reloadData()
+        self.myTableView?.beginUpdates()
+        self.myTableView?.endUpdates()
+        self.spinner.stopAnimating()
+        self.view.removeFromSuperview()
+        self.refresher?.endRefreshing()
+//        self.child?.willMove(toParent: nil)
+//        self.child?.view.removeFromSuperview()
+//        self.child?.removeFromParent()
+//        self.myTableView?.beginUpdates()
+//        self.myTableView?.endUpdates()
+    }
+    
+    func addNativeAds() {
+      if nativeAds.count <= 0 {
+        return
+      }
+
+      let adInterval = (mainArray.count / nativeAds.count) + 2
+      var index = 0
+      for nativeAd in nativeAds {
+        print("nativeAd \(nativeAd)")
+        if index < mainArray.count {
+          mainArray.insert(nativeAd, at: index)
+          index += adInterval
+        } else {
+          break
+        }
+      }
+    }
+    
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//           return 140
+//       }
     
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -217,22 +315,38 @@ class AlbumCell: UICollectionViewCell, UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return posts.count
+        return mainArray.count
     }
     
+    
+    func tableView(_ tableView: UITableView,
+            cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") as! FeedCell
+        if let post = mainArray[indexPath.row] as? Post {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") as! FeedCell
+            let post = post
             
-        let post = posts[indexPath.row]
-        
-        cell.set(post: post)
-       
-        cell.setUser(user: userDictionary[posts[indexPath.row].author!])
+            cell.set(post: post)
+            
+            if let author = post.author {
+            cell.setUser(user: userDictionary[author])
+            }
+            
+            return cell
+            
+          } else {
+            let nativeAd = mainArray[indexPath.row] as! GADUnifiedNativeAd
+            /// Set the native ad's rootViewController to the current view controller.
+            nativeAd.rootViewController = parent
 
+            let nativeAdCell =  tableView.dequeueReusableCell(withIdentifier: "AdCell") as! AdCell
 
-        return cell
-    }
+            nativeAdCell.addAdItems(nativeAd: nativeAd)
+
+            return nativeAdCell
+          }
+        }
+
     
     
     
