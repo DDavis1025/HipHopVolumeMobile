@@ -267,7 +267,7 @@ class Auth0AccessToken {
 
     let postData = NSMutableData(data: "grant_type=client_credentials".data(using: String.Encoding.utf8)!)
     postData.append("&client_id=1xSs0Ez95mih823mzKFxHWVDFh7iHX8y".data(using: String.Encoding.utf8)!)
-    postData.append("&client_secret=-v6XTncUAYsx_Pzdlsh8p0sxaZidx8FD2wTh0g4TP-3QVgWkTd0ewqZg4CBauDIN".data(using: String.Encoding.utf8)!)
+    postData.append("&client_secret=".data(using: String.Encoding.utf8)!)
     postData.append("&audience=https://dev-owihjaep.auth0.com/api/v2/".data(using: String.Encoding.utf8)!)
 
     let request = NSMutableURLRequest(url: NSURL(string: "https://dev-owihjaep.auth0.com/oauth/token")! as URL,
@@ -314,7 +314,7 @@ struct POSTAuth0 {
         urlComponents.queryItems = [
            URLQueryItem(name: "grant_type", value: "client_credentials"),
            URLQueryItem(name: "client_id", value: "1xSs0Ez95mih823mzKFxHWVDFh7iHX8y"),
-           URLQueryItem(name: "client_secret", value: "-v6XTncUAYsx_Pzdlsh8p0sxaZidx8FD2wTh0g4TP-3QVgWkTd0ewqZg4CBauDIN"),
+           URLQueryItem(name: "client_secret", value: ""),
            URLQueryItem(name: "audience", value: "https://dillonsapi.com")
         ]
         
