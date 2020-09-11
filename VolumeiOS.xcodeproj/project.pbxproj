@@ -77,11 +77,14 @@
 		CD86C65F24F588330021F4B2 /* IntersticialAdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C65E24F588330021F4B2 /* IntersticialAdTest.swift */; };
 		CD86C66524F6BE210021F4B2 /* IntersticialAdVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C66424F6BE210021F4B2 /* IntersticialAdVM.swift */; };
 		CD86C66824F711F50021F4B2 /* AdMobTableViewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C66724F711F50021F4B2 /* AdMobTableViewVC.swift */; };
+<<<<<<< HEAD
 		CDA4543C2502C11B0030C822 /* IAPMasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA4543B2502C11B0030C822 /* IAPMasterViewController.swift */; };
 		CDA4543E2502C1580030C822 /* HipHopVolumeProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA4543D2502C1580030C822 /* HipHopVolumeProducts.swift */; };
 		CDA454402502C17C0030C822 /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA4543F2502C17C0030C822 /* IAPHelper.swift */; };
 		CDA454422502C1C20030C822 /* ProductCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA454412502C1C20030C822 /* ProductCell.swift */; };
 		CDA454442502C5D00030C822 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDA454432502C5D00030C822 /* StoreKit.framework */; };
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -158,11 +161,7 @@
 		CD86C65E24F588330021F4B2 /* IntersticialAdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntersticialAdTest.swift; sourceTree = "<group>"; };
 		CD86C66424F6BE210021F4B2 /* IntersticialAdVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntersticialAdVM.swift; sourceTree = "<group>"; };
 		CD86C66724F711F50021F4B2 /* AdMobTableViewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobTableViewVC.swift; sourceTree = "<group>"; };
-		CDA4543B2502C11B0030C822 /* IAPMasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPMasterViewController.swift; sourceTree = "<group>"; };
-		CDA4543D2502C1580030C822 /* HipHopVolumeProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HipHopVolumeProducts.swift; sourceTree = "<group>"; };
-		CDA4543F2502C17C0030C822 /* IAPHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPHelper.swift; sourceTree = "<group>"; };
-		CDA454412502C1C20030C822 /* ProductCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCell.swift; sourceTree = "<group>"; };
-		CDA454432502C5D00030C822 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+
 		E9359D0B9062EBD16B3ADC07 /* Pods-VolumeiOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VolumeiOS.debug.xcconfig"; path = "Target Support Files/Pods-VolumeiOS/Pods-VolumeiOS.debug.xcconfig"; sourceTree = "<group>"; };
 		ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VolumeiOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -173,7 +172,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A34179DA10DF7C31AE28B6E /* Pods_VolumeiOS.framework in Frameworks */,
-				CDA454442502C5D00030C822 /* StoreKit.framework in Frameworks */,
+
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,7 +235,7 @@
 		CD57111A244FDF3300FAAC5D /* VolumeiOS */ = {
 			isa = PBXGroup;
 			children = (
-				CDA4543A2502C0ED0030C822 /* IAP */,
+
 				CD86C65824F445B10021F4B2 /* Info.plist */,
 				CD86C63D24EC57500021F4B2 /* TabBar */,
 				CD422C9924C8E0D300D9DF76 /* Notifications */,
@@ -349,21 +348,7 @@
 			path = AdMob;
 			sourceTree = "<group>";
 		};
-		CDA4543A2502C0ED0030C822 /* IAP */ = {
-			isa = PBXGroup;
-			children = (
-				CDA4543B2502C11B0030C822 /* IAPMasterViewController.swift */,
-				CDA4543D2502C1580030C822 /* HipHopVolumeProducts.swift */,
-				CDA4543F2502C17C0030C822 /* IAPHelper.swift */,
-				CDA454412502C1C20030C822 /* ProductCell.swift */,
-			);
-			path = IAP;
-			sourceTree = "<group>";
-		};
-		D988314BAA79AF0D66CCA14F /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				CDA454432502C5D00030C822 /* StoreKit.framework */,
+
 				ED03D1724A86439B80A145E8 /* Pods_VolumeiOS.framework */,
 			);
 			name = Frameworks;
@@ -506,7 +491,7 @@
 				CD57114E244FDF6600FAAC5D /* ImageView.swift in Sources */,
 				CD08ADD3248EDD8600AC3A39 /* VideoTableViewCell.swift in Sources */,
 				CD5711612450AB5B00FAAC5D /* AppDelegate.swift in Sources */,
-				CDA4543E2502C1580030C822 /* HipHopVolumeProducts.swift in Sources */,
+
 				CD08ADD524900C5600AC3A39 /* TracksCell.swift in Sources */,
 				CD57115F245096AE00FAAC5D /* AlbumTrackVC.swift in Sources */,
 				CD08ADE52495982300AC3A39 /* CommentVC.swift in Sources */,
@@ -519,7 +504,7 @@
 				CD57114B244FDF6600FAAC5D /* ArtistProfileVC.swift in Sources */,
 				CD422C9F24C8E77E00D9DF76 /* NotificationViewModel.swift in Sources */,
 				CD08ADDC249146A400AC3A39 /* ArtistPFContainerView.swift in Sources */,
-				CDA454402502C17C0030C822 /* IAPHelper.swift in Sources */,
+
 				CD08ADC12474803000AC3A39 /* UsernameTextField.swift in Sources */,
 				CD422C9424A2E40400D9DF76 /* CommentViewModel.swift in Sources */,
 				CD571154244FDF6600FAAC5D /* SessionManager.swift in Sources */,
@@ -528,7 +513,7 @@
 				CD422C9D24C8E27B00D9DF76 /* NotificationCell.swift in Sources */,
 				CD571149244FDF6600FAAC5D /* ViewController.swift in Sources */,
 				CD57116F2451F7C400FAAC5D /* ViewModels.swift in Sources */,
-				CDA4543C2502C11B0030C822 /* IAPMasterViewController.swift in Sources */,
+
 				CD08ADBB246DED8000AC3A39 /* ImageToServer.swift in Sources */,
 				CD571152244FDF6600FAAC5D /* PlayAudio.swift in Sources */,
 				CD08ADE0249174B500AC3A39 /* ArtistVideoCell.swift in Sources */,
@@ -561,7 +546,7 @@
 				CD571151244FDF6600FAAC5D /* Models.swift in Sources */,
 				CD08ADB9246B452900AC3A39 /* EditProfileVC.swift in Sources */,
 				CD08ADDA2491431B00AC3A39 /* ArtistAlbumsCell.swift in Sources */,
-				CDA454422502C1C20030C822 /* ProductCell.swift in Sources */,
+
 				CD86C66824F711F50021F4B2 /* AdMobTableViewVC.swift in Sources */,
 				CD571150244FDF6600FAAC5D /* OtherView.swift in Sources */,
 			);
@@ -692,14 +677,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = V3293SR39E;
+
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = VolumeiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.dillondavis.hiphopvolume;
+
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "VolumeiOS/VolumeiOS-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -716,14 +701,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = V3293SR39E;
+
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = VolumeiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.dillondavis.hiphopvolume;
+
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "VolumeiOS/VolumeiOS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

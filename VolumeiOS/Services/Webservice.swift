@@ -60,6 +60,7 @@ class GetAllOfMediaType {
         
         URLSession.shared.dataTask(with: url) { data, _, _ in
             
+<<<<<<< HEAD
             guard let data = data else {
                 return
             }
@@ -72,6 +73,13 @@ class GetAllOfMediaType {
                 completion(posts)
             }
             
+=======
+            let posts = try!
+    
+                JSONDecoder().decode([Post].self, from: data!); DispatchQueue.main.async {
+                    completion(posts)
+            }
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }.resume()
      }
    }
@@ -371,6 +379,7 @@ class GETUsersByFollowerId: Identifiable {
         
         URLSession.shared.dataTask(with: request) { data, _, _ in
             
+<<<<<<< HEAD
             guard let data = data else {
                 return
             }
@@ -381,6 +390,12 @@ class GETUsersByFollowerId: Identifiable {
             }
             DispatchQueue.main.async {
                 completion(following)
+=======
+            let following = try!
+    
+                JSONDecoder().decode([Following].self, from: data!); DispatchQueue.main.async {
+                    completion(following)
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             }
         }.resume()
     }
@@ -1571,6 +1586,7 @@ class GETNotifications: Identifiable {
         }.resume()
     }
 }
+<<<<<<< HEAD
 
 
 class GETUser: Identifiable {
@@ -1671,3 +1687,5 @@ class GETUserName: Identifiable {
     }
 }
 
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6

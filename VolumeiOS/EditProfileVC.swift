@@ -57,6 +57,7 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
             print("user")
             var getUser = GetUsersById(id:userID)
             getUser.getAllPosts {
+<<<<<<< HEAD
                 if $0[0].username == nil {
                 GETUser(id: userID, path: "getUserInfo").getAllById {
                      if let username = $0[0].username {
@@ -68,6 +69,8 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
                   }
                 }
                 } else {
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
                 let user = $0
                 if let username = user[0].username {
                 self.userInfoArr[0].value = username
@@ -76,7 +79,10 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
                     self.myTableView?.reloadData()
                 }
                 self.delegate?.sendUsernameToArtistPF(myString: username)
+<<<<<<< HEAD
               }
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             }
           }
         }
@@ -122,6 +128,7 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
         var getUser = GetUsersById(id:userID)
             getUser.getAllPosts {
                 let user = $0
+<<<<<<< HEAD
                 if user[0].username == nil {
                     GETUser(id: userID, path: "getUserInfo").getAllById {
                         self.userInfoArr.append((title: "Username:", value: $0[0].username ?? "undefined"))
@@ -133,6 +140,11 @@ class EditProfileVC: Toolbar, UITextFieldDelegate, UITableViewDelegate, UITableV
                 self.userInfoArr.append((title: "Email:", value: user[0].email ?? "undefined"))
                 self.addTableView()
                 }
+=======
+                self.userInfoArr.append((title: "Username:", value: user[0].username ?? "undefined" ))
+                self.userInfoArr.append((title: "Email:", value: user[0].email ?? "undefined"))
+                self.addTableView()
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             }
         }
     }

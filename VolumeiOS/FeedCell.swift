@@ -26,9 +26,15 @@ class FeedCell:UITableViewCell {
     
     var components:URLComponents = {
         var component = URLComponents()
+<<<<<<< HEAD
         component.scheme = "https"
         component.host = "hiphopvolumebucket.s3.amazonaws.com"
         
+=======
+        component.scheme = "http"
+        component.host = "localhost"
+        component.port = 8000
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         return component
     }()
 

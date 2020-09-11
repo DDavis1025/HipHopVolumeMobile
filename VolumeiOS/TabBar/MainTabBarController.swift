@@ -14,7 +14,10 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     var profile = SessionManager.shared.profile
     override func viewDidLoad() {
         super.viewDidLoad()
+<<<<<<< HEAD
         view.backgroundColor = UIColor.white
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         self.tabBarController?.tabBar.isHidden = false
         tabBar.barTintColor = UIColor.lightGray
         setUpTabBar()

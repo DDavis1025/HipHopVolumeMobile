@@ -94,6 +94,7 @@ class AlbumCell: UICollectionViewCell, GADUnifiedNativeAdLoaderDelegate, UITable
                
                for id in uniqueVals {
                        GetUsersById(id: id).getAllPosts {
+<<<<<<< HEAD
                         var user = $0
                         if $0[0].username == nil {
                             GETUser(id: id, path: "getUserInfo").getAllById {
@@ -104,6 +105,10 @@ class AlbumCell: UICollectionViewCell, GADUnifiedNativeAdLoaderDelegate, UITable
                         self.users.append(contentsOf: $0)
                            print("got users for this \($0)")
                     }
+=======
+                           self.users.append(contentsOf: $0)
+                           print("got users for this \($0)")
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
                  }
                }
             
@@ -119,7 +124,11 @@ class AlbumCell: UICollectionViewCell, GADUnifiedNativeAdLoaderDelegate, UITable
        
        var components:URLComponents = {
               var component = URLComponents()
+<<<<<<< HEAD
               component.scheme = "https"
+=======
+              component.scheme = "http"
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
               component.host = "localhost"
               component.port = 8000
               return component
@@ -128,7 +137,11 @@ class AlbumCell: UICollectionViewCell, GADUnifiedNativeAdLoaderDelegate, UITable
     let view = UIView()
     override init(frame: CGRect) {
         super.init(frame: frame)
+<<<<<<< HEAD
         self.addMainMethods()
+=======
+        addMainMethods()
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 //        Webservice().getAllPosts {
 //                    self.posts = $0
 //                }
@@ -315,13 +328,20 @@ class AlbumCell: UICollectionViewCell, GADUnifiedNativeAdLoaderDelegate, UITable
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             tableView.deselectRow(at: indexPath, animated: true)
+<<<<<<< HEAD
         if let post = mainArray[indexPath.row] as? Post {
             let albumVC = AlbumVC(post: post)
+=======
+            let albumVC = AlbumVC(post: posts[indexPath.row])
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             if let del = self.delegate {
                del.didPressTVCell()
             }
             parent?.navigationController?.pushViewController(albumVC, animated: true)
+<<<<<<< HEAD
         }
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

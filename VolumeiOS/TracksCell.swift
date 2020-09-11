@@ -25,7 +25,10 @@ class TracksCell: AlbumCell {
         addTableView()
         GetAllOfMediaType(path:"tracks").getAllPosts {
                    self.posts = $0
+<<<<<<< HEAD
             print("track posts \(self.posts)")
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 //                   self.myTableView.reloadData()
                }
         
@@ -69,10 +72,16 @@ class TracksCell: AlbumCell {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             tableView.deselectRow(at: indexPath, animated: true)
             print("didSelect TrackCell row")
+<<<<<<< HEAD
            if let post = mainArray[indexPath.row] as? Post {
             if let id = post.id {
              if let path = post.title {
                 if let author_id = post.author {
+=======
+            if let id = posts[indexPath.row].id {
+             if let path = posts[indexPath.row].title {
+                if let author_id = posts[indexPath.row].author {
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
               let trackVC = TrackPlayVC()
               let author = Author()
               trackVC.captureId(id: id)
@@ -87,7 +96,10 @@ class TracksCell: AlbumCell {
 
               parent?.navigationController?.present(modalVC, animated: true, completion: nil)
             }
+<<<<<<< HEAD
            }
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
          }
        }
     }

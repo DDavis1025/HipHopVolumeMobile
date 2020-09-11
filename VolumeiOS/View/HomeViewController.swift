@@ -28,19 +28,25 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
     var albumVC:AlbumVC?
     var userAndFollowVC:UserPfAndFollow?
     var bannerView: GADBannerView!
+<<<<<<< HEAD
     var profile = SessionManager.shared.profile
     var product: SKProduct?
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
+<<<<<<< HEAD
         
 //          guard let product = product else { return }
          
 //         if HipHopVolumeProducts.store.isProductPurchased(product.productIdentifier) {
 //            print("isPurchased true")
 //        }
+=======
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 //        POSTAuth0().post(completion: {})
         view.backgroundColor = UIColor.white
         setupMenuBar()
@@ -78,6 +84,7 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
         navigationController?.isToolbarHidden = false
         
         print("navigation toolbar \(self.navigationController?.toolbar.barTintColor)")
+<<<<<<< HEAD
         
         if let id = profile?.sub {
         print("profile?.sub id \(profile?.sub)")
@@ -108,6 +115,11 @@ class HomeViewController: Toolbar, UICollectionViewDelegate, UICollectionViewDat
   }
     
     
+=======
+
+    }
+    
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     func addBannerViewToView(_ bannerView: GADBannerView) {
      bannerView.translatesAutoresizingMaskIntoConstraints = false
      bannerView.backgroundColor = UIColor.lightGray

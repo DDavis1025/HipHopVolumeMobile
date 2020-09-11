@@ -215,6 +215,7 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     func getUser(completion: @escaping(()->())) {
         if let id = profile?.sub {
+<<<<<<< HEAD
         print("profile?.sub id \(profile?.sub)")
         GetUsersById(id: id).getAllPosts {
             print("$0[0].username \($0[0].username)")
@@ -228,6 +229,16 @@ class CommentVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 completion()
             }
           }
+=======
+            print("profile?.sub id \(profile?.sub)")
+            GetUsersById(id: id).getAllPosts {
+                self.username = $0[0].username
+                print("self.username \(self.username)")
+                completion()
+            }
+        } else {
+            print("profile?.sub \(profile?.sub)")
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
     }
     

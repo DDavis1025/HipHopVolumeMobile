@@ -45,9 +45,13 @@ class ArtistProfileVC: Toolbar {
         didSet {
             DispatchQueue.main.async {
                 print("usersdid \(self.users)")
+<<<<<<< HEAD
                 self.getUser {
                      self.userInfo()
                 }
+=======
+                self.userInfo()
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             }
         }
     }
@@ -163,6 +167,10 @@ class ArtistProfileVC: Toolbar {
             }
             
             addActionToFlwBtn()
+<<<<<<< HEAD
+=======
+            getUser()
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             
             
             print("navigation artistPF \(navigationController)")
@@ -203,6 +211,7 @@ class ArtistProfileVC: Toolbar {
         print("setupButton")
     }
     
+<<<<<<< HEAD
     func getUser(completion: @escaping(()->())) {
             if let id = profile?.sub {
             print("profile?.sub id \(profile?.sub)")
@@ -219,6 +228,17 @@ class ArtistProfileVC: Toolbar {
                 }
               }
             }
+=======
+    func getUser() {
+        if let id = profile?.sub {
+            print("profile?.sub id \(profile?.sub)")
+            GetUsersById(id: id).getAllPosts {
+                self.username = $0[0].username
+            }
+        } else {
+            print("profile?.sub \(profile?.sub)")
+        }
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     
@@ -279,9 +299,13 @@ class ArtistProfileVC: Toolbar {
             label?.translatesAutoresizingMaskIntoConstraints = false
             label?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
             label?.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10).isActive = true
+<<<<<<< HEAD
             if let username = self.username {
             label?.text = "\(username)"
             }
+=======
+            label?.text = "\(self.users[0].username ?? "undefined")"
+>>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 
             imageLoader = DownloadImage()
                 self.imageLoader?.imageDidSet = { [weak self] image in
