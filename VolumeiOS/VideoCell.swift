@@ -74,21 +74,17 @@ class VideoCell: AlbumCell {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             tableView.deselectRow(at: indexPath, animated: true)
             let videoStruct = VideoStruct()
-<<<<<<< HEAD
             if let post = mainArray[indexPath.row] as? Post {
             if let id = post.id {
                 print("posts[indexPath.row].id \(post.id)")
-=======
             if let id = posts[indexPath.row].id {
                 print("posts[indexPath.row].id \(posts[indexPath.row].id)")
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             videoStruct.updateVideoId(newString: id)
             if let video_id = VideoStruct.id {
             let videoVC = VideoVC()
             if let id = VideoStruct.id {
             videoVC.passId (id: id)
             }
-<<<<<<< HEAD
             if let author = post.author {
               print("author now \(author)")
               videoVC.author = author
@@ -97,7 +93,6 @@ class VideoCell: AlbumCell {
               videoVC.video_description = description
             }
             if let title = post.title {
-=======
             if let author = posts[indexPath.row].author {
               videoVC.author = author
             }
@@ -105,15 +100,11 @@ class VideoCell: AlbumCell {
               videoVC.video_description = description
             }
             if let title = posts[indexPath.row].title {
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
               videoVC.video_title = title
             }
 
             parent?.navigationController?.pushViewController(videoVC, animated: true)
-<<<<<<< HEAD
             }
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 
           }
        }

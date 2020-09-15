@@ -15,11 +15,7 @@ import GoogleMobileAds
 
 var player:AVPlayer?
 class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     var bannerView: GADBannerView!
     var post:Post?
     var albumNameLabel:UILabel?
@@ -49,7 +45,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
     var fromNotificationCell:Bool?
     
     let timeRemainingLabel: UILabel = {
-<<<<<<< HEAD
         let timeRemaining = UILabel()
         timeRemaining.text = "00:00"
         timeRemaining.textColor = UIColor.black
@@ -62,7 +57,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         timeElapsed.textColor = UIColor.black
         return timeElapsed
     }()
-=======
          let timeRemaining = UILabel()
          timeRemaining.text = "00:00"
          timeRemaining.textColor = UIColor.black
@@ -75,8 +69,7 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
          timeElapsed.textColor = UIColor.black
          return timeElapsed
      }()
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
-    
+
     var components:URLComponents = {
         var component = URLComponents()
         component.scheme = "http"
@@ -92,11 +85,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         label.sizeToFit()
         return label
     }()
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,7 +103,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                 self.setImageViewConstraints()
                 self.addAlbumImage()
             })
-<<<<<<< HEAD
             print("it worked author_id \(author_id)")
         }
         
@@ -141,7 +128,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             let imageView = UIHostingController(rootView: ImageView(withURL: image))
             view.addSubview(imageView.view)
         }
-=======
          print("it worked author_id \(author_id)")
         }
         
@@ -161,7 +147,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
            let imageView = UIHostingController(rootView: ImageView(withURL: image))
            view.addSubview(imageView.view)
            }
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         
         bannerView = GADBannerView(adSize: kGADAdSizeBanner)
         addBannerViewToView(bannerView)
@@ -170,8 +155,7 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         bannerView.rootViewController = self
         bannerView.load(GADRequest())
         
-        
-<<<<<<< HEAD
+
         setupConstraints()
         addCommentsButton()
         addCommentsBtnConstraints()
@@ -201,7 +185,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         //        }
         
         
-=======
          setupConstraints()
          addCommentsButton()
          addCommentsBtnConstraints()
@@ -231,12 +214,10 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
 //        }
         
          
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         
     }
     
     func addBannerViewToView(_ bannerView: GADBannerView) {
-<<<<<<< HEAD
         bannerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bannerView)
         bannerView.backgroundColor = UIColor.lightGray
@@ -250,7 +231,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         interstitial.delegate = self as? GADInterstitialDelegate
         interstitial.load(GADRequest())
         return interstitial
-=======
      bannerView.translatesAutoresizingMaskIntoConstraints = false
      view.addSubview(bannerView)
      bannerView.backgroundColor = UIColor.lightGray
@@ -264,7 +244,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
       interstitial.delegate = self as? GADInterstitialDelegate
       interstitial.load(GADRequest())
       return interstitial
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     func interstitialDidReceiveAd(_ ad: GADInterstitial) {
@@ -274,11 +253,8 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         interstitial = createAndLoadInterstitial()
         view.isUserInteractionEnabled = true
         if ModelClass.playing! {
-<<<<<<< HEAD
             player?.play()
-=======
          player?.play()
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
         
         print("did dismiss screen")
@@ -287,22 +263,18 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
     func openAd() {
         guard let player = player else { return }
         if interstitial.isReady {
-<<<<<<< HEAD
             //          player.pause()
             interstitial.present(fromRootViewController: self)
         } else {
             print("Ad wasn't ready")
-=======
 //          player.pause()
           interstitial.present(fromRootViewController: self)
         } else {
           print("Ad wasn't ready")
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
-<<<<<<< HEAD
         print("it worked")
         guard let playing = ModelClass.playing else {
             return
@@ -313,7 +285,7 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             button?.setImage(UIImage(named: "play"), for: .normal)
         }
         trackNameLabel!.text = ModelClass.trackNameLabel
-=======
+
          print("it worked")
         guard let playing = ModelClass.playing else {
             return
@@ -324,12 +296,10 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                button?.setImage(UIImage(named: "play"), for: .normal)
            }
            trackNameLabel!.text = ModelClass.trackNameLabel
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         
         print(ModelClass.justClicked)
         
         if ModelClass.justClicked! && !ModelClass.clickedFromAT! {
-<<<<<<< HEAD
             if let track = ModelClass.track {
                 components.path = "/\(track)"
             }
@@ -338,10 +308,8 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                 play(url: (NSURL(string: url.absoluteString)!))
             }
             modelClass.updateJustClicked(newBool: false)
-=======
            play(url: (NSURL(string: (ModelClass.track!))!))
            modelClass.updateJustClicked(newBool: false)
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
         mySlider?.value = 0.0
         mySlider?.maximumValue = Float(CMTimeGetSeconds((player?.currentItem?.asset.duration)!))
@@ -351,11 +319,9 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         self.likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
         self.likeBtn?.tintColor = UIColor.black
         self.modelClass.updateIsLiked(newBool: false)
-<<<<<<< HEAD
     }
-=======
        }
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
+
     
     
     override func viewDidAppear(_ animated: Bool) {
@@ -364,7 +330,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         print("post_id album track \(ModelClass.post_id)")
         print("supporter id \(profile?.sub) + post_id \(track_id)")
         if let supporter_id = profile?.sub, let post_id = ModelClass.post_id {
-<<<<<<< HEAD
             GETLikeRequest(path: "postLikeByUserID", post_id: post_id, supporter_id: supporter_id).getLike {
                 if $0.count > 0 {
                     let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
@@ -377,7 +342,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                     self.likeBtn?.tintColor = UIColor.black
                     self.modelClass.updateIsLiked(newBool: false)
                 }
-=======
           GETLikeRequest(path: "postLikeByUserID", post_id: post_id, supporter_id: supporter_id).getLike {
               if $0.count > 0 {
                   let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
@@ -390,7 +354,7 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                   self.likeBtn?.tintColor = UIColor.black
                   self.modelClass.updateIsLiked(newBool: false)
               }
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
+
             }
         } 
         if let post_id = ModelClass.post_id {
@@ -398,17 +362,14 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                 self.numberOfLikes.text = "\($0.count)"
             }
         }
-<<<<<<< HEAD
         print("$0.count after")
         trackPlay.updateViewAppeared(newBool: false)
         modelClass.updateViewAppeared(newBool: true)
         
-=======
               print("$0.count after")
         trackPlay.updateViewAppeared(newBool: false)
         modelClass.updateViewAppeared(newBool: true)
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     @objc func dismissVC() {
@@ -431,7 +392,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
     func addUserAndFollowView(id: String, completion: @escaping () -> ()) {
         userAndFollow = UserPfAndFollow(id: id)
         if let userAndFollow = userAndFollow {
-<<<<<<< HEAD
             addChild(userAndFollow)
             userAndFollow.view.isUserInteractionEnabled = true
             view.addSubview(userAndFollow.view)
@@ -448,7 +408,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             completion()
         }
         
-=======
           addChild(userAndFollow)
           userAndFollow.view.isUserInteractionEnabled = true
           view.addSubview(userAndFollow.view)
@@ -465,7 +424,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
           completion()
         }
          
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     
@@ -480,16 +438,12 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         view.addSubview(trackNameLabel!)
         
         addLabelConstraints()
-<<<<<<< HEAD
     }
-=======
 }
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     
     func addLabelConstraints() {
         self.albumNameLabel?.translatesAutoresizingMaskIntoConstraints = false
         self.trackNameLabel?.translatesAutoresizingMaskIntoConstraints = false
-<<<<<<< HEAD
         
         //        albumNameLabel?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         //        albumNameLabel?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -497,7 +451,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         
         //        trackNameLabel?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         //        trackNameLabel?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-=======
                                                                      
 //        albumNameLabel?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
 //        albumNameLabel?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -505,7 +458,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         
 //        trackNameLabel?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
 //        trackNameLabel?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         trackNameLabel?.topAnchor.constraint(equalTo: albumNameLabel!.bottomAnchor, constant: 20).isActive = true
         
         albumNameLabel?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
@@ -514,13 +466,10 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
     
     func addAlbumImage() {
         if let path = ModelClass.post?.path {
-<<<<<<< HEAD
             components.path = "/\(path)"
             print("imageView image 3")
-=======
         components.path = "/\(path)"
         print("imageView image 3")
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
         imageLoader = DownloadImage()
         imageLoader?.imageDidSet = { [weak self ] image in
@@ -532,13 +481,10 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             
         }
         if let url = components.url?.absoluteString {
-<<<<<<< HEAD
             print("imageView image 2")
             imageLoader?.downloadImage(urlString: url)
-=======
         print("imageView image 2")
         imageLoader?.downloadImage(urlString: url)
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
         
         
@@ -551,11 +497,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         } else {
             imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         
         imageView.widthAnchor.constraint(equalToConstant: 290).isActive = true
         
@@ -564,7 +505,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         imageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
         
-<<<<<<< HEAD
     }
     
     
@@ -578,7 +518,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         
         self.view.addSubview(mySlider!)
         
-=======
 }
     
     
@@ -592,24 +531,20 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                
             self.view.addSubview(mySlider!)
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     func addButtons() {
         button = UIButton()
-<<<<<<< HEAD
         //        if playing! {
         //            button?.setImage(UIImage(named: "pause"), for: .normal)
         //        } else {
         //            button?.setImage(UIImage(named: "play"), for: .normal)
         //        }
-=======
 //        if playing! {
 //            button?.setImage(UIImage(named: "pause"), for: .normal)
 //        } else {
 //            button?.setImage(UIImage(named: "play"), for: .normal)
 //        }
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         button?.imageView?.contentMode = .scaleAspectFit
         button?.addTarget(self, action: #selector(buttonClicked(_:)), for: .touchUpInside)
         
@@ -647,11 +582,7 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             button?.setImage(UIImage(named: "pause"), for: .normal)
         }
     }
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     @objc func goBackBtnClicked(_: UIButton) {
         var index = ModelClass.index
         print("index go back \(index)")
@@ -662,11 +593,8 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             index! -= 1
             modelClass.updateIndex(newInt: index!)
             if let trackName = ModelClass.listArray![index!].name {
-<<<<<<< HEAD
                 modelClass.updateTrackNameLabel(newText: trackName)
-=======
             modelClass.updateTrackNameLabel(newText: trackName)
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             }
             if let index = index {
                 if let path = ModelClass.listArray?[index].path {
@@ -724,13 +652,9 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             }
             trackNameLabel?.text = ModelClass.listArray![index!].name
             
-<<<<<<< HEAD
             //            play(url: components.url! as NSURL)
             
-=======
 //            play(url: components.url! as NSURL)
-
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             print("url gb \(components.url! as NSURL)")
         }
         
@@ -742,7 +666,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         }
         var index = ModelClass.index
         if index! < ModelClass.listArray!.count - 1 {
-<<<<<<< HEAD
             index! += 1
             modelClass.updateIndex(newInt: index!)
             print("index \(index)")
@@ -776,7 +699,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                 }
             } else {
                 print("track_id \(track_id) + supporter_id \(profile?.sub)")
-=======
         index! += 1
         modelClass.updateIndex(newInt: index!)
         print("index \(index)")
@@ -810,14 +732,12 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             }
         } else {
             print("track_id \(track_id) + supporter_id \(profile?.sub)")
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             }
             if let post_id = ModelClass.post_id {
                 GETLikeRequest(path: "getLikesByPostID", post_id: post_id, supporter_id: nil).getLike {
                     self.numberOfLikes.text = "\($0.count)"
                 }
             }
-<<<<<<< HEAD
             if NumberOfNext.numberOfNext <= 12{
                 var number = NumberOfNext.numberOfNext
                 number += 1
@@ -843,7 +763,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             trackNameLabel?.text = ModelClass.listArray![index!].name
             //        play(url: components.url! as NSURL)
             print("url gf \(components.url! as NSURL)")
-=======
         if NumberOfNext.numberOfNext <= 12{
           var number = NumberOfNext.numberOfNext
           number += 1
@@ -869,7 +788,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
          trackNameLabel?.text = ModelClass.listArray![index!].name
 //        play(url: components.url! as NSURL)
         print("url gf \(components.url! as NSURL)")
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
     }
     
@@ -885,13 +803,9 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         vc.modalPresentationStyle = .fullScreen
         vc.delegate = self
         self.present(vc, animated: false, completion: nil)
-<<<<<<< HEAD
     }
     
-=======
 }
-
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     
     func getFormattedTime(timeInterval: TimeInterval) -> String {
         let mins = timeInterval / 60
@@ -910,17 +824,14 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         guard let player = player else { return }
         mySlider?.value = Float(CMTimeGetSeconds(player.currentTime()))
         let remainingTimeInSeconds = CMTimeGetSeconds((player.currentItem?.asset.duration)!) - CMTimeGetSeconds(player.currentTime())
-<<<<<<< HEAD
         
         timeRemainingLabel.text = getFormattedTime(timeInterval: remainingTimeInSeconds)
         timeElapsedLabel.text = getFormattedTime(timeInterval: CMTimeGetSeconds(player.currentTime()))
         
-=======
                  
         timeRemainingLabel.text = getFormattedTime(timeInterval: remainingTimeInSeconds)
         timeElapsedLabel.text = getFormattedTime(timeInterval: CMTimeGetSeconds(player.currentTime()))
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     @objc func sliderValueChanged(_ sender: UISlider) {
@@ -931,16 +842,10 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
             let seekTime = CMTime(value: Int64(value), timescale: 1)
             player.seek(to: seekTime)
         }
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     
     func play(url:NSURL)  {
-<<<<<<< HEAD
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
@@ -964,7 +869,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         }
         
         //               return player
-=======
                do {
                    try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
                    try AVAudioSession.sharedInstance().setActive(true)
@@ -988,7 +892,6 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
                }
                
 //               return player
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     func setupConstraints() {
@@ -999,26 +902,20 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         self.goBackBtn?.translatesAutoresizingMaskIntoConstraints = false
         self.goForwardBtn?.translatesAutoresizingMaskIntoConstraints = false
         self.albumTracksBtn?.translatesAutoresizingMaskIntoConstraints = false
-<<<<<<< HEAD
         
         timeElapsedLabel.leadingAnchor.constraint(equalTo: self.mySlider!.leadingAnchor).isActive = true
         
-=======
                                                               
         timeElapsedLabel.leadingAnchor.constraint(equalTo: self.mySlider!.leadingAnchor).isActive = true
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         timeRemainingLabel.trailingAnchor.constraint(equalTo: self.mySlider!.trailingAnchor).isActive = true
         
         timeElapsedLabel.topAnchor.constraint(equalTo: self.mySlider!.bottomAnchor).isActive = true
         timeRemainingLabel.topAnchor.constraint(equalTo: self.mySlider!.bottomAnchor).isActive = true
         
         mySlider?.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
+        
         mySlider?.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
         
         mySlider?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
@@ -1034,35 +931,29 @@ class AlbumTrackVC: UIViewController, GADInterstitialDelegate {
         button?.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         goBackBtn?.leadingAnchor.constraint(equalTo: self.button!.leadingAnchor, constant: -60).isActive = true
-<<<<<<< HEAD
         
         goForwardBtn?.trailingAnchor.constraint(equalTo: self.button!.trailingAnchor, constant: 60).isActive = true
         
         goForwardBtn?.centerYAnchor.constraint(equalTo: self.button!.centerYAnchor).isActive = true
         
-=======
 
         goForwardBtn?.trailingAnchor.constraint(equalTo: self.button!.trailingAnchor, constant: 60).isActive = true
         
         goForwardBtn?.centerYAnchor.constraint(equalTo: self.button!.centerYAnchor).isActive = true
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         goBackBtn?.centerYAnchor.constraint(equalTo: self.button!.centerYAnchor).isActive = true
         
         albumTracksBtn?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         
         albumTracksBtn?.bottomAnchor.constraint(equalTo: bannerView.topAnchor, constant: -15).isActive = true
-<<<<<<< HEAD
         
         
     }
     
-=======
     
     
     }
         
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 }
 
 
@@ -1075,11 +966,8 @@ extension AlbumTrackVC {
         commentsBtn?.addTarget(self, action: #selector(commentsBtnClicked(_:)), for: .touchUpInside)
         commentsBtn?.tintColor = UIColor.black
         if let commentsBtn = commentsBtn {
-<<<<<<< HEAD
             view.addSubview(commentsBtn)
-=======
         view.addSubview(commentsBtn)
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
     }
     
@@ -1106,11 +994,8 @@ extension AlbumTrackVC {
     @objc func commentsBtnClicked(_ sender: UIButton) {
         let commentVC = CommentVC()
         if let post_id = ModelClass.post_id {
-<<<<<<< HEAD
             commentVC.post_id = post_id
-=======
         commentVC.post_id = post_id
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
         let commentVC2 = UINavigationController(rootViewController: commentVC)
         commentVC2.modalPresentationStyle = .popover
@@ -1129,11 +1014,8 @@ extension AlbumTrackVC {
         likeBtn?.addTarget(self, action: #selector(likeBtnClicked(_:)), for: .touchUpInside)
         likeBtn?.tintColor = UIColor.black
         if let likeBtn = likeBtn {
-<<<<<<< HEAD
             view.addSubview(likeBtn)
-=======
         view.addSubview(likeBtn)
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
     }
     
@@ -1147,19 +1029,16 @@ extension AlbumTrackVC {
         likeBtn?.centerXAnchor.constraint(equalTo: albumTracksBtn.centerXAnchor, constant: -80).isActive = true
     }
     
-<<<<<<< HEAD
     
     
     @objc func likeBtnClicked(_ sender: UIButton) {
         print("model class is liked \(ModelClass.isLiked)")
         if ModelClass.isLiked == true {
-=======
 
     
     @objc func likeBtnClicked(_ sender: UIButton) {
         print("model class is liked \(ModelClass.isLiked)")
             if ModelClass.isLiked == true {
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .medium, scale: .medium)
             likeBtn?.setImage(UIImage(systemName: "heart", withConfiguration: likeBtnConfig), for: .normal)
             likeBtn?.tintColor = UIColor.black
@@ -1187,7 +1066,6 @@ extension AlbumTrackVC {
             let likeBtnConfig = UIImage.SymbolConfiguration(pointSize: 25.0, weight: .bold, scale: .medium)
             likeBtn?.setImage(UIImage(systemName: "heart.fill", withConfiguration: likeBtnConfig), for: .normal)
             likeBtn?.tintColor = UIColor.red
-<<<<<<< HEAD
             if let supporter_id = profile?.sub, let supporter_username = username, let supporter_picture = profile?.picture, let post_id = ModelClass.post_id, let user_id = ModelClass.user_id {
                 let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture.absoluteString, post_id: post_id, post_type: "album")
                 
@@ -1209,7 +1087,6 @@ extension AlbumTrackVC {
             }
             modelClass.updateIsLiked(newBool: true)
         }
-=======
                 if let supporter_id = profile?.sub, let supporter_username = username, let supporter_picture = profile?.picture, let post_id = ModelClass.post_id, let user_id = ModelClass.user_id {
                     let postLike = LikeModel(user_id: user_id, supporter_id: supporter_id, supporter_username: supporter_username, supporter_picture: supporter_picture.absoluteString, post_id: post_id, post_type: "album")
             
@@ -1231,7 +1108,6 @@ extension AlbumTrackVC {
           }
             modelClass.updateIsLiked(newBool: true)
       }
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
 }

@@ -24,12 +24,9 @@ class UsernameTextField: Toolbar, UITextFieldDelegate {
     let updateUser = UpdateUserInfo()
     var usernameWarning:UILabel?
     let editPF = EditPFStruct()
-<<<<<<< HEAD
     let usernameNil:Bool? = false
     var isAuth0Username:Bool?
     var usernameExists:Bool? = false
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +36,6 @@ class UsernameTextField: Toolbar, UITextFieldDelegate {
         addUserConstraints()
         addNavButtons()
         
-<<<<<<< HEAD
         checkForAuth0Username()
         
         view.backgroundColor = UIColor.white
@@ -234,7 +230,6 @@ class UsernameTextField: Toolbar, UITextFieldDelegate {
         
         
         
-=======
         view.backgroundColor = UIColor.white
         
     }
@@ -347,7 +342,6 @@ class UsernameTextField: Toolbar, UITextFieldDelegate {
     
     
     
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 }
 
 

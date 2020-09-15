@@ -53,7 +53,6 @@ struct UsersModel: Codable {
     var email:String?
 }
 
-<<<<<<< HEAD
 struct UsersModel2: Codable {
     var name:String?
     var username:String?
@@ -67,8 +66,6 @@ struct UsersModel2: Codable {
     }
 }
 
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 final class Follower: Codable {
     var user_id:String?
     var follower_id:String?

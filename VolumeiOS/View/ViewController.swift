@@ -238,11 +238,8 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
         modelClass.updateTrackNameLabel(newText: "\(listArray[indexPath.row].name!)")
 
         print("listArray \(listArray)")
-<<<<<<< HEAD
         if let path = listArray[indexPath.row].path {
-=======
         if let path = trackPath?[indexPath.row] {
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         modelClass.updateTrackPath(newText: path)
         }
 
@@ -258,7 +255,6 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
 
           self.navigationController?.present(modalVC, animated: true, completion: nil)
         } else {
-<<<<<<< HEAD
           if let track = ModelClass.track {
               components.path = "/\(track)"
           }
@@ -266,9 +262,7 @@ class ViewController: Toolbar, UITableViewDelegate, UITableViewDataSource {
               print("url \(url.absoluteString)")
             trackVC.play(url: (NSURL(string: url.absoluteString)!))
           }
-=======
           trackVC.play(url: (NSURL(string: (ModelClass.track!))!))
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
           modelClass.updateClickedFromAT(newBool: true)
           if let track_id = listArray[indexPath.row].id {
             delegate?.updateTrackID(track_id: track_id)

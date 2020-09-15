@@ -2,7 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<<<<<<< HEAD
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -88,7 +87,6 @@
 	</array>
 </dict>
 </plist>
-=======
     <key>GADIsAdManagerApp</key>
     <true/>
     <key>GADApplicationIdentifier</key>
@@ -175,4 +173,3 @@
 </dict>
 </plist>
 
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6

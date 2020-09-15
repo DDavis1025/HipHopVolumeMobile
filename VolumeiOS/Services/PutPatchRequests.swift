@@ -53,7 +53,6 @@ class UpdateUserInfo {
         dataTask.resume()
     }
 }
-<<<<<<< HEAD
 
 struct UpdateUser {
     let resourceURL:URL
@@ -94,5 +93,4 @@ struct UpdateUser {
         }
     }
 }
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
+

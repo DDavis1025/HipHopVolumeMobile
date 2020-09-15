@@ -115,7 +115,6 @@ class FollowButtonView: UIViewController, FollowDelegateProtocol {
     
     func getUser() {
         if let id = profile?.sub {
-<<<<<<< HEAD
         print("profile?.sub id \(profile?.sub)")
         GetUsersById(id: id).getAllPosts {
             print("$0[0].username \($0[0].username)")
@@ -127,14 +126,12 @@ class FollowButtonView: UIViewController, FollowDelegateProtocol {
                 self.username = $0[0].username
             }
           }
-=======
             print("profile?.sub id \(profile?.sub)")
             GetUsersById(id: id).getAllPosts {
                 self.username = $0[0].username
             }
         } else {
             print("profile?.sub \(profile?.sub)")
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         }
     }
     
@@ -162,13 +159,10 @@ class FollowButtonView: UIViewController, FollowDelegateProtocol {
     @objc func setButtonAction() {
         
         if followButton.buttonState == .add {
-<<<<<<< HEAD
             if let follower_id = profile?.sub, let follower_picture = profile?.picture?.absoluteString, let username = username {
                 let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: username, follower_picture: follower_picture )
-=======
             if let follower_id = profile?.sub, let follower_picture = profile?.picture?.absoluteString, let name = profile?.name {
                 let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: self.username ?? name, follower_picture: follower_picture )
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
               let postRequest = FollowerPostRequest(endpoint: "follower")
               
               postRequest.save(follower) { (result) in

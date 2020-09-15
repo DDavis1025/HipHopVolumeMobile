@@ -57,7 +57,6 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
         
             self.userModel?.usersDidChange = { [weak self] users in
             self?.user = UILabel()
-<<<<<<< HEAD
             self?.getUser(completion: {
             if let username = self?.username {
             self?.user!.text = username
@@ -65,12 +64,9 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
             }
             
             self?.user_id = users[0].user_id
-=======
             self?.user!.text = users[0].username ?? "undefined"
             self?.user_id = users[0].user_id
-            self?.view.addSubview(self!.user!)
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
-            self?.addImageAfterLoad()
+            self?.view.addSubview(self!.user!)            self?.addImageAfterLoad()
             if let picture = users[0].picture {
             self?.imageLoader?.downloadImage(urlString: picture)
                 }
@@ -90,17 +86,13 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
                 }
                 
                 self?.view.isUserInteractionEnabled = true
-<<<<<<< HEAD
-              
+
             })
         }
-        addImage()
-=======
-                
+        addImage()                
         }
         addImage()
         getUser()
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
         
         getFollowing(id: profile!.sub)
         
@@ -124,7 +116,6 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
         }
     }
     
-<<<<<<< HEAD
     func getUser(completion: @escaping(()->())) {
             GetUsersById(id: self.id).getAllPosts {
             print("$0[0].username \($0[0].username)")
@@ -138,7 +129,6 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
                 completion()
             }
           }
-=======
     func getUser() {
         if let id = profile?.sub {
             print("profile?.sub id \(profile?.sub)")
@@ -150,7 +140,6 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
         } else {
             print("profile?.sub \(profile?.sub)")
         }
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
     }
     
     
@@ -171,13 +160,10 @@ class UserPfAndFollow: UIViewController, FollowDelegateProtocol {
         
         print("profile?.sub user \(profile?.sub)")
         if followButton.buttonState == .add {
-<<<<<<< HEAD
             if let follower_id = profile?.sub, let name = profile?.name, let follower_picture = profile?.picture?.absoluteString, let username = self.username {
             let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: username, follower_picture: follower_picture )
-=======
            if let follower_id = profile?.sub, let name = profile?.name, let follower_picture = profile?.picture?.absoluteString {
             let follower = Follower(user_id: user_id!, follower_id: follower_id, follower_username: self.username ?? name, follower_picture: follower_picture )
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
               
               let postRequest = FollowerPostRequest(endpoint: "follower")
               

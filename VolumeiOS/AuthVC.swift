@@ -10,10 +10,7 @@ import Foundation
 import UIKit
 import Auth0
 import Lock
-<<<<<<< HEAD
 import StoreKit
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 
 let domain = "https://dev-owihjaep.auth0.com"
 let clientId = "vA4GjK6zABxVEbqtNLvs7t5IOqeFyWMJ"
@@ -31,10 +28,7 @@ class AuthVC: UIViewController {
     
     var auth = AuthStruct()
     
-<<<<<<< HEAD
-    
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
+
     override func viewDidLoad() {
         super.viewDidLoad()
         Auth0AccessToken().getAccessToken(completion: {
@@ -49,14 +43,12 @@ class AuthVC: UIViewController {
         
         view.backgroundColor = UIColor.white
         
-<<<<<<< HEAD
         HipHopVolumeProducts.store.requestProducts {_,_ in 
         }
         
         
         
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
+
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -128,11 +120,8 @@ class AuthVC: UIViewController {
             $0.parameters = ["prompt" : "select_account"]
         }
         .withStyle {
-<<<<<<< HEAD
             $0.title = "Hip-Hop Volume"
-=======
             $0.title = "Volume"
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
             $0.primaryColor = UIColor.darkGray
         }
         .withStyle {
