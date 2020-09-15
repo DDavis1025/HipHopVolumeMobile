@@ -77,14 +77,11 @@
 		CD86C65F24F588330021F4B2 /* IntersticialAdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C65E24F588330021F4B2 /* IntersticialAdTest.swift */; };
 		CD86C66524F6BE210021F4B2 /* IntersticialAdVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C66424F6BE210021F4B2 /* IntersticialAdVM.swift */; };
 		CD86C66824F711F50021F4B2 /* AdMobTableViewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD86C66724F711F50021F4B2 /* AdMobTableViewVC.swift */; };
-<<<<<<< HEAD
 		CDA4543C2502C11B0030C822 /* IAPMasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA4543B2502C11B0030C822 /* IAPMasterViewController.swift */; };
 		CDA4543E2502C1580030C822 /* HipHopVolumeProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA4543D2502C1580030C822 /* HipHopVolumeProducts.swift */; };
 		CDA454402502C17C0030C822 /* IAPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA4543F2502C17C0030C822 /* IAPHelper.swift */; };
 		CDA454422502C1C20030C822 /* ProductCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA454412502C1C20030C822 /* ProductCell.swift */; };
 		CDA454442502C5D00030C822 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDA454432502C5D00030C822 /* StoreKit.framework */; };
-=======
->>>>>>> f197ef7388e157d07eadab057a0ccda42f8661b6
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
